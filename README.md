@@ -1,5 +1,5 @@
 ## About
-This Repo is designed to serve a gap in the market. The 2008 Silicon Knights Xbox 360 game - Too Human - was a pretty big community talking point since it's release. However when it came to underground content, there was very little produced. The main reason for this? The gamesaves contained a custom-built hash to validate them meaning, as far as i could find, only 1 working save editor has ever been seen.
+This Repo is designed to serve a gap in the market. The 2008 Silicon Knights Xbox 360 game - Too Human - has been a pretty big community talking point since it's release. However when it came to underground content, there was very little produced. The main reason for this? The gamesaves contained a custom-built hash to validate them meaning, as far as i could find, only 1 working save editor has ever been seen.
 
 ## Compaitibility
 This project has been built using C# in Visual Studio. The GUI is WPF based, the framework is .NET 4.5.
