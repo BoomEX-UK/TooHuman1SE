@@ -2,6 +2,7 @@ name: TooHuman1SE
 theme: jekyll-theme-midnight
 title: Too Human 1 Save Editor
 permalink: index.md
+show_downloads: true
 
 repository: https://github.com/xJam-es/TooHuman1SE
 
