@@ -7,6 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Button x:Name="btnOpenDir" Content="Open Directory" HorizontalAlignment="Left" Margin="401,4,0,0" VerticalAlignment="Top" Width="106" Height="26" Click="btnOpenDir_Click"/>
+        <Label Content="Too Human Saves:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,4,0,0"/>
+        <CheckBox Content="Auto Backup" HorizontalAlignment="Left" Margin="10,294,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <Frame x:Name="MainFrame" Content="Frame" Margin="10,35,10,30"/>
+
     </Grid>
 </Window>
