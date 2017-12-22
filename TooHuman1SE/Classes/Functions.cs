@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Documents;
+using System.Windows.Media;
 using Isolib.STFSPackage;
 using TooHuman1SE.SEStructure;
 
@@ -16,19 +18,62 @@ namespace TooHuman1SE.SEFunctions
         public static Stfs confs;
         public static byte[] _buffer;
 
+        public const int LC_DEFAULT = 0;
+        public const int LC_CRITICAL = 1;
+        public const int LC_SUCCESS = 2;
+        public const int LC_WARNING = 3;
+        public const int LC_PRIMARY = 4;
+
         public static void log(string logMessage)
         {
+            log(logMessage, LC_DEFAULT);
+        }
+
+        public static void log(string logMessage, int logColour)
+        {
+            System.Windows.Controls.RichTextBox rb = MainWindow._MessagesPage.RichLog;
+            TextRange tr = new TextRange(rb.Document.ContentEnd, rb.Document.ContentEnd);
+            SolidColorBrush col;
+            string tPrefix = "";
+            string fullMessage = "";
+
+            switch (logColour)
+            {
+                case LC_CRITICAL:
+                    col = Brushes.Red;
+                    tPrefix = "[x] ";
+                    break;
+                case LC_SUCCESS:
+                    col = Brushes.Green;
+                    tPrefix = "[+] ";
+                    break;
+                case LC_WARNING:
+                    col = Brushes.Gold;
+                    tPrefix = "[!] ";
+                    break;
+                case LC_PRIMARY:
+                    col = Brushes.Navy;
+                    tPrefix = "[>] ";
+                    break;
+                default:
+                    col = Brushes.SlateGray;
+                    break;
+            }
+
+            fullMessage = DateTime.Now.ToLongTimeString() + ": " + tPrefix + logMessage + Environment.NewLine;
+
             try
             {
                 if (!Directory.Exists("log")) Directory.CreateDirectory("log");
                 using (StreamWriter w = File.AppendText("log/" + DateTime.Now.ToString("yyyy-MM-dd") + ".log"))
                 {
-                    w.WriteLine("{0}: {1}", DateTime.Now.ToLongTimeString(), logMessage);
+                    w.WriteLine(fullMessage);
                 }
             }
             catch { }
 
-            MainWindow._MessagesPage.RichLog.AppendText(logMessage + Environment.NewLine);
+            tr.Text = fullMessage;
+            tr.ApplyPropertyValue(System.Windows.Controls.RichTextBox.ForegroundProperty, col);
 
         }
 

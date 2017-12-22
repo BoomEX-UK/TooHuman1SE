@@ -128,7 +128,7 @@ namespace TooHuman1SE.SEStructure
             // If Sucessful
             if (this.saveLoaded)
             {
-                Functions.log("Verification Passed");
+                Functions.log("Verification Passed", Functions.LC_SUCCESS);
                 this.sectorCount = this.sectorCode.Count;
                 foreach (byte[] barr in this.sectorData)
                 {
@@ -137,7 +137,7 @@ namespace TooHuman1SE.SEStructure
 
                 // Data Parsing
                 // loadRunes();
-            } else Functions.log("Verification Failed");
+            } else Functions.log("Verification Failed", Functions.LC_CRITICAL);
 
         }
 
@@ -292,7 +292,7 @@ namespace TooHuman1SE.SEStructure
                         this.dataSize = readerW.ReadInt32();
                         tmpres = readerW.Length >= this.dataSize;
                     }
-                    else Functions.log("Fail - File Size Below " + TH1_OFFSET_SIZE.ToString() + "b");
+                    else Functions.log("Fail - File Size Below " + TH1_OFFSET_SIZE.ToString() + "b", Functions.LC_CRITICAL);
 
                     if(tmpres) { // OK - enough checks, let's prime the data
                         // trim the fat
@@ -307,7 +307,7 @@ namespace TooHuman1SE.SEStructure
                         readerW.WriteBytes(PLACEHOLDER_HASH);
                         readerW.Flush();
                     }
-                    else Functions.log("Fail - Corrupt Gamesave Length");
+                    else Functions.log("Fail - Corrupt Gamesave Length", Functions.LC_CRITICAL);
 
                 }
                 catch (Exception ex) { MsgBox(ex.ToString()); }
@@ -317,7 +317,7 @@ namespace TooHuman1SE.SEStructure
             if (tmpres) // if we made it this far, lets hash it all up
             {
                 newhash = getHash();
-                if (!this.hash.SequenceEqual(newhash)) Functions.log("Warning: Original file contains invalid hash."); // FYI
+                if (!this.hash.SequenceEqual(newhash)) Functions.log("Warning: Original file contains invalid hash.", Functions.LC_WARNING); // FYI
             }
 
             this.saveLoaded = tmpres;
