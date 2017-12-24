@@ -122,7 +122,7 @@ namespace TooHuman1SE.SEStructure
             // Try The File
             Init();
             this.filePath = filePath;
-            Functions.log("File In [" + Path.GetFileNameWithoutExtension(this.filePath) + "]");
+            Functions.log("File In [" + Path.GetFileNameWithoutExtension(this.filePath) + "]", Functions.LC_PRIMARY);
             readTH1GameSave();
 
             // If Sucessful

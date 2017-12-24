@@ -32,48 +32,53 @@ namespace TooHuman1SE.SEFunctions
         public static void log(string logMessage, int logColour)
         {
             System.Windows.Controls.RichTextBox rb = MainWindow._MessagesPage.RichLog;
-            TextRange tr = new TextRange(rb.Document.ContentEnd, rb.Document.ContentEnd);
+            TextRange trf = new TextRange(rb.Document.ContentEnd, rb.Document.ContentEnd);
+            TextRange trh = new TextRange(rb.Document.ContentEnd, rb.Document.ContentEnd);
             SolidColorBrush col;
+
             string tPrefix = "";
             string fullMessage = "";
+            string highlightMessage = "";
 
             switch (logColour)
             {
                 case LC_CRITICAL:
-                    col = Brushes.Red;
+                    col = Brushes.PaleVioletRed;
                     tPrefix = "[x] ";
                     break;
                 case LC_SUCCESS:
-                    col = Brushes.Green;
+                    col = Brushes.LightGreen;
                     tPrefix = "[+] ";
                     break;
                 case LC_WARNING:
-                    col = Brushes.Gold;
+                    col = Brushes.Yellow;
                     tPrefix = "[!] ";
                     break;
                 case LC_PRIMARY:
-                    col = Brushes.Navy;
+                    col = Brushes.LightBlue;
                     tPrefix = "[>] ";
                     break;
                 default:
-                    col = Brushes.SlateGray;
+                    col = Brushes.White;
                     break;
             }
 
-            fullMessage = DateTime.Now.ToLongTimeString() + ": " + tPrefix + logMessage + Environment.NewLine;
+            highlightMessage = tPrefix + logMessage + Environment.NewLine;
+            fullMessage = DateTime.Now.ToLongTimeString() + ": ";
 
             try
             {
                 if (!Directory.Exists("log")) Directory.CreateDirectory("log");
                 using (StreamWriter w = File.AppendText("log/" + DateTime.Now.ToString("yyyy-MM-dd") + ".log"))
                 {
-                    w.WriteLine(fullMessage);
+                    w.WriteLine(fullMessage + highlightMessage);
                 }
             }
             catch { }
 
-            tr.Text = fullMessage;
-            tr.ApplyPropertyValue(System.Windows.Controls.RichTextBox.ForegroundProperty, col);
+            trf.Text = fullMessage;
+            trh.Text = highlightMessage;
+            trh.ApplyPropertyValue(TextElement.BackgroundProperty, col);
 
         }
 
