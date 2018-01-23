@@ -1,0 +1,13 @@
+﻿<Window x:Class="TooHuman1SE.Windows.LogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TooHuman1SE.Windows"
+        mc:Ignorable="d"
+        Title="LogWindow" Height="351.502" Width="531.76" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Icon="/TooHuman1SE;component/Icons/log.gif">
+    <Grid>
+        <ContentControl x:Name="MainCC" Content="ContentControl" Margin="10"/>
+
+    </Grid>
+</Window>

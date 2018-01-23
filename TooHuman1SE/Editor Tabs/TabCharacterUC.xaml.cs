@@ -13,16 +13,25 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TooHuman1SE
+namespace TooHuman1SE.Editor_Tabs
 {
     /// <summary>
-    /// Interaction logic for WelcomePage.xaml
+    /// Interaction logic for TabCharacterUC.xaml
     /// </summary>
-    public partial class WelcomePage : Page
+    public partial class TabCharacterUC : UserControl
     {
-        public WelcomePage()
+        public TabCharacterUC()
         {
             InitializeComponent();
+        }
+
+        private void txt_NumberOnly(object sender, TextCompositionEventArgs e)
+        {
+            try
+            {
+                int.Parse(e.Text);
+            }
+            catch { e.Handled = true; }
         }
     }
 }

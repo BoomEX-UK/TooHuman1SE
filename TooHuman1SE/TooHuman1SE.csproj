@@ -35,7 +35,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\icon_64x64.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ISOLib, Version=0.2.2.0, Culture=neutral, PublicKeyToken=5a4742d0f8b86e59, processorArchitecture=x86">
@@ -63,13 +83,64 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MessagesPage.xaml.cs">
-      <DependentUpon>MessagesPage.xaml</DependentUpon>
+    <Compile Include="Editor Tabs\TabCharacterUC.xaml.cs">
+      <DependentUpon>TabCharacterUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WelcomePage.xaml.cs">
-      <DependentUpon>WelcomePage.xaml</DependentUpon>
+    <Compile Include="Editor Tabs\TabDataPairsUC.xaml.cs">
+      <DependentUpon>TabDataPairsUC.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="Editor Tabs\TabRunesUC.xaml.cs">
+      <DependentUpon>TabRunesUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editor Tabs\TabSkillsTreeUC.xaml.cs">
+      <DependentUpon>TabSkillsTreeUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="User Controls\CharactersUC.xaml.cs">
+      <DependentUpon>CharactersUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="User Controls\LogUC.xaml.cs">
+      <DependentUpon>LogUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\RuneEditorWindow.xaml.cs">
+      <DependentUpon>RuneEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Editor Tabs\TabCharacterUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor Tabs\TabDataPairsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor Tabs\TabRunesUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor Tabs\TabSkillsTreeUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="User Controls\CharactersUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="User Controls\LogUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DataPairEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -79,15 +150,20 @@
     </Compile>
     <Compile Include="Classes\Functions.cs" />
     <Compile Include="Classes\TH1SaveStructure.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\DataPairEditorWindow.xaml.cs">
+      <DependentUpon>DataPairEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\EditorWindow.xaml.cs">
+      <DependentUpon>EditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MessagesPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WelcomePage.xaml">
+    <Page Include="Windows\RuneEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -114,13 +190,30 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="_Non Build\character-class.psd" />
+    <None Include="_Non Build\DataTables.7z" />
+    <None Include="_Non Build\TH1SE-vector-logoV2.psd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\icon_64x64.ico" />
+    <Resource Include="ClassImages\bio-engineer.png" />
+    <Resource Include="ClassImages\champion.png" />
+    <Resource Include="ClassImages\commando.png" />
+    <Resource Include="ClassImages\defender.png" />
+    <Resource Include="ClassImages\berserker.png" />
+    <Resource Include="ClassImages\default.png" />
+    <Resource Include="Icons\log.gif" />
+    <Resource Include="Icons\save.png" />
+    <Resource Include="Icons\file.png" />
+    <Resource Include="Icons\folder.png" />
+    <Resource Include="Icons\delete.gif" />
+    <Resource Include="Icons\exit.png" />
+    <Resource Include="Icons\web.png" />
+    <Resource Include="Icons\github.png" />
     <Content Include="Resources\ISOLib.dll" />
+    <Resource Include="Icons\app.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

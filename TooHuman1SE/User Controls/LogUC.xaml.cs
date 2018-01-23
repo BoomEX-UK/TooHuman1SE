@@ -16,14 +16,19 @@ using System.Windows.Shapes;
 namespace TooHuman1SE
 {
     /// <summary>
-    /// Interaction logic for MessagesPage.xaml
+    /// Interaction logic for LogUC.xaml
     /// </summary>
-    public partial class MessagesPage : Page
+    public partial class LogUC : UserControl
     {
-        public MessagesPage()
+        public LogUC()
         {
             InitializeComponent();
+            RichLog.Document.Blocks.Clear();
         }
 
+        private void RichTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
