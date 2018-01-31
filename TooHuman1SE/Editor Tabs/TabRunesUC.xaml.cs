@@ -33,7 +33,7 @@ namespace TooHuman1SE.Editor_Tabs
             EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
             RuneEditorWindow dlg = new RuneEditorWindow();
             dlg.runeIndex = gridRunes.SelectedIndex;
-            dlg.thisRune = (TH1Rune)gridRunes.SelectedItem;
+            dlg.thisRune = (TH1RuneMExt)gridRunes.SelectedItem;
             dlg.Owner = Window.GetWindow(this);
             
             if (dlg.ShowDialog().Equals(true))
@@ -48,14 +48,13 @@ namespace TooHuman1SE.Editor_Tabs
 
         public void recountRunes()
         {
-            TH1Rune tmpRune = new TH1Rune();
-            lblRuneCount.Content = String.Format("{0}/{1} Runes", gridRunes.Items.Count, tmpRune.LIMIT_MAX_RUNES);
+            lblRuneCount.Content = String.Format("{0}/{1} Runes", gridRunes.Items.Count, new TH1Helper().LIMIT_MAX_RUNES);
         }
 
         private void flipFlop()
         {
             EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
-            ewin._save.runes = (List<TH1Rune>)gridRunes.ItemsSource;
+            ewin._save.runes = (List<TH1RuneMExt>)gridRunes.ItemsSource;
             gridRunes.ItemsSource = null;
             gridRunes.ItemsSource = ewin._save.runes;
         }
@@ -63,12 +62,13 @@ namespace TooHuman1SE.Editor_Tabs
         #region Actions Menu
 
         public void buildContextMenu() {
-            buildColourContext();
+            // buildColourContext();
         }
 
+        /*
         private void buildColourContext()
         {
-            string[] colours = new TH1Rune().getColourNames;
+            string[] colours = new TH1Helper().colourNameArray;
             MenuItem rootItem = findActionsMenu();
             MenuItem _group = new MenuItem();
 
@@ -83,6 +83,7 @@ namespace TooHuman1SE.Editor_Tabs
             }
             rootItem.Items.Add(_group);
         }
+        */
 
         private MenuItem findActionsMenu()
         {
@@ -110,12 +111,13 @@ namespace TooHuman1SE.Editor_Tabs
             RuneEditorWindow dlg = new RuneEditorWindow();
             dlg.Owner = Window.GetWindow(this);
             EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            TH1Helper _help = new TH1Helper();
 
-            if (gridRunes.Items.Count < dlg.thisRune.LIMIT_MAX_RUNES)
+            if (gridRunes.Items.Count < _help.LIMIT_MAX_RUNES)
             {
                 if (dlg.ShowDialog().Equals(true))
                 {
-                    Functions.log("Creating New Rune..");
+                    Functions.log(string.Format("Creating New Rune [{0}]", dlg.thisRune.rune.runeString));
                     gridRunes.ItemsSource = null;
                     ewin._save.runes.Add(dlg.thisRune);
                     gridRunes.ItemsSource = ewin._save.runes;
@@ -125,7 +127,7 @@ namespace TooHuman1SE.Editor_Tabs
             else
             {
                 Functions.log("Max Rune Limit Reached, Cannot Create New Rune", Functions.LC_WARNING);
-                MessageBox.Show(String.Format("You Have Reached The Maximum Number Of Runes ({0})", dlg.thisRune.LIMIT_MAX_RUNES), "Rune Limit Reached", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(String.Format("You Have Reached The Maximum Number Of Runes ({0})", _help.LIMIT_MAX_RUNES), "Rune Limit Reached", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -136,7 +138,8 @@ namespace TooHuman1SE.Editor_Tabs
 
             if( MessageBox.Show(String.Format("Are You Sure You Want To Delete {0} Rune(s)?",gridRunes.SelectedItems.Count),"Confirm Delete",MessageBoxButton.YesNo,MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                foreach( TH1Rune rune in gridRunes.SelectedItems)
+                Functions.log(string.Format("Deleting {0} Rune{1}", gridRunes.SelectedItems.Count, gridRunes.SelectedItems.Count == 1 ? "" : "s"), Functions.LC_WARNING);
+                foreach( TH1RuneMExt rune in gridRunes.SelectedItems)
                 {
                     ewin._save.runes.Remove(rune);
                 }
@@ -146,17 +149,19 @@ namespace TooHuman1SE.Editor_Tabs
             }
         }
 
-        private void mnu_SetColourClick(object sender, RoutedEventArgs e)
+        private void mnu_DuplicateRunes(object sender, RoutedEventArgs e)
         {
-            if ( sender is MenuItem)
+            EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            if (gridRunes.SelectedItems.Count < 1) return;
+
+            foreach (TH1RuneMExt rune in gridRunes.SelectedItems)
             {
-                MenuItem mnu = sender as MenuItem;
-                foreach (TH1Rune _rune in gridRunes.SelectedItems)
-                {
-                    _rune.setColourByName((string)mnu.Header);
-                }
-                flipFlop();
+                if( ewin._save.runes.Count < new TH1Helper().LIMIT_MAX_RUNES) ewin._save.runes.Add(rune);
             }
+            gridRunes.ItemsSource = null;
+            gridRunes.ItemsSource = ewin._save.runes;
+            gridRunes.UnselectAll();
+            recountRunes();
         }
 
         private void mnu_PurchasedClick(object sender, RoutedEventArgs e)
@@ -164,7 +169,7 @@ namespace TooHuman1SE.Editor_Tabs
             if (sender is MenuItem)
             {
                 bool _toggle = (string)((MenuItem)sender).Header == "Yes";
-                foreach (TH1Rune _rune in gridRunes.SelectedItems)
+                foreach (TH1RuneMExt _rune in gridRunes.SelectedItems)
                 {
                     _rune.purchased = (uint)(_toggle ? 1 : 0);
                 }

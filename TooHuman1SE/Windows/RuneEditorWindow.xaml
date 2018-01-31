@@ -5,25 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TooHuman1SE.Windows"
         mc:Ignorable="d"
-        Title="Rune Editor" Height="205" Width="330" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="Rune Editor" Height="335.666" Width="330" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Grid>
-        <ComboBox x:Name="comboColour" Margin="10,10,10,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtID" HorizontalAlignment="Right" Height="23" Margin="0,96,35,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="50" MaxLength="3" PreviewTextInput="txt_NumberOnly"/>
-        <Label Content="ID:" HorizontalAlignment="Right" Margin="0,91,95,0" VerticalAlignment="Top" Width="40"/>
-        <Label Content="Purchased" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="70"/>
-        <Button x:Name="btnOK" Content="Save" HorizontalAlignment="Right" Margin="0,130,10,0" VerticalAlignment="Top" Width="75" Height="25" Cursor="Hand" Click="btnOK_Click"/>
-        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,130,90,0" VerticalAlignment="Top" Width="75" Height="25" Click="btnCancel_Click" Cursor="Hand"/>
-        <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Left" Margin="10,130,0,0" VerticalAlignment="Top" Width="75" Height="25" Click="btnReset_Click" Cursor="Hand"/>
-        <Label Content="B:" HorizontalAlignment="Right" Margin="0,37,95,0" VerticalAlignment="Top" Width="40"/>
-        <TextBox x:Name="txtB" HorizontalAlignment="Right" Height="23" Margin="0,41,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="75" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
-        <Label Content="Base Value" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="70"/>
-        <TextBox x:Name="txtBaseValue" HorizontalAlignment="Left" Height="23" Margin="90,69,0,0" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" Width="75" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
-        <Label Content="D:" HorizontalAlignment="Right" Margin="0,65,95,0" VerticalAlignment="Top" Width="40"/>
-        <TextBox x:Name="txtD" HorizontalAlignment="Right" Height="23" Margin="0,69,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="75" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
-        <Label Content="Paint ID" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top" Width="70"/>
-        <TextBox x:Name="txtPaint" HorizontalAlignment="Left" Height="23" Margin="90,97,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="75" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
-        <Button x:Name="btnRandom" Content="R" HorizontalAlignment="Right" Margin="0,96,10,0" VerticalAlignment="Top" Width="20" Height="23" Click="btnRandom_Click" Cursor="Hand"/>
-        <CheckBox x:Name="checkPurchased" HorizontalAlignment="Left" Margin="90,43,0,0" VerticalAlignment="Top" Cursor="Hand"/>
+        <ComboBox x:Name="comboColour" Margin="90,10,10,0" VerticalAlignment="Top" Height="26" SelectionChanged="comboColour_SelectionChanged"/>
+        <Button x:Name="btnOK" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" Width="75" Cursor="Hand" Click="btnOK_Click" Height="25" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,90,10" Width="75" Click="btnCancel_Click" Cursor="Hand" Height="25" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Click="btnReset_Click" Cursor="Hand" Height="25" VerticalAlignment="Bottom"/>
+        <Label Content="Paint ID" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Width="70"/>
+        <Button x:Name="btnRandom" Content="R" HorizontalAlignment="Right" Margin="0,41,10,0" VerticalAlignment="Top" Width="20" Height="26" Click="btnRandom_Click" Cursor="Hand"/>
+        <ComboBox x:Name="comboBonus" Margin="90,41,35,0" VerticalAlignment="Top" Height="26" SelectionChanged="comboBonus_SelectionChanged"/>
+        <Label Content="Colour:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="70"/>
+        <Label Content="Bonus:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="70"/>
+        <ComboBox x:Name="comboPaint" Margin="90,72,10,0" VerticalAlignment="Top" Height="26" IsEnabled="False"/>
+        <Image x:Name="imgRune" HorizontalAlignment="Left" Height="27" Margin="16,108,0,0" VerticalAlignment="Top" Width="27" Source="/TooHuman1SE;component/Icons/Runes/unknown.png"/>
+        <Label x:Name="lblRune" Content="{}{Output}" Margin="48,108,15,0" VerticalAlignment="Top"/>
+        <GroupBox Header="Other Values (BETA)" Margin="10,149,10,46">
+            <Grid Margin="0">
+                <Label Content="Treasure" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70"/>
+                <Label Content="Unknown" HorizontalAlignment="Right" Margin="0,10,70,0" VerticalAlignment="Top" Width="70"/>
+                <Label Content="Base Value" Margin="0,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70"/>
+                <TextBox x:Name="txtBaseValue" Height="23" Margin="75,48,0,0" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" PreviewTextInput="txt_NumberOnly" MaxLength="9" HorizontalAlignment="Left" Width="60"/>
+                <Label Content="Unknown#" Margin="0,46,70,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="70"/>
+                <TextBox x:Name="txtD" Height="23" Margin="0,48,5,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" PreviewTextInput="txt_NumberOnly" MaxLength="9" HorizontalAlignment="Right" Width="60"/>
+                <CheckBox x:Name="checkPurchased" Margin="97,15,0,0" VerticalAlignment="Top" Cursor="Hand" HorizontalAlignment="Left" Width="16"/>
+                <CheckBox x:Name="chkUnknown" Margin="0,15,27,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="16" Cursor="Hand"/>
+            </Grid>
+        </GroupBox>
 
     </Grid>
 </Window>

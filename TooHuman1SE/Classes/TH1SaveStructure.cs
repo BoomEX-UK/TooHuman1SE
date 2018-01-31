@@ -4,10 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using Isolib.IOPackage;
 using Isolib.STFSPackage;
+using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
 
 namespace TooHuman1SE.SEStructure
@@ -33,11 +38,93 @@ namespace TooHuman1SE.SEStructure
          15  : Unable To Write Runes
     */
 
+    #region Sector
     public class TH1Sector
     {
         public long id = 0;
         public long offset = 0;
         public long size = 0;
+    }
+    #endregion Sector
+
+    public class TH1Helper
+    {
+        // Dictionaries
+        private Dictionary<char,string> _colourNames = new Dictionary<char,string>() {
+            { 'G', "Grey" },
+            { 'E', "Green" },
+            { 'B', "Blue" },
+            { 'P', "Purple" },
+            { 'O', "Orange" }, // Orange? :P
+            { 'R', "Red" }
+        };
+        private Dictionary<int, string> _runeNames = new Dictionary<int, string>() {
+            { 0, "Ansuz" },
+            { 1, "Berkano" },
+            { 2, "Dagaz" },
+            { 3, "Ehwaz" },
+            { 4, "Sowilo" },
+            { 5, "Fehu" },
+            { 6, "Gebo" },
+            { 7, "Hagalaz" },
+            { 8, "Ingwaz" },
+            { 9, "Isa" },
+            { 10, "Jera" },
+            { 11, "Kenaz" }
+        };
+        private Dictionary<int, string> _weaponTypes = new Dictionary<int, string>()
+        {
+            {0 , ""},{1 , ""},{2 , ""},{3 , ""},{4 , ""},{5 , ""},{6 , ""},{7 , ""},{8 , ""},{9 , ""},{10 , ""},{11 , ""},{12 , ""},{13 , ""},{14 , ""},{15 , ""},{16 , ""},{17 , ""}
+        };
+
+        // Limits
+        public int LIMIT_MAX_RUNES = 60;
+        
+        // Lookups
+        public string getRuneColourName( char _colourID )
+        {
+            if( !_colourNames.TryGetValue(_colourID, out string tmpRes) ) tmpRes = "Unknown";
+            return tmpRes;
+        }
+        public char getRuneColourID( string name)
+        {
+            char tmpRes = 'G';
+            foreach( KeyValuePair<char,string> _kvp in _colourNames) if (_kvp.Value == name) tmpRes = _kvp.Key;
+            return tmpRes;
+        }
+        public string[] colourNameArray
+        {
+            get
+            {
+                string[] tmpRes = new string[_colourNames.Count];
+                int i = 0;
+                foreach( KeyValuePair<char, string> _kvp in _colourNames)
+                {
+                    tmpRes[i] = _kvp.Value;
+                    i++;
+                }
+                return tmpRes;
+            }
+        }
+        public string getRuneName(int _runeID)
+        {
+            if (!_runeNames.TryGetValue(_runeID, out string tmpRes)) tmpRes = "Unknown";
+            return tmpRes;
+        }
+        public string[] classNamesArray
+        {
+            get
+            {
+                return new string[] { "Berserker", "Champion", "Defender", "Heavy Gunner", "Gunslinger", "Commando", "Bio-Engineer", "Dragon", "Rune Master" };
+            }
+        }
+        public string[] alignmentNamesArray
+        {
+            get
+            {
+                return new string[] { "None", "Human", "Cybernitics" }; 
+            }
+        }
     }
 
     public class TH1Character
@@ -120,7 +207,7 @@ namespace TooHuman1SE.SEStructure
 
     }
 
-    // 2x Value For Skills Tree
+    #region Skills Tree
     public class TH1SkillsTreePair
     {
         public long first = 0;
@@ -256,12 +343,7 @@ namespace TooHuman1SE.SEStructure
             else return ST_VALUES_DEFAULT;
         }
     }
-
-    class TH1CharClassAlign
-    {
-        public string[] classNames = { "Berserker", "Champion", "Defender", "Heavy Gunner", "Gunslinger", "Commando", "Bio-Engineer", "Dragon", "Rune Master" };
-        public string[] alignmentNames = { "None", "Human", "Cybernitics" };
-    }
+    #endregion Skills Tree
 
     class TH1ExpToNextLevel
     {
@@ -269,7 +351,13 @@ namespace TooHuman1SE.SEStructure
             450, 690, 970, 1290, 1650,
             2050, 2710, 3670, 4710, 5805,
             7515, 9339, 11277, 13329, 15495,
-            17775, 20169, 22677, 25229
+            17775, 20169, 22677, 25299, 24000,
+            28000, 30000, 32000, 33000, 35000,
+            37000, 39000, 41000, 42000, 43000,
+            45000, 47000, 49000, 51000, 53000,
+            55000, 57000, 59000, 61000, 64000,
+            67000, 70000, 73000, 76000, 79000,
+            82000, 85000, 88000, 91000
         };
         public long[] baseEXP;
 
@@ -311,178 +399,672 @@ namespace TooHuman1SE.SEStructure
 
     }
 
-    public class TH1Rune
+    #region TH1Paint
+
+    public class TH1Paint
     {
-        //- Private
-        private string[] colourNames = new string[] { "Unknown", "Grey", "Green", "Blue", "Purple", "Orange", "Red" };
-        private Double[] runeValues = new Double[] { 0, 0.0025, 0.0125, 0.02, 0, 0, 25 };
-        private bool _purchased = false;
-        private char _runeMid = 'M'; // default
-        //- Public
-        public uint purchased {
+        // Private
+        private int _paintID;
+        private string _paintName;
+        private string _paintUse;
+
+        // Public
+        public int paintID
+        {
             get
             {
-                return (uint)(_purchased ? 1 : 0);
+                return _paintID;
             }
-            set
+        }
+        public string paintName
+        {
+            get
             {
-                _purchased = (value == 1);
+                return _paintName;
             }
-         }
+        }
+        public string paintUse
+        {
+            get
+            {
+                return _paintUse;
+            }
+        }
+
+        // Construction
+        public TH1Paint( int id, string name, string use)
+        {
+            _paintID = id;
+            _paintName = name;
+            _paintUse = use;
+        }
+        public TH1Paint()
+        {
+            _paintID = 1;
+            _paintName = "default";
+            _paintUse = "";
+        } // Default (valid paint)
+    }
+    public class TH1PaintJson
+    {
+        [JsonProperty("ID")] public int ID { get; set; }
+        [JsonProperty("Name")] public string Name { get; set; }
+        [JsonProperty("Use")] public string Use { get; set; }
+    }
+    public class TH1PaintCollection
+    {
+        // The Collection
+        private Dictionary<int, TH1Paint> _collection = new Dictionary<int, TH1Paint>();
+
+        public TH1PaintCollection()
+        {
+            // Load The Library
+            string json;
+            Dictionary<int, TH1PaintJson> _parseCollection = new Dictionary<int, TH1PaintJson>();
+
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/Paint.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<int, TH1PaintJson>>(json);
+            foreach (KeyValuePair<int, TH1PaintJson> _item in _parseCollection)
+            {
+                TH1PaintJson _paint = _item.Value;
+                TH1Paint _tmpPaint = new TH1Paint(_item.Key,_paint.Name,_paint.Use);
+                _collection.Add(_item.Key, _tmpPaint);
+            }
+        }
+
+        // Return Paint
+        public TH1Paint findPaint( int id)
+        {
+            if (!_collection.TryGetValue(id, out TH1Paint tmpRes)) tmpRes = new TH1Paint();
+            return tmpRes;
+        }
+        public TH1Paint findPaint(string name)
+        {
+            foreach( KeyValuePair<int,TH1Paint> _kvp in _collection) if (_kvp.Value.paintName == name) return _kvp.Value;
+            return new TH1Paint();
+        }
+
+        // Other Functions
+        public string[] paintNameArray()
+        {
+            List<TH1Paint> values = Enumerable.ToList(_collection.Values);
+            string[] tmpRes = new string[values.Count];
+            for (int i = 0; i < tmpRes.Length; i++) tmpRes[i] = values[i].paintName;
+            return tmpRes;
+        }
+    }
+
+    #endregion TH1Paint
+
+    #region TH1RuneM
+
+    public class TH1RuneM
+    {
+        // Private
+        int _runeID;
+        char _runeColourKey;
+        int _runeLevel;
+        TH1RuneMBonus _runeBonus;
+        int _runeBonusValue;
+        int _runeType;
+        int _runeValue;
+        int _runeCraftCost;
+        double _runeBaseStatFactor; // Base Stats Ahoy!
+
+        // Public
+        public int runeID
+        {
+            get
+            {
+                return _runeID;
+            }
+        }
+        public char runeColourKey
+        {
+            get
+            {
+                return _runeColourKey;
+            }
+        }
+        public int runeLevel
+        {
+            get
+            {
+                return _runeLevel;
+            }
+        }
+        public TH1RuneMBonus runeBonus
+        {
+            get
+            {
+                return _runeBonus;
+            }
+        }
+        public int runeBonusValue
+        {
+            get
+            {
+                return _runeBonusValue;
+            }
+        } // to be updated?
+        public int runeType
+        {
+            get
+            {
+                return _runeType;
+            }
+        }
+        public int runeValue
+        {
+            get
+            {
+                return _runeValue;
+            }
+        }
+        public int runeCraftCost
+        {
+            get
+            {
+                return _runeCraftCost;
+            }
+        }
+        public double runeBaseStatFactor
+        {
+            get
+            {
+                return _runeBaseStatFactor;
+            }
+        }
+
+        // Construction
+        public TH1RuneM(int ID, char colourKey, int level, TH1RuneMBonus bonus, int bonusValue, int type, int value, int craftCost, double baseStatFactor)
+        {
+            _runeID = ID;
+            _runeColourKey = colourKey;
+            _runeLevel = level;
+            _runeBonus = bonus;
+            _runeBonusValue = bonusValue;
+            _runeType = type;
+            _runeValue = value;
+            _runeCraftCost = craftCost;
+            _runeBaseStatFactor = baseStatFactor;
+        }
+        public TH1RuneM()
+        {
+            _runeID = 1;
+            _runeColourKey = 'G';
+            _runeLevel = 1;
+            _runeBonus = new TH1RuneMBonus();
+            _runeBonusValue = 1;
+            _runeType = 0;
+            _runeValue = 100;
+            _runeCraftCost = 100;
+            _runeBaseStatFactor = 0.2;
+        } // overload for default (valid rune)
+
+        // Additional Public
+        public string runeString
+        {
+            get
+            {
+                return runeColourKey + "_M_" + runeID.ToString();
+            }
+        }
+        public byte[] runeNullArray
+        {
+            get
+            {
+                string tmpString = runeString;
+                byte[] tmpRes = new byte[tmpString.Length + 1];
+                for (int i = 0; i < tmpString.Length; i++)
+                {
+                    tmpRes[i] = Convert.ToByte(tmpString[i]);
+                }
+                return tmpRes;
+            }
+        } // Null Terminated Array
+        public string longName
+        {
+            get
+            {
+                string suffix_type = "";
+                string suffix_value = "";
+                if (runeBonus.bonusName != runeBonus.bonusType) suffix_type = string.Format(" ({0})",runeBonus.bonusType);
+                if (runeBonus.bonusName != "Colour Module") suffix_value = string.Format(" +{0}%", runeBonusValue);
+                return string.Format("L{0} {1}{2}{3}", runeLevel, runeBonus.bonusName, suffix_type, suffix_value);
+                // return string.Format("L{4} {0}: {1} +{2}% [{3}]", runeColourName, runeBonus.bonusName, runeBonusValue, runeID, runeLevel);
+            }
+        }
+        public string bonusName
+        {
+            get
+            {
+                if(runeBonus.bonusName == "Colour Module") return string.Format("{0}", runeBonus.bonusName);
+                else return string.Format("{0} +{1}%", runeBonus.bonusName, runeBonusValue);
+            }
+        }
+        public string bonusType
+        {
+            get
+            {
+                string suffix = "";
+                if (bonusName != "Colour Module") suffix = string.Format(" +{0}%", runeBonusValue);          
+                return string.Format("{0}{1}", runeBonus.bonusType, suffix);
+            }
+        }
+        public string LevelAndBonusName
+        {
+            get
+            {
+                if (bonusName == "Colour Module") return string.Format("{1}", runeID, bonusName);
+                else return string.Format("{1} {2}", runeID, runeLevel, bonusName);
+            }
+        }
+        public string LevelAndBonusType
+        {
+            get
+            {
+                if (bonusName == "Colour Module") return string.Format("{1}", runeID, bonusName);
+                else return string.Format("L{1} {2}", runeID, runeLevel, bonusType);
+            }
+        }
+        public string idLevelAndBonusName
+        {
+            get
+            {
+                return string.Format("{0}: {1}", runeID, LevelAndBonusName);
+            }
+        }
+        public string idLevelAndBonusType
+        {
+            get
+            {
+                return string.Format("{0}: {1}", runeID, LevelAndBonusType);
+            }
+        }
+        public string runeColourName
+        {
+            get
+            {
+                TH1Helper _help = new TH1Helper();
+                return _help.getRuneColourName(_runeColourKey);
+            }
+        }
+        public string runeTypeName
+        {
+            get
+            {
+                TH1Helper _help = new TH1Helper();
+                return _help.getRuneName(runeType);
+            }
+        }
+        public BitmapImage runeImage
+        {
+            get
+            {
+                BitmapImage tmpres;
+                try
+                {
+                    tmpres = new BitmapImage(new Uri(string.Format("pack://application:,,,/Icons/Runes/{0}{1}.png", runeColourKey, runeType)));
+                }
+                catch { tmpres = new BitmapImage(new Uri("pack://application:,,,/Icons/Runes/unknown.png"));  }
+                return tmpres;
+            }
+        }
+    } // A Single Rune
+    public class TH1RuneMJson
+    {
+        [JsonProperty("ID")] public int ID { get; set; }
+        [JsonProperty("ColourKey")] public char ColourKey { get; set; }
+        [JsonProperty("Level")] public int Level { get; set; }
+        [JsonProperty("BonusID")] public string BonusID { get; set; }
+        [JsonProperty("BonusValue")] public int BonusValue { get; set; }
+        [JsonProperty("RuneType")] public int RuneType { get; set; }
+        [JsonProperty("RuneValue")] public int RuneValue { get; set; }
+        [JsonProperty("CraftCost")] public int CraftCost { get; set; }
+        [JsonProperty("BaseStatFactor")] public double BaseStatFactor { get; set; }
+    } // JSON Structure
+    public class TH1RuneMCollection // A Collection Of Runes (Orange? :P)
+    {
+        // The Collection
+        private Dictionary<string, TH1RuneM> _collection = new Dictionary<string, TH1RuneM>();
+        private Dictionary<char, int> _countByColour = new Dictionary<char, int>();
+
+        // The Support
+        private TH1RuneMBonusCollection _bonusCollection = new TH1RuneMBonusCollection();
+
+        // Create
+        public TH1RuneMCollection()
+        {
+            // Load The Library
+            string json;
+            Dictionary<string, TH1RuneMJson> _parseCollection = new Dictionary<string, TH1RuneMJson>();
+
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/RuneMCollection.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            } catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString());  }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<string, TH1RuneMJson>>(json);
+            foreach( KeyValuePair<string,TH1RuneMJson> _item in _parseCollection)
+            {
+                TH1RuneMJson _rune = _item.Value;
+                TH1RuneMBonus _bonus = _bonusCollection.findBonus(_rune.BonusID);
+                TH1RuneM _tmpRune = new TH1RuneM(_rune.ID, _rune.ColourKey, _rune.Level, _bonus, _rune.BonusValue, _rune.RuneType, _rune.RuneValue, _rune.CraftCost, _rune.BaseStatFactor);
+                _collection.Add(_item.Key, _tmpRune);
+
+                if(_countByColour.TryGetValue(_rune.ColourKey, out int _colourCount)) _countByColour[_rune.ColourKey] += 1;
+                else _countByColour.Add(_rune.ColourKey, _rune.ID);
+            }
+
+        }
+
+        // Return Rune
+        public TH1RuneM findRune(char colourCode, int runeID)
+        {
+            return findRune(colourCode + "_M_" + runeID.ToString());
+        }
+        public TH1RuneM findRune(byte[] nullString)
+        {
+            char[] asciiChars = new char[Encoding.ASCII.GetCharCount(nullString, 0, nullString.Length-1)];
+            Encoding.ASCII.GetChars(nullString, 0, nullString.Length-1, asciiChars, 0); // Remove Null
+            string tmpString = new string(asciiChars); ;
+            return findRune(tmpString);
+        }
+        public TH1RuneM findRune( string runeString)
+        {
+            _collection.TryGetValue(runeString, out TH1RuneM tmpRes);
+            return tmpRes;
+        }
+        public TH1RuneM findRuneByBonusLongNameID( string _bonusLNI)
+        {
+            TH1RuneM _tmpres = new TH1RuneM();
+            foreach( KeyValuePair<string,TH1RuneM> _kvp in _collection)
+            {
+                if (_kvp.Value.runeBonus.bonusNameID == _bonusLNI) return _kvp.Value;
+            }
+            return _tmpres;
+        }
+
+        // Check Rune
+        public bool runeValid(char colourCode, int runeID)
+        {
+            return runeValid(colourCode + "_M_" + runeID.ToString());
+        }
+        public bool runeValid ( string runeString)
+        {
+            return _collection.TryGetValue(runeString, out TH1RuneM _tmp);
+        }
+
+        // Return Rune
+        public TH1RuneM randomRune()
+        {
+            Random rand = new Random();
+            List<TH1RuneM> values = Enumerable.ToList(_collection.Values);
+            int size = _collection.Count;
+            return values[rand.Next(size)];
+        }
+        public TH1RuneM randomRuneByColour(char _colourKey)
+        {
+            Random rand = new Random();
+            List<TH1RuneM> values = new List<TH1RuneM>();
+            foreach( KeyValuePair<string,TH1RuneM> _kvp in _collection) if (_kvp.Value.runeColourKey == _colourKey) values.Add(_kvp.Value);
+            int size = values.Count;
+            return values[rand.Next(size)];
+        }
+
+        // Other Functions
+        public string[] idLevelAndBonusArray( char _colour)
+        {
+            List<string> tmpRes = new List<string>();
+            foreach( KeyValuePair<string,TH1RuneM> _kvp in _collection)
+            {
+                if (_kvp.Key[0] == _colour) tmpRes.Add(_kvp.Value.idLevelAndBonusType);
+            }
+            return tmpRes.ToArray();
+        }
+    }
+    public class TH1RuneMExt
+    {
+        // Private
+        private TH1RuneM _rune;
+
+        // Public
+        public TH1RuneM rune
+        {
+            get
+            {
+                return _rune;
+            }
+        }
+        public uint purchased { get; set; }
         public uint baseValue { get; set; }
         public uint dataB { get; set; }
         public uint dataD { get; set; }
-        public uint paintID { get; set; }
-        public int runeColour { get; set; }
-        public int runeID { get; set; }
-        public char runeMid {
-            get
-            {
-                return _runeMid;
-            }
+        public TH1Paint paint { get; set; }
 
-            set
-            {
-                _runeMid = value;
-            }
-        }
-        public string[] getColourNames
+        // Functions
+        public TH1RuneMExt( TH1RuneM runeM )
         {
+            _rune = runeM;
+        }
+        public byte[] runeExtToArray { 
             get
             {
-                string[] tmpstring = new string[colourNames.Length - 1];
-                for( int i=1; i<colourNames.Length; i++)
-                {
-                    tmpstring[i - 1] = colourNames[i];
-                }
-                return tmpstring;
-            }
-        }
-        public int LIMIT_MAX_RUNES
-        {
-            get
-            {
-                return 60;
-            }
-        }
-        public string runeColourName {
-            get
-            {
-                return colourNames[runeColour];
-            }
-        }
-        public void nameToRune(byte[] name )
-        {
-            string tmpname = "";
-            for( int nameloop = 0; nameloop < name.Length-1; nameloop++)
-            {
-                tmpname += (char)name[nameloop];
-            }
-            string[] parts = tmpname.Split('_');
-            switch( parts[0])
-            {
-                case "G":
-                    runeColour = 1;
-                    break;
-                case "E":
-                    runeColour = 2;
-                    break;
-                case "B":
-                    runeColour = 3;
-                    break;
-                case "P":
-                    runeColour = 4;
-                    break;
-                case "O":
-                    runeColour = 5;
-                    break;
-                case "R":
-                    runeColour = 6;
-                    break;
-            }
-            runeMid = parts[1][0];
-            runeID = int.Parse(parts[2]);
-        }
-        public byte[] runeToName
-        {
-            get
-            {
-                string tmpString = "";
-                switch (runeColour)
-                {
-                    case 2:
-                        tmpString += "E";
-                        break;
-                    case 3:
-                        tmpString += "B";
-                        break;
-                    case 4:
-                        tmpString += "P";
-                        break;
-                    case 5:
-                        tmpString += "O";
-                        break;
-                    case 6:
-                        tmpString += "R";
-                        break;
-                    default:
-                    case 1:
-                        tmpString += "G";
-                        break;
-                }
-                tmpString += "_" + runeMid + "_" + runeID.ToString();
-                byte[] tmpByte = new byte[tmpString.Length + 1];
-                Array.Copy(Encoding.ASCII.GetBytes(tmpString), tmpByte, tmpString.Length);
-                return tmpByte;
-            }
-        }
-        public int getByteSize
-        {
-            get
-            {
-                return 4 + runeToName.Length + (5*4);
-            }
-        }
-        public long getValue
-        {
-            get
-            {
-                return Convert.ToUInt32(baseValue * runeValues[runeColour]);
-            }
-        }
-        public byte[] runeToArray
-        {
-            get
-            {
-                byte[] tmpRune = new byte[getByteSize];
+                string tmpName = rune.runeString;
+                byte[] tmpRune = new byte[tmpName.Length+1+(4*6)];
                 RWStream writer = new RWStream(tmpRune, true, true);
                 try
                 {
-                    byte[] tmpName = runeToName;
-                    writer.WriteUInt32((uint)tmpName.Length);
-                    writer.WriteBytes(tmpName);
+                    // Rune String
+                    writer.WriteUInt32((uint)tmpName.Length+1);
+                    writer.WriteString(tmpName, StringType.Ascii, tmpName.Length);
+                    writer.WriteBytes( new byte[] { 0x00 });
+
+                    // Rune Ext
                     writer.WriteUInt32(purchased);
                     writer.WriteUInt32(dataB);
                     writer.WriteUInt32(baseValue);
                     writer.WriteUInt32(dataD);
-                    writer.WriteUInt32(paintID);
-                } catch { }
+                    writer.WriteUInt32((uint)paint.paintID);
+                }
+                catch { }
                 finally { writer.Flush(); tmpRune = writer.ReadAllBytes(); writer.Close(true); }
                 return tmpRune;
             }
         }
-        public void setColourByName( string _name)
+        public int calcValue
         {
-            for( int i = 0; i < colourNames.Length; i++)
-            {
-                if (_name == colourNames[i])
+            get {
+                try
                 {
-                    runeColour = i;
-                }
+                    // dial m for deciMal
+                    decimal tmpVal = (2500m / baseValue) * rune.runeValue;
+                    return Convert.ToInt32(tmpVal);
+                } catch { return 0;  }
             }
+        }
+
+    } // Rune + Gamesave Data
+    public class TH1RuneMBonus
+    {
+        // Private
+        private string _bonusID;
+        private string _bonusName;
+        private string _bonusTypeA;
+        private string _bonusTypeB;
+        private int _bonusMax;
+
+        // Public
+        public string bonusID
+        {
+            get
+            {
+                return _bonusID;
+            }
+        }
+        public string bonusName
+        {
+            get
+            {
+                return _bonusName;
+            }
+        }
+        public string bonusTypeA
+        {
+            get
+            {
+                return _bonusTypeA;
+            }
+        }
+        public string bonusTypeB
+        {
+            get
+            {
+                return _bonusTypeB;
+            }
+        }
+        public string bonusType
+        {
+            get
+            {
+                if (bonusTypeB != "") return bonusTypeB;
+                else if (bonusTypeA != "") return bonusTypeA;
+                else return bonusName;
+            }
+        }
+        public int bonusMax
+        {
+            get
+            {
+                return _bonusMax;
+            }
+        }
+        public string bonusLongName
+        {
+            get
+            {
+                string tmpBonus = "";
+                if (bonusTypeB != "") tmpBonus = bonusTypeB;
+                else if (bonusTypeA != "") tmpBonus = bonusTypeA;
+                else tmpBonus = bonusName;
+                return string.Format("{0} (Max {1}%)", tmpBonus, bonusMax);
+            }
+        }
+        public string bonusNameID
+        {
+            get
+            {
+                string tmpBonus = "";
+                if (bonusTypeB != "") tmpBonus = bonusTypeB;
+                else if (bonusTypeA != "") tmpBonus = bonusTypeA;
+                else tmpBonus = bonusName;
+                return string.Format("{0}: {1}",bonusID, tmpBonus);
+            }
+        }
+
+        // Construction
+        public TH1RuneMBonus( string id, string name, string typeA, string typeB, int maxBonus ) {
+            _bonusID = id;
+            _bonusName = name;
+            _bonusTypeA = typeA;
+            _bonusTypeB = typeB;
+            _bonusMax = maxBonus;
+        }
+        public TH1RuneMBonus()
+        {
+            _bonusID = "G_0";
+            _bonusName = "Balance";
+            _bonusTypeA = "Air Melee Damage";
+            _bonusTypeB = "";
+            _bonusMax = 30;
+        } // Default (valid bonus)
+    }
+    public class TH1RuneMBonusJson
+    {
+        [JsonProperty("Bonus")] public string ID { get; set; }
+        [JsonProperty("Name")] public string name { get; set; }
+        [JsonProperty("Type")] public string typeA { get; set; }
+        [JsonProperty("Type2")] public string typeB { get; set; }
+        [JsonProperty("Max Bonus")] public int maxBonus { get; set; }
+    }
+    public class TH1RuneMBonusCollection
+    {
+        Dictionary<string, TH1RuneMBonus> _collection = new Dictionary<string, TH1RuneMBonus>();
+
+        public TH1RuneMBonusCollection()
+        {
+            string json;
+            Dictionary<string, TH1RuneMBonusJson> _parseCollection = new Dictionary<string, TH1RuneMBonusJson>();
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/RuneMBonus.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<string, TH1RuneMBonusJson>>(json);
+            foreach (KeyValuePair<string, TH1RuneMBonusJson> _item in _parseCollection)
+            {
+                TH1RuneMBonusJson _bonus = _item.Value;
+                TH1RuneMBonus _tmpRuneBonus = new TH1RuneMBonus(_item.Key, _bonus.name, _bonus.typeA, _bonus.typeB, _bonus.maxBonus);
+                _collection.Add(_item.Key, _tmpRuneBonus);
+            }
+
+        }
+
+        // Return Bonus
+        public TH1RuneMBonus findBonus(string id)
+        {
+            _collection.TryGetValue(id, out TH1RuneMBonus tmpRes);
+            return tmpRes;
+        }
+
+        // Other Functions
+        public string[] bonusNameArray()
+        {
+            return bonusNameArray(char.Parse(""), false);
+        }
+        public string[] bonusNameArray( char prefix, bool incID )
+        {
+            List<TH1RuneMBonus> values = Enumerable.ToList(_collection.Values);
+            List<string> tmpRes = new List<string>();
+            for (int i = 0; i < values.Count; i++)
+                if ((prefix == 0) || (prefix == values[i].bonusID[0]))
+                {
+                    string tmpLine = "";
+                    if (incID) tmpLine = values[i].bonusNameID;
+                    else tmpLine = values[i].bonusLongName;
+                    tmpRes.Add(tmpLine);
+                }
+            return tmpRes.ToArray();
         }
     }
 
+    #endregion TH1RuneM
+
+    #region TH1Weapon
+
+    public class TH1Weapon
+    {
+
+    }
+
+    #endregion Weapon
+    
     public class TH1SaveStructure
     {
 
@@ -493,9 +1075,9 @@ namespace TooHuman1SE.SEStructure
         public const int TH1_SECTOR_CHARACTER = 1; // Character Data
         public const int TH1_SECTOR_SKILLTREE = 2; // Skill/Class Tree?
         public const int TH1_SECTOR_LOCATION = 3; // Area & Co-Ordinates?
-        public const int TH1_SECTOR_QUEST01 = 4; // Active Charms? - 2x Only, NOID = No Rune
-        public const int TH1_SECTOR_RUNE = 5; // Runes?
-        public const int TH1_SECTOR_QUEST02 = 6; // Charms Store? -- uint #of quests, string size, name, uint 0x00, 0x123456, data length 0x4C, back to string size 
+        public const int TH1_SECTOR_CHARMS_EQUIP = 4; // Equipt Charms? - 2x Only, NOID = No Rune
+        public const int TH1_SECTOR_RUNE = 5; // Rune Inventry
+        public const int TH1_SECTOR_CHARMS = 6; // Charms Inventry -- uint #of quests, string size, name, uint 0x00, 0x123456, data length 0x4C, back to string size 
         public const int TH1_SECTOR_WEAPONS = 7; // Weapons Begin? -- uint #of weapons, string size, name, uint 0x00, 0x123456, data length 0x14, back to string size
         public const int TH1_SECTOR_UNKNOWN02 = 8; // Weapons Begin Here
 
@@ -556,7 +1138,7 @@ namespace TooHuman1SE.SEStructure
         // Gamesave Parsing
         public List<TH1Sector> sectors;
         public TH1Character character;
-        public List<TH1Rune> runes;
+        public List<TH1RuneMExt> runes;
         public TH1SkillsTree skills;
 
         // Problems
@@ -580,7 +1162,7 @@ namespace TooHuman1SE.SEStructure
             // Parsed
             this.sectors = new List<TH1Sector>();
             this.character = new TH1Character();
-            this.runes = new List<TH1Rune>();
+            this.runes = new List<TH1RuneMExt>();
             this.skills = new TH1SkillsTree(0);
 
             // Checks
@@ -605,6 +1187,7 @@ namespace TooHuman1SE.SEStructure
                 dataToCharacter();
                 dataToSkillsTree();
                 dataToRunes();
+                // dataToCharms();
 
                 this.dataSize = this.rawData.Length;
             }
@@ -1086,7 +1669,9 @@ namespace TooHuman1SE.SEStructure
 
         private void dataToRunes()
         {
-            List<TH1Rune> tmpRunes = new List<TH1Rune>();
+            List<TH1RuneMExt> tmpRunes = new List<TH1RuneMExt>();
+            TH1RuneMCollection runeCollection = new TH1RuneMCollection();
+            TH1PaintCollection paintCollection = new TH1PaintCollection();
 
             // Buffer It
             byte[] runesData = new byte[this.sectors[TH1_SECTOR_RUNE].size];
@@ -1100,14 +1685,16 @@ namespace TooHuman1SE.SEStructure
                 for (int runeloop = 0; runeloop < runeCount; runeloop++)
                 {
                     int nameLength = (int)reader.ReadUInt32();
-                    TH1Rune tmpRune = new TH1Rune();
+                    byte[] runeName = reader.ReadBytes(nameLength);
 
-                    tmpRune.nameToRune(reader.ReadBytes(nameLength));
+                    TH1RuneMExt tmpRune = new TH1RuneMExt( runeCollection.findRune(runeName) );
+                    if (tmpRune.rune == null) tmpRune = new TH1RuneMExt(new TH1RuneM());
+
                     tmpRune.purchased = reader.ReadUInt32();
                     tmpRune.dataB = reader.ReadUInt32();
                     tmpRune.baseValue = reader.ReadUInt32();
                     tmpRune.dataD = reader.ReadUInt32();
-                    tmpRune.paintID = reader.ReadUInt32();
+                    tmpRune.paint = paintCollection.findPaint((int)reader.ReadUInt32());
 
                     tmpRunes.Add(tmpRune);
                 }
@@ -1121,14 +1708,14 @@ namespace TooHuman1SE.SEStructure
         private void runesToData()
         {
             long bytesize = 0;
-            foreach( TH1Rune tmpRune in this.runes) bytesize += tmpRune.getByteSize; 
+            foreach( TH1RuneMExt tmpRune in this.runes) bytesize += tmpRune.runeExtToArray.Length; 
             byte[] tmpRunes = new byte[4+bytesize];
 
             RWStream writer = new RWStream(tmpRunes, true, true);
             try
             {
                 writer.WriteUInt32((uint)this.runes.Count);
-                foreach (TH1Rune runeLoop in this.runes) writer.WriteBytes(runeLoop.runeToArray);
+                foreach (TH1RuneMExt runeLoop in this.runes) writer.WriteBytes(runeLoop.runeExtToArray);
             } catch( Exception ex) { setError(15, "Unable To Write Runes: " + ex.ToString()); }
             finally { writer.Flush(); tmpRunes = writer.ReadAllBytes(); writer.Close(true); }
 
@@ -1201,7 +1788,8 @@ namespace TooHuman1SE.SEStructure
         {
             byte[] deliminator = new byte[4];
             UInt32 thisSize = 0;
-            long[] sectors;
+            long[] sectorsArray;
+            List<long> _sectors;
 
             // Load
             Array.Copy(PUBLIC_HEADER, deliminator, deliminator.Length);
@@ -1209,26 +1797,40 @@ namespace TooHuman1SE.SEStructure
             RWStream reader = new RWStream(this.rawData, true);
             try
             {
-                sectors = reader.SearchHexString(BitConverter.ToString(deliminator).Replace("-",""), false);
-                if (sectors.Length > 6)
+                sectorsArray = reader.SearchHexString(BitConverter.ToString(deliminator).Replace("-",""), false);
+                _sectors = new List<long>(sectorsArray);
+
+                if (_sectors.Count > 6)
                 {
-                    for (int cursec = 0; cursec < sectors.Length; cursec++)
+                    for (int cursec = 0; cursec < _sectors.Count; cursec++)
                     {
+                        uint sectorSkip = 0;
+                        if (cursec < (_sectors.Count - 1))
+                        {
+                            // Sector sepcific loading (as currently, the same deliminator is used within sector data)
+                            switch (cursec)
+                            {
+                                case TH1_SECTOR_CHARMS: // Charms
+                                    reader.Position = _sectors[cursec] + deliminator.Length;
+                                    sectorSkip = reader.ReadUInt32();
+                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
+                                    break;
+                                default: // Everything Else
+                                    thisSize = (UInt32)(_sectors[cursec + 1] - _sectors[cursec]);
+                                    break;
+                            }
+                        } else thisSize = (UInt32)(this.dataSize - _sectors[cursec]);
 
-                        // Checking for Next Sector Available.
-                        if (cursec < (sectors.Length - 1)) thisSize = (UInt32)(sectors[cursec + 1] - sectors[cursec]);
-                        else thisSize = (UInt32)(this.dataSize - sectors[cursec]);
-
-                        // Load In The Sector
-                        thisSize -= (UInt32)deliminator.Length; // we don't need the header every time..
+                        thisSize -= (UInt32)deliminator.Length;
 
                         // Add the important references to the list
                         TH1Sector tmpsector = new TH1Sector();
                         tmpsector.id = cursec;
-                        tmpsector.offset = sectors[cursec] + deliminator.Length;
+                        tmpsector.offset = _sectors[cursec] + deliminator.Length;
                         tmpsector.size = thisSize;
                         this.sectors.Add(tmpsector);
-
+                        // cursec += (int)sectorSkip;
+                        for (int i = 0; i < sectorSkip; i++) _sectors.RemoveAt(cursec + 1);
                     }
                 }
                 else {

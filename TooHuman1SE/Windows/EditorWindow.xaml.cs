@@ -26,12 +26,13 @@ namespace TooHuman1SE.Windows
 
     public partial class EditorWindow : Window
     {
+        public MainWindow _mainWindow;
         public TH1SaveStructure _save;
+
         TabCharacterUC tc = new TabCharacterUC();
         TabDataPairsUC dp = new TabDataPairsUC();
         TabSkillsTreeUC st = new TabSkillsTreeUC();
         TabRunesUC ru = new TabRunesUC();
-
 
         public EditorWindow()
         {
@@ -196,8 +197,8 @@ namespace TooHuman1SE.Windows
 
         private void setWindowTitle()
         {
-            TH1CharClassAlign ca = new TH1CharClassAlign();
-            this.Title = _save.character.name + ": L" + _save.character.level.ToString("N0") + " " + ca.alignmentNames[_save.character.alignment] + ", " + ca.classNames[_save.character.charClass];
+            TH1Helper ca = new TH1Helper();
+            this.Title = _save.character.name + ": L" + _save.character.level.ToString("N0") + " " + ca.alignmentNamesArray[_save.character.alignment] + ", " + ca.classNamesArray[_save.character.charClass];
         }
 
         private static bool validSaveSlot(string text)

@@ -56,6 +56,7 @@ namespace TooHuman1SE
 
     public partial class MainWindow : Window
     {
+        public TH1RuneMCollection runeCollection = new TH1RuneMCollection();
 
         internal static CharactersUC _CharactersUC = new CharactersUC();
         internal static LogUC _LogUC = new LogUC();
@@ -176,10 +177,9 @@ namespace TooHuman1SE
             }
         }
 
-        #endregion Menu Items
-
         private void mnu_RebuildList(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("Not Yet Built");
         }
 
         private void mnu_webGithub(object sender, RoutedEventArgs e)
@@ -191,5 +191,7 @@ namespace TooHuman1SE
         {
             System.Diagnostics.Process.Start("http://toohuman1se.xjam.es/"); 
         }
+
+        #endregion Menu Items
     }
 }

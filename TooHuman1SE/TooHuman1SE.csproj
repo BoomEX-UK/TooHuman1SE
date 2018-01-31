@@ -62,6 +62,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Resources\ISOLib.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -95,6 +98,7 @@
     <Compile Include="Editor Tabs\TabSkillsTreeUC.xaml.cs">
       <DependentUpon>TabSkillsTreeUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="User Controls\CharactersUC.xaml.cs">
       <DependentUpon>CharactersUC.xaml</DependentUpon>
     </Compile>
@@ -186,10 +190,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Resource Include="Supporting Data\mutation.csv" />
+    <Resource Include="Supporting Data\RuneMBonus.json.gz" />
+    <Resource Include="Supporting Data\Paint.json.gz" />
+    <Resource Include="Supporting Data\RuneMCollection.json.gz" />
     <None Include="_Non Build\character-class.psd" />
     <None Include="_Non Build\DataTables.7z" />
     <None Include="_Non Build\TH1SE-vector-logoV2.psd" />
@@ -212,8 +221,82 @@
     <Resource Include="Icons\exit.png" />
     <Resource Include="Icons\web.png" />
     <Resource Include="Icons\github.png" />
+    <Resource Include="Icons\Runes\R0.png" />
+    <Resource Include="Icons\Runes\R1.png" />
+    <Resource Include="Icons\Runes\R2.png" />
+    <Resource Include="Icons\Runes\R3.png" />
+    <Resource Include="Icons\Runes\R4.png" />
+    <Resource Include="Icons\Runes\R5.png" />
+    <Resource Include="Icons\Runes\R6.png" />
+    <Resource Include="Icons\Runes\R10.png" />
+    <Resource Include="Icons\Runes\R11.png" />
+    <Resource Include="Icons\Runes\R7.png" />
+    <Resource Include="Icons\Runes\R8.png" />
+    <Resource Include="Icons\Runes\R9.png" />
+    <Resource Include="Icons\Runes\O0.png" />
+    <Resource Include="Icons\Runes\O1.png" />
+    <Resource Include="Icons\Runes\O10.png" />
+    <Resource Include="Icons\Runes\O11.png" />
+    <Resource Include="Icons\Runes\O2.png" />
+    <Resource Include="Icons\Runes\O3.png" />
+    <Resource Include="Icons\Runes\O4.png" />
+    <Resource Include="Icons\Runes\O5.png" />
+    <Resource Include="Icons\Runes\O6.png" />
+    <Resource Include="Icons\Runes\O7.png" />
+    <Resource Include="Icons\Runes\O8.png" />
+    <Resource Include="Icons\Runes\O9.png" />
+    <Resource Include="Icons\Runes\B0.png" />
+    <Resource Include="Icons\Runes\B1.png" />
+    <Resource Include="Icons\Runes\B10.png" />
+    <Resource Include="Icons\Runes\B11.png" />
+    <Resource Include="Icons\Runes\B2.png" />
+    <Resource Include="Icons\Runes\B3.png" />
+    <Resource Include="Icons\Runes\B4.png" />
+    <Resource Include="Icons\Runes\B5.png" />
+    <Resource Include="Icons\Runes\B6.png" />
+    <Resource Include="Icons\Runes\B7.png" />
+    <Resource Include="Icons\Runes\B8.png" />
+    <Resource Include="Icons\Runes\B9.png" />
+    <Resource Include="Icons\Runes\E0.png" />
+    <Resource Include="Icons\Runes\E1.png" />
+    <Resource Include="Icons\Runes\E2.png" />
+    <Resource Include="Icons\Runes\E3.png" />
+    <Resource Include="Icons\Runes\E4.png" />
+    <Resource Include="Icons\Runes\P0.png" />
+    <Resource Include="Icons\Runes\P1.png" />
+    <Resource Include="Icons\Runes\P10.png" />
+    <Resource Include="Icons\Runes\P11.png" />
+    <Resource Include="Icons\Runes\P2.png" />
+    <Resource Include="Icons\Runes\P3.png" />
+    <Resource Include="Icons\Runes\P4.png" />
+    <Resource Include="Icons\Runes\P5.png" />
+    <Resource Include="Icons\Runes\P6.png" />
+    <Resource Include="Icons\Runes\P7.png" />
+    <Resource Include="Icons\Runes\P8.png" />
+    <Resource Include="Icons\Runes\P9.png" />
+    <Resource Include="Icons\Runes\E10.png" />
+    <Resource Include="Icons\Runes\E11.png" />
+    <Resource Include="Icons\Runes\E5.png" />
+    <Resource Include="Icons\Runes\E6.png" />
+    <Resource Include="Icons\Runes\E7.png" />
+    <Resource Include="Icons\Runes\E8.png" />
+    <Resource Include="Icons\Runes\E9.png" />
+    <Resource Include="Icons\Runes\G0.png" />
+    <Resource Include="Icons\Runes\G1.png" />
+    <Resource Include="Icons\Runes\G10.png" />
+    <Resource Include="Icons\Runes\G11.png" />
+    <Resource Include="Icons\Runes\G2.png" />
+    <Resource Include="Icons\Runes\G3.png" />
+    <Resource Include="Icons\Runes\G4.png" />
+    <Resource Include="Icons\Runes\G5.png" />
+    <Resource Include="Icons\Runes\G6.png" />
+    <Resource Include="Icons\Runes\G7.png" />
+    <Resource Include="Icons\Runes\G8.png" />
+    <Resource Include="Icons\Runes\G9.png" />
+    <Resource Include="Icons\Runes\unknown.png" />
     <Content Include="Resources\ISOLib.dll" />
     <Resource Include="Icons\app.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

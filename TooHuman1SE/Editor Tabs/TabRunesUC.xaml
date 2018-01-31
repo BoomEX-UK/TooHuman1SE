@@ -6,17 +6,34 @@
              xmlns:local="clr-namespace:TooHuman1SE.Editor_Tabs"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style x:Key="Body_Content_DataGrid_Centering"
+	 TargetType="{x:Type DataGridCell}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
-        <DataGrid x:Name="gridRunes"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" Margin="0,36,0,0">
+        <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridRunes"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="*" Header="Colour" Binding="{Binding Path=runeColourName}" IsReadOnly="true"/>
-                <DataGridTextColumn Width="50" Header="ID" Binding="{Binding Path=runeID}" IsReadOnly="true" />
-                <DataGridTextColumn Width="50" Header="B" Binding="{Binding Path=dataB}" IsReadOnly="true" />
-                <DataGridCheckBoxColumn Width="70" Header="Purchased" Binding="{Binding Path=purchased}" IsReadOnly="true"/>
-                <DataGridTextColumn Width="50" Header="Value" Binding="{Binding Path=getValue}" IsReadOnly="true" />
-                <DataGridTextColumn Width="50" Header="D" Binding="{Binding Path=dataD}" IsReadOnly="true" />
-                <DataGridTextColumn Width="60" Header="Paint ID" Binding="{Binding Path=paintID}" IsReadOnly="true" />
-                <DataGridTextColumn Width="50" Header="Key" Binding="{Binding Path=runeMid}" IsReadOnly="true" />
+                <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding Path=rune.runeImage}" Height="24"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="*" Header="Rune Bonus" Binding="{Binding Path=rune.bonusType}" IsReadOnly="true"/>
+                <DataGridTextColumn Width="40" Header="Level" Binding="{Binding Path=rune.runeLevel}" IsReadOnly="true" />
+                <DataGridTextColumn Width="70" Header="Value" Binding="{Binding Path=calcValue, StringFormat={}{0:N0}}" IsReadOnly="true" />
+                <DataGridTextColumn Width="*" MaxWidth="175" Header="Paint ID" Binding="{Binding Path=paint.paintName}" IsReadOnly="true" />
             </DataGrid.Columns>
             <DataGrid.Resources>
                 <Style TargetType="DataGridRow">
@@ -26,14 +43,15 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="New Rune .." Click="btnAddRune_Click"/>
-                    <MenuItem Header="Actions">
+                    <MenuItem Header="Selected">
                         <MenuItem Header="Set Purchased">
                             <MenuItem Header="Yes" Click="mnu_PurchasedClick"/>
                             <MenuItem Header="No" Click="mnu_PurchasedClick"/>
                         </MenuItem>
+                        <MenuItem Header="Duplicate" Click="mnu_DuplicateRunes"/>
+                        <Separator />
+                        <MenuItem Header="Delete" Click="mnu_DeleteRunes"/>
                     </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="Delete Selected" Click="mnu_DeleteRunes"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

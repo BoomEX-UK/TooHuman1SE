@@ -200,7 +200,7 @@ namespace TooHuman1SE.SEFunctions
             log("Refreshing Character List View");
             List<CharList> lst = loadCharList();
             List<CharListImages> lsti = new List<CharListImages>();
-            TH1CharClassAlign ca = new TH1CharClassAlign();
+            TH1Helper ca = new TH1Helper();
             lst.Sort(delegate (CharList c1, CharList c2) { return c1.importedon.CompareTo(c2.importedon); });
             lst.Reverse();
             foreach(CharList cl in lst)
@@ -214,7 +214,7 @@ namespace TooHuman1SE.SEFunctions
                 il.path = cl.path;
                 il.cclass = cl.cclass;
                 il.bounty = cl.bounty;
-                il.image = classToImage(Array.IndexOf(ca.classNames,cl.cclass));
+                il.image = classToImage(Array.IndexOf(ca.classNamesArray,cl.cclass));
                 il.calign = cl.calign;
                 lsti.Add(il);
             }
@@ -239,7 +239,7 @@ namespace TooHuman1SE.SEFunctions
                 // Generate list
                 ObservableCollection<CharListImages> list = (ObservableCollection<CharListImages>)MainWindow._CharactersUC.lstCharacters.ItemsSource;
                 CharListImages item = new CharListImages();
-                TH1CharClassAlign ca = new TH1CharClassAlign();
+                TH1Helper ca = new TH1Helper();
 
                 // Generate item
                 item.hash = BitConverter.ToString(save.hash).Replace("-","");
@@ -248,8 +248,8 @@ namespace TooHuman1SE.SEFunctions
                 item.level = save.character.level;
                 item.importedon = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 item.bounty = save.character.bounty.ToString("N0");
-                item.cclass = ca.classNames[save.character.charClass];
-                item.calign = ca.alignmentNames[save.character.alignment];
+                item.cclass = ca.classNamesArray[save.character.charClass];
+                item.calign = ca.alignmentNamesArray[save.character.alignment];
                 item.image = classToImage(save.character.charClass);
 
                 // Backup save
@@ -299,7 +299,7 @@ namespace TooHuman1SE.SEFunctions
             return tmpres;
         }
 
-        public static void loadIntoEditorWindow( string savepath)
+        public static void loadIntoEditorWindow( string savepath, MainWindow _parent)
         {
             TH1SaveStructure loadingSave = new TH1SaveStructure();
             log("Loading Into Editor \"" + savepath + "\"", LC_PRIMARY);
@@ -310,6 +310,7 @@ namespace TooHuman1SE.SEFunctions
             {
                 EditorWindow eWin = new EditorWindow();
                 eWin._save = loadingSave;
+                eWin._mainWindow = _parent;
                 eWin.Show();
                 log("File Loaded Successfully", LC_SUCCESS);
             } else

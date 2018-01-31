@@ -21,7 +21,7 @@ namespace TooHuman1SE.Windows
     /// </summary>
     public partial class RuneEditorWindow : Window
     {
-        public TH1Rune thisRune = new TH1Rune();
+        public TH1RuneMExt thisRune;
         public int runeIndex = -1;
 
         public RuneEditorWindow()
@@ -34,41 +34,51 @@ namespace TooHuman1SE.Windows
             base.OnContentRendered(e);
 
             // On Show Event Stuff Goes Below..
+            buildDropDowns();
             setupForm();
-            // FocusManager.SetFocusedElement(this, txtValue);
-            // txtValue.SelectAll();
+        }
+
+        private void buildDropDowns()
+        {
+            // Rune Colour
+            string[] colourNames = new TH1Helper().colourNameArray;
+            comboColour.Items.Clear();
+            comboColour.ItemsSource = colourNames;
+
+            // Paint Colour
+            string[] paintColours = new TH1PaintCollection().paintNameArray();
+            comboPaint.Items.Clear();
+            comboPaint.ItemsSource = paintColours;
         }
 
         private void setupForm()
         {
-            string[] colourNames = thisRune.getColourNames;
-            comboColour.Items.Clear();
 
-            foreach (string colour in colourNames) comboColour.Items.Add(colour);
 
             if (runeIndex > -1)
             {
                 Functions.log("Loading Rune Editor (" + runeIndex.ToString() +")");
                 Window.GetWindow(this).Title = String.Format("Edit Rune #{0}", runeIndex + 1);
-                comboColour.SelectedIndex = thisRune.runeColour - 1;
-                txtID.Text = thisRune.runeID.ToString();
-                txtB.Text = thisRune.dataB.ToString();
+
+                comboColour.SelectedItem = thisRune.rune.runeColourName;
+                comboBonus.SelectedItem = thisRune.rune.idLevelAndBonusType;              
+                chkUnknown.IsChecked = (thisRune.dataB == 1);
                 checkPurchased.IsChecked = (thisRune.purchased == 1);
                 txtBaseValue.Text = thisRune.baseValue.ToString();
                 txtD.Text = thisRune.dataD.ToString();
-                txtPaint.Text = thisRune.paintID.ToString();
+                comboPaint.SelectedItem = thisRune.paint.paintName;
             }
             else
             {
                 Functions.log("Loading Rune Editor (New Rune)");
                 Window.GetWindow(this).Title = "New Rune";
                 comboColour.SelectedIndex = 0;
-                txtID.Text = "1";
+                comboBonus.SelectedIndex = 0;
+                comboPaint.SelectedIndex = 0;
                 checkPurchased.IsChecked = false;
-                txtB.Text = "0";
+                chkUnknown.IsChecked = false;
                 txtBaseValue.Text = "10000";
                 txtD.Text = "0";
-                txtPaint.Text = "1";
             }
 
         }
@@ -94,19 +104,18 @@ namespace TooHuman1SE.Windows
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            Random r = new Random();
-            
-            thisRune.runeColour = comboColour.SelectedIndex + 1;
-            try {
-                thisRune.runeID = int.Parse(txtID.Text);
-                if (thisRune.runeID < 1) thisRune.runeID = 1;
-            } catch { thisRune.runeID = r.Next(1, 999); }
+            MainWindow _mwin = (MainWindow)((EditorWindow)this.Owner)._mainWindow;
+            TH1RuneMCollection _collection = _mwin.runeCollection;
+            TH1PaintCollection _paintCollection = new TH1PaintCollection();
+            string[] runeParts = ((string)comboBonus.SelectedItem).Split(':');
+            TH1RuneM newRune = _collection.findRune(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue), int.Parse(runeParts[0]));
 
+            thisRune = new TH1RuneMExt(newRune);
             try { thisRune.purchased = (uint)((bool)checkPurchased.IsChecked ? 1 : 0); } catch { thisRune.purchased = 0; }
-            try { thisRune.dataB = uint.Parse(txtB.Text); } catch { thisRune.dataB = 0; }
+            try { thisRune.dataB = (uint)((bool)chkUnknown.IsChecked ? 1 : 0); } catch { thisRune.purchased = 0; }
             try { thisRune.baseValue = uint.Parse(txtBaseValue.Text); } catch { thisRune.baseValue = 10000; }
             try { thisRune.dataD = uint.Parse(txtD.Text); } catch { thisRune.dataD = 0; }
-            try { thisRune.paintID = uint.Parse(txtPaint.Text); } catch { thisRune.paintID = 1; }
+            try { thisRune.paint = _paintCollection.findPaint((string)comboPaint.SelectedItem); } catch { thisRune.paint = new TH1Paint(); }
 
             this.DialogResult = true;
         }
@@ -114,7 +123,36 @@ namespace TooHuman1SE.Windows
         private void btnRandom_Click(object sender, RoutedEventArgs e)
         {
             Random r = new Random();
-            txtID.Text = r.Next(1, 999).ToString();
+            comboBonus.SelectedIndex = r.Next(comboBonus.Items.Count);
+        }
+
+        private void comboColour_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MainWindow _mwin = (MainWindow)((EditorWindow)this.Owner)._mainWindow;
+            TH1RuneMCollection _collection = _mwin.runeCollection;
+
+            comboBonus.ItemsSource = _collection.idLevelAndBonusArray(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue));
+            comboBonus.SelectedIndex = 0;
+        }
+
+        private void comboBonus_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBonus.SelectedItem != null)
+            {
+                MainWindow _mwin = (MainWindow)((EditorWindow)this.Owner)._mainWindow;
+                TH1RuneMCollection _collection = _mwin.runeCollection;
+
+                string[] runeParts = ((string)comboBonus.SelectedItem).Split(':');
+                TH1RuneM _rune = _collection.findRune(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue), int.Parse(runeParts[0]));
+
+                imgRune.Source = _rune.runeImage;
+                lblRune.ToolTip = _rune.longName;
+                lblRune.Content = lblRune.ToolTip;
+
+                comboPaint.IsEnabled = comboBonus.SelectedItem.ToString().Contains("Colour Module");
+                if (!comboPaint.IsEnabled) comboPaint.SelectedIndex = 0;
+                
+            }
         }
     }
 }

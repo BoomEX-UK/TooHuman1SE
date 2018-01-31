@@ -95,7 +95,7 @@ namespace TooHuman1SE.User_Controls
             foreach(CharListImages item in lstCharacters.SelectedItems)
             {
                 string savepath = item.path;
-                Functions.loadIntoEditorWindow(savepath);
+                Functions.loadIntoEditorWindow(savepath, (MainWindow)Window.GetWindow(this) );
             }
             // Functions.saveCharList((List<CharList>)lstCharacters.ItemsSource);
 
