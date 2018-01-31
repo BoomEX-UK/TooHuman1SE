@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TooHuman1SE.Windows"
         xmlns:Editor_Tabs="clr-namespace:TooHuman1SE.Editor_Tabs" x:Class="TooHuman1SE.Windows.EditorWindow"
         mc:Ignorable="d"
-        Title="EditorWindow" Height="470" Width="545" MinWidth="545" MinHeight="350" WindowStartupLocation="CenterScreen">
+        Title="EditorWindow" Height="500" Width="545" MinWidth="545" MinHeight="350" WindowStartupLocation="CenterScreen">
     <Grid>
 
         <TabControl x:Name="tabEditor" Margin="10,43,10,10">
@@ -25,10 +25,19 @@
             <TabItem Header="Tokens">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
+            <TabItem Header="Weapons">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Armour">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
             <TabItem Header="Runes">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
             <TabItem Header="Charms">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Charm Quests">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
             <TabItem Header="Sectors">

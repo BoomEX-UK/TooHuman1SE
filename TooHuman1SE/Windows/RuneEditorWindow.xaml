@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TooHuman1SE.Windows"
         mc:Ignorable="d"
-        Title="Rune Editor" Height="335.666" Width="330" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="Rune Editor" Height="335.666" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Grid>
         <ComboBox x:Name="comboColour" Margin="90,10,10,0" VerticalAlignment="Top" Height="26" SelectionChanged="comboColour_SelectionChanged"/>
         <Button x:Name="btnOK" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" Width="75" Cursor="Hand" Click="btnOK_Click" Height="25" VerticalAlignment="Bottom"/>
@@ -18,17 +18,17 @@
         <Label Content="Bonus:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="70"/>
         <ComboBox x:Name="comboPaint" Margin="90,72,10,0" VerticalAlignment="Top" Height="26" IsEnabled="False"/>
         <Image x:Name="imgRune" HorizontalAlignment="Left" Height="27" Margin="16,108,0,0" VerticalAlignment="Top" Width="27" Source="/TooHuman1SE;component/Icons/Runes/unknown.png"/>
-        <Label x:Name="lblRune" Content="{}{Output}" Margin="48,108,15,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblRune" Content="{}{Output}" Margin="48,108,10,0" VerticalAlignment="Top"/>
         <GroupBox Header="Other Values (BETA)" Margin="10,149,10,46">
             <Grid Margin="0">
-                <Label Content="Treasure" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70"/>
-                <Label Content="Unknown" HorizontalAlignment="Right" Margin="0,10,70,0" VerticalAlignment="Top" Width="70"/>
-                <Label Content="Base Value" Margin="0,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70"/>
-                <TextBox x:Name="txtBaseValue" Height="23" Margin="75,48,0,0" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" PreviewTextInput="txt_NumberOnly" MaxLength="9" HorizontalAlignment="Left" Width="60"/>
-                <Label Content="Unknown#" Margin="0,46,70,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="70"/>
-                <TextBox x:Name="txtD" Height="23" Margin="0,48,5,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" PreviewTextInput="txt_NumberOnly" MaxLength="9" HorizontalAlignment="Right" Width="60"/>
-                <CheckBox x:Name="checkPurchased" Margin="97,15,0,0" VerticalAlignment="Top" Cursor="Hand" HorizontalAlignment="Left" Width="16"/>
-                <CheckBox x:Name="chkUnknown" Margin="0,15,27,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="16" Cursor="Hand"/>
+                <Label Content="Treasure:" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="90"/>
+                <Label Content="Unknown:" HorizontalAlignment="Right" Margin="0,10,60,0" VerticalAlignment="Top" Width="70"/>
+                <Label Content="Value Modifier:" Margin="0,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="90"/>
+                <TextBox x:Name="txtBaseValue" Height="23" Margin="95,48,0,0" TextWrapping="Wrap" Text="10000" VerticalAlignment="Top" PreviewTextInput="txt_NumberOnly" MaxLength="9" HorizontalAlignment="Left" Width="60"/>
+                <Label Content="Unknown#:" Margin="0,46,60,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="70"/>
+                <TextBox x:Name="txtD" Height="23" Margin="0,48,5,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" PreviewTextInput="txt_NumberOnly" MaxLength="9" HorizontalAlignment="Right" Width="50"/>
+                <CheckBox x:Name="checkPurchased" Margin="117,15,0,0" VerticalAlignment="Top" Cursor="Hand" HorizontalAlignment="Left" Width="16"/>
+                <CheckBox x:Name="chkUnknown" Margin="0,15,22,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="16" Cursor="Hand"/>
             </Grid>
         </GroupBox>
 

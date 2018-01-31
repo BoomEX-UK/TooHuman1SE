@@ -95,6 +95,9 @@
     <Compile Include="Editor Tabs\TabRunesUC.xaml.cs">
       <DependentUpon>TabRunesUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Editor Tabs\TabSectorsUC.xaml.cs">
+      <DependentUpon>TabSectorsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Editor Tabs\TabSkillsTreeUC.xaml.cs">
       <DependentUpon>TabSkillsTreeUC.xaml</DependentUpon>
     </Compile>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Editor Tabs\TabRunesUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor Tabs\TabSectorsUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

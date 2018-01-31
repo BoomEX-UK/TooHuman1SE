@@ -39,6 +39,11 @@ namespace TooHuman1SE.Editor_Tabs
             if (dlg.ShowDialog().Equals(true))
             {
                 Functions.log("Saving Rune..");
+                if ((dlg.thisRune.calcValue == 0) && (dlg.thisRune.valueModifier != 0))
+                {
+                    Functions.log(string.Format("Value Modifier Caused The Rune Value To Go Out Of Bounds ({0})", dlg.thisRune.valueModifier), Functions.LC_WARNING);
+                    dlg.thisRune.valueModifier = 0;
+                }
                 gridRunes.ItemsSource = null;
                 ewin._save.runes[dlg.runeIndex] = dlg.thisRune;
                 gridRunes.ItemsSource = ewin._save.runes;
@@ -119,6 +124,11 @@ namespace TooHuman1SE.Editor_Tabs
                 {
                     Functions.log(string.Format("Creating New Rune [{0}]", dlg.thisRune.rune.runeString));
                     gridRunes.ItemsSource = null;
+                    if( (dlg.thisRune.calcValue == 0) && (dlg.thisRune.valueModifier != 0))
+                    {
+                        Functions.log(string.Format("Value Modifier Caused The Rune Value To Go Out Of Bounds ({0})"), Functions.LC_WARNING);
+                        dlg.thisRune.valueModifier = 0;
+                    }
                     ewin._save.runes.Add(dlg.thisRune);
                     gridRunes.ItemsSource = ewin._save.runes;
                     recountRunes();

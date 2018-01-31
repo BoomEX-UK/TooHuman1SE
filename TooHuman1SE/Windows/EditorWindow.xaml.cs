@@ -33,6 +33,7 @@ namespace TooHuman1SE.Windows
         TabDataPairsUC dp = new TabDataPairsUC();
         TabSkillsTreeUC st = new TabSkillsTreeUC();
         TabRunesUC ru = new TabRunesUC();
+        TabSectorsUC se = new TabSectorsUC();
 
         public EditorWindow()
         {
@@ -61,6 +62,7 @@ namespace TooHuman1SE.Windows
             loadDataPairsTab();
             loadSkillTreeTab();
             loadRunesTab();
+            loadSectorsTab();
         }
 
         private void loadEditorWindow()
@@ -131,6 +133,11 @@ namespace TooHuman1SE.Windows
             ru.buildContextMenu();
         }
 
+        private void loadSectorsTab()
+        {
+            se.dataSectors.ItemsSource = _save.sectors;
+        }
+
         #endregion Tab Loading
 
         #region Tab Saving
@@ -141,6 +148,8 @@ namespace TooHuman1SE.Windows
             saveCharacterTab();
             saveDataPairsTab();
             saveSkillTreeTab();
+            // saveRunesTab(); // No Action
+            // saveSectorsTab(); // No Action
         }
 
         private void saveEditorWindow()
@@ -226,6 +235,7 @@ namespace TooHuman1SE.Windows
                 if (head == "Stats") ti.Content = dp;
                 if (head == "Skill Tree") ti.Content = st;
                 if (head == "Runes") ti.Content = ru;
+                if (head == "Sectors") ti.Content = se;
             }
         }
 

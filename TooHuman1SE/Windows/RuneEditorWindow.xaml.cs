@@ -64,7 +64,7 @@ namespace TooHuman1SE.Windows
                 comboBonus.SelectedItem = thisRune.rune.idLevelAndBonusType;              
                 chkUnknown.IsChecked = (thisRune.dataB == 1);
                 checkPurchased.IsChecked = (thisRune.purchased == 1);
-                txtBaseValue.Text = thisRune.baseValue.ToString();
+                txtBaseValue.Text = thisRune.valueModifier.ToString();
                 txtD.Text = thisRune.dataD.ToString();
                 comboPaint.SelectedItem = thisRune.paint.paintName;
             }
@@ -113,7 +113,7 @@ namespace TooHuman1SE.Windows
             thisRune = new TH1RuneMExt(newRune);
             try { thisRune.purchased = (uint)((bool)checkPurchased.IsChecked ? 1 : 0); } catch { thisRune.purchased = 0; }
             try { thisRune.dataB = (uint)((bool)chkUnknown.IsChecked ? 1 : 0); } catch { thisRune.purchased = 0; }
-            try { thisRune.baseValue = uint.Parse(txtBaseValue.Text); } catch { thisRune.baseValue = 10000; }
+            try { thisRune.valueModifier = uint.Parse(txtBaseValue.Text); } catch { thisRune.valueModifier = 10000; }
             try { thisRune.dataD = uint.Parse(txtD.Text); } catch { thisRune.dataD = 0; }
             try { thisRune.paint = _paintCollection.findPaint((string)comboPaint.SelectedItem); } catch { thisRune.paint = new TH1Paint(); }
 

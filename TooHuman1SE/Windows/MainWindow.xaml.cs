@@ -179,7 +179,23 @@ namespace TooHuman1SE
 
         private void mnu_RebuildList(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Not Yet Built");
+            string characterFile = "caracters.xml";
+            string saveDir = "saves";
+            string fileExt = ".th1";
+
+            Functions.log("Rebuilding Character List", Functions.LC_PRIMARY);
+
+            if (File.Exists(characterFile)) File.Delete(characterFile);
+            if( _CharactersUC._charList != null ) _CharactersUC._charList.Clear();
+
+            if ( Directory.Exists(saveDir))
+            {
+                var files = Directory.EnumerateFiles(saveDir, "*.*", SearchOption.AllDirectories)
+                .Where(s => s.EndsWith(fileExt, StringComparison.OrdinalIgnoreCase));
+
+                loadFilesIntoList(files.ToArray());
+            }
+
         }
 
         private void mnu_webGithub(object sender, RoutedEventArgs e)

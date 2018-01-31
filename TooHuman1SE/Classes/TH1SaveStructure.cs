@@ -41,9 +41,89 @@ namespace TooHuman1SE.SEStructure
     #region Sector
     public class TH1Sector
     {
-        public long id = 0;
-        public long offset = 0;
-        public long size = 0;
+        private long _id = 0;
+        private long _offset = 0;
+        private long _size = 0;
+        private string _sectorname;
+
+        public long id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                Dictionary<int, string> sectorNamesDic = new TH1Helper().sectorNamesDic;
+                if (!sectorNamesDic.TryGetValue((int)id, out _sectorname))
+                {
+                    _sectorname = string.Format("sector{0}", id.ToString().PadLeft(3, '0'));
+                }
+            }
+        }
+        public long offset
+        {
+            get
+            {
+                return _offset;
+            }
+            set
+            {
+                _offset = value;
+            }
+        }
+        public long size
+        {
+            get
+            {
+                return _size;
+            }
+            set
+            {
+                _size = value;
+            }
+        }
+        public string sizeString
+        {
+            get
+            {
+                string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+                int decimalPlaces = 1;
+                long value = _size;
+
+                if (value < 0) { return "Unknown"; }
+                if (value == 0) { return string.Format("{0:n" + decimalPlaces + "} bytes", 0); }
+
+                // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
+                int mag = (int)Math.Log(value, 1024);
+
+                // 1L << (mag * 10) == 2 ^ (10 * mag) 
+                // [i.e. the number of bytes in the unit corresponding to mag]
+                decimal adjustedSize = (decimal)value / (1L << (mag * 10));
+
+                // make adjustment when the value is large enough that
+                // it would round up to 1000 or more
+                if (Math.Round(adjustedSize, decimalPlaces) >= 1000)
+                {
+                    mag += 1;
+                    adjustedSize /= 1024;
+                }
+
+                if (mag == 0) decimalPlaces = 0;
+
+                return string.Format("{0:n" + decimalPlaces + "} {1}",
+                    adjustedSize,
+                    SizeSuffixes[mag]);
+            }
+        }
+        public string sectorName
+        {
+            get
+            {
+                return _sectorname;
+            }
+        }
     }
     #endregion Sector
 
@@ -75,6 +155,25 @@ namespace TooHuman1SE.SEStructure
         private Dictionary<int, string> _weaponTypes = new Dictionary<int, string>()
         {
             {0 , ""},{1 , ""},{2 , ""},{3 , ""},{4 , ""},{5 , ""},{6 , ""},{7 , ""},{8 , ""},{9 , ""},{10 , ""},{11 , ""},{12 , ""},{13 , ""},{14 , ""},{15 , ""},{16 , ""},{17 , ""}
+        };
+        private Dictionary<int, string> _armourTypes = new Dictionary<int, string>()
+        {
+            {0 , ""},{1 , ""},{2 , ""},{3 , ""},{4 , ""},{5 , ""}
+        };
+        private Dictionary<int, string> _sectorNames = new Dictionary<int, string>()
+        {
+            {0, "header" },
+            {1, "character" },
+            {2, "skill_tree" },
+            {3, "location" },
+            {4, "charm-equipped" },
+            {5, "runes" },
+            {6, "charms" },
+            {7, "weapons" },
+            {8, "armour" },
+            {11, "quests" },
+            {12, "weapon-blueprints" },
+            {13, "armour-blueprints" }
         };
 
         // Limits
@@ -122,7 +221,28 @@ namespace TooHuman1SE.SEStructure
         {
             get
             {
-                return new string[] { "None", "Human", "Cybernitics" }; 
+                return new string[] { "None", "Human", "Cybernetics" }; 
+            }
+        }
+        public Dictionary<int,string> sectorNamesDic
+        {
+            get
+            {
+                return _sectorNames;
+            }
+        }
+        public Dictionary<int, string> weaponTypesDic
+        {
+            get
+            {
+                return _weaponTypes;
+            }
+        }
+        public Dictionary<int, string> armourTypesDic
+        {
+            get
+            {
+                return _armourTypes;
             }
         }
     }
@@ -134,18 +254,17 @@ namespace TooHuman1SE.SEStructure
         public long OFFSET_SAVESLOT = 4;
         public long OFFSET_NAME_U = 20;
         public long OFFSET_CLASS = 52;
-        public long OFFSET_ALIGNMENT = 0; // unknown
         public long OFFSET_LEVELA = 56;
-        public long OFFSET_LEVELB = 1748;
+        public long OFFSET_ENEMIES_KILLED = 124;
         public long OFFSET_SKILLPOINTS = 128;
+        public long OFFSET_DATA_PAIRSA = 956;
+        public long OFFSET_DATA_PAIRSB = 1652;
+        public long OFFSET_LEVELB = 1748;
+        public long OFFSET_CURR_LEVEL_EXP = 1752;
         public long OFFSET_EXP = 1756;
         public long OFFSET_BOUNTY = 1764;
         public long OFFSET_NAME_A_LENGTH = 1800;
         public long OFFSET_NAME_A = 1804;
-        public long OFFSET_CURR_LEVEL_EXP = 1752;
-        public long OFFSET_DATA_PAIRSA = 956;
-        public long OFFSET_DATA_PAIRSB = 1652;
-        public long OFFSET_ENEMIES_KILLED = 124;
 
         // Limits
         public int LIMIT_NAME_LENGTH = 15;
@@ -162,6 +281,8 @@ namespace TooHuman1SE.SEStructure
         public long skillPoints;
         public string playTime;
         public long saveSlot;
+
+        public long OFFSET_ALIGNMENT = 0; // After Ascii Name (uint 14/14)
 
         // Data Pairs
         public Dictionary<string, uint> dataPairsA = new Dictionary<string, uint>();
@@ -199,12 +320,12 @@ namespace TooHuman1SE.SEStructure
             [0x7A] = "highest_combo",
             [0x7B] = "item_pickups"
         };
-
         public Dictionary<uint, string> dataPairNamesB = new Dictionary<uint, string>
         {
 
         };
 
+        
     }
 
     #region Skills Tree
@@ -849,7 +970,7 @@ namespace TooHuman1SE.SEStructure
             }
         }
         public uint purchased { get; set; }
-        public uint baseValue { get; set; }
+        public uint valueModifier { get; set; }
         public uint dataB { get; set; }
         public uint dataD { get; set; }
         public TH1Paint paint { get; set; }
@@ -875,7 +996,7 @@ namespace TooHuman1SE.SEStructure
                     // Rune Ext
                     writer.WriteUInt32(purchased);
                     writer.WriteUInt32(dataB);
-                    writer.WriteUInt32(baseValue);
+                    writer.WriteUInt32(valueModifier);
                     writer.WriteUInt32(dataD);
                     writer.WriteUInt32((uint)paint.paintID);
                 }
@@ -890,7 +1011,7 @@ namespace TooHuman1SE.SEStructure
                 try
                 {
                     // dial m for deciMal
-                    decimal tmpVal = (2500m / baseValue) * rune.runeValue;
+                    decimal tmpVal = (rune.runeValue * (1m/4m)) * (valueModifier / 10000m);
                     return Convert.ToInt32(tmpVal);
                 } catch { return 0;  }
             }
@@ -1064,7 +1185,16 @@ namespace TooHuman1SE.SEStructure
     }
 
     #endregion Weapon
-    
+
+    #region TH1Armour
+
+    public class TH1Armour
+    {
+
+    }
+
+    #endregion TH1Armour
+
     public class TH1SaveStructure
     {
 
@@ -1075,11 +1205,16 @@ namespace TooHuman1SE.SEStructure
         public const int TH1_SECTOR_CHARACTER = 1; // Character Data
         public const int TH1_SECTOR_SKILLTREE = 2; // Skill/Class Tree?
         public const int TH1_SECTOR_LOCATION = 3; // Area & Co-Ordinates?
-        public const int TH1_SECTOR_CHARMS_EQUIP = 4; // Equipt Charms? - 2x Only, NOID = No Rune
+        public const int TH1_SECTOR_CHARM_EQUIP = 4; // Equipt Charms? - 2x Only, NOID = No Rune
         public const int TH1_SECTOR_RUNE = 5; // Rune Inventry
         public const int TH1_SECTOR_CHARMS = 6; // Charms Inventry -- uint #of quests, string size, name, uint 0x00, 0x123456, data length 0x4C, back to string size 
-        public const int TH1_SECTOR_WEAPONS = 7; // Weapons Begin? -- uint #of weapons, string size, name, uint 0x00, 0x123456, data length 0x14, back to string size
-        public const int TH1_SECTOR_UNKNOWN02 = 8; // Weapons Begin Here
+        public const int TH1_SECTOR_WEAPONS = 7; // Weapons -- uint #of weapons, string size, name, uint 0x00, 0x123456, data length 0x14, back to string size
+        public const int TH1_SECTOR_ARMOUR = 8; // Armour -- uint #of Armour, 
+        public const int TH1_SECTOR_UNKNOWN01 = 9;
+        public const int TH1_SECTOR_UNKNOWN02 = 10;
+        public const int TH1_SECTOR_QUESTS = 11; // ?
+        public const int TH1_SECTOR_WEAPON_BLUEPRINTS = 12;
+        public const int TH1_SECTOR_ARMOUR_BLUEPRINTS = 13;
 
         // Save Types
         private const int TH1_SAVETYPE_NONE = 00;
@@ -1354,7 +1489,7 @@ namespace TooHuman1SE.SEStructure
         }
 
         // Dumping Sectors..
-        private void writeSectorToFile(string filename, int sectorID, bool incHeader)
+        public void writeSectorToFile(string filename, int sectorID, bool incHeader)
         {
             // Sector Code
             byte[] sectorcode = new byte[4];
@@ -1434,6 +1569,7 @@ namespace TooHuman1SE.SEStructure
         {
             // Supports
             // - Name
+            // - Alignment
             // - Class
             // - Level
             // - Exp
@@ -1458,7 +1594,9 @@ namespace TooHuman1SE.SEStructure
                 reader.Position = tmpChar.OFFSET_NAME_A;
                 tmpChar.name = reader.ReadString(StringType.Ascii, namelength - 1);
 
-                //tmpChar.alignment;
+                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A_LENGTH + 4 + namelength + (13*4);
+                reader.Position = tmpChar.OFFSET_ALIGNMENT;
+                tmpChar.alignment = reader.ReadUInt32();
 
                 reader.Position = tmpChar.OFFSET_CLASS;
                 tmpChar.charClass = reader.ReadUInt32();
@@ -1502,6 +1640,7 @@ namespace TooHuman1SE.SEStructure
 
             // Supports
             // - Name (Unicode & ASCII)
+            // - Alignment
             // - Class
             // - Level (x2 Offsets)
             // - Exp
@@ -1532,6 +1671,8 @@ namespace TooHuman1SE.SEStructure
                 namewriter.Position = tmpChar.OFFSET_NAME_A_LENGTH;
                 namewriter.WriteUInt32(newNameLength + 1);
 
+                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + 4 + newNameLength + 1 + (13 * 4);
+
                 charDataTemp = new byte[charData.Length - oldNameLength + newNameLength];
 
                 // i think ?!
@@ -1553,7 +1694,9 @@ namespace TooHuman1SE.SEStructure
                 writer.WriteString(tmpChar.name, StringType.Unicode, tmpChar.name.Length);
                 for (int uniz = tmpChar.name.Length; uniz < tmpChar.LIMIT_NAME_LENGTH; uniz++) writer.WriteBytes(new byte[] { 0x00, 0x00 });
 
-                //tmpChar.alignment;
+                // Write Alignment
+                writer.Position = tmpChar.OFFSET_ALIGNMENT;
+                writer.WriteUInt32((uint)tmpChar.alignment);
 
                 // Write Class
                 writer.Position = tmpChar.OFFSET_CLASS;
@@ -1692,7 +1835,7 @@ namespace TooHuman1SE.SEStructure
 
                     tmpRune.purchased = reader.ReadUInt32();
                     tmpRune.dataB = reader.ReadUInt32();
-                    tmpRune.baseValue = reader.ReadUInt32();
+                    tmpRune.valueModifier = reader.ReadUInt32();
                     tmpRune.dataD = reader.ReadUInt32();
                     tmpRune.paint = paintCollection.findPaint((int)reader.ReadUInt32());
 
@@ -1784,6 +1927,8 @@ namespace TooHuman1SE.SEStructure
 
         }
 
+        #region Sector Loading
+
         private void loadGamesaveSectors()
         {
             byte[] deliminator = new byte[4];
@@ -1815,6 +1960,33 @@ namespace TooHuman1SE.SEStructure
                                     sectorSkip = reader.ReadUInt32();
                                     thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
                                     break;
+                                case TH1_SECTOR_WEAPONS:
+                                case TH1_SECTOR_WEAPON_BLUEPRINTS:
+                                    int weapCount = new TH1Helper().weaponTypesDic.Count;
+                                    for ( int i=0; i < weapCount; i++)
+                                    {
+                                        reader.Position = _sectors[cursec + i + (int)sectorSkip] + deliminator.Length;
+                                        sectorSkip += reader.ReadUInt32();
+                                    }
+                                    sectorSkip += (uint)weapCount - 1;
+                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
+                                    break;
+                                case TH1_SECTOR_ARMOUR:
+                                case TH1_SECTOR_ARMOUR_BLUEPRINTS:
+                                    int armourCount = new TH1Helper().armourTypesDic.Count;
+                                    for (int i = 0; i < armourCount; i++)
+                                    {
+                                        reader.Position = _sectors[cursec + i + (int)sectorSkip] + deliminator.Length;
+                                        sectorSkip += reader.ReadUInt32();
+                                    }
+                                    sectorSkip += (uint)armourCount - 1;
+                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
+                                    break;
+                                case TH1_SECTOR_QUESTS:
+                                    reader.Position = _sectors[cursec] + deliminator.Length;
+                                    sectorSkip = reader.ReadUInt32();
+                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
+                                    break;
                                 default: // Everything Else
                                     thisSize = (UInt32)(_sectors[cursec + 1] - _sectors[cursec]);
                                     break;
@@ -1840,6 +2012,8 @@ namespace TooHuman1SE.SEStructure
             catch { }
             finally { reader.Close(false);  }
         }
+
+        #endregion Sector Loading
 
         private byte[] getHash( byte[] saveData )
         {

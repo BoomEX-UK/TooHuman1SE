@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="TooHuman1SE.Editor_Tabs.TabSectorsUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TooHuman1SE.Editor_Tabs"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="500">
+    <Grid>
+        <DataGrid x:Name="dataSectors" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="*" Header="Sector ID" Binding="{Binding Path=sectorName}" IsReadOnly="true"/>
+                <DataGridTextColumn Width="*" Header="Size" Binding="{Binding Path=sizeString}" IsReadOnly="true" />
+            </DataGrid.Columns>
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <!-- <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/> -->
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Extract Selected" Click="mnuExtractSelected_Click"/>
+                    <MenuItem Header="Extract All" Click="mnuExtractAll_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+
+    </Grid>
+</UserControl>
