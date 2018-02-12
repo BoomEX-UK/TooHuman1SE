@@ -36,6 +36,10 @@ namespace TooHuman1SE.SEStructure
          13  : Unable To Write Skills Tree
          14  : Unable To Parse Runes
          15  : Unable To Write Runes
+         16  : Unable To Parse Charms
+         17  : Unable To Write Active Charms
+         18  : Unable To Write Complete Charms
+         19  : Unable To Write Incomplete Charms
     */
 
     #region Sector
@@ -130,13 +134,18 @@ namespace TooHuman1SE.SEStructure
     public class TH1Helper
     {
         // Dictionaries
-        private Dictionary<char,string> _colourNames = new Dictionary<char,string>() {
+        private Dictionary<char,string> _runeColourNames = new Dictionary<char,string>() {
             { 'G', "Grey" },
             { 'E', "Green" },
             { 'B', "Blue" },
             { 'P', "Purple" },
             { 'O', "Orange" }, // Orange? :P
             { 'R', "Red" }
+        };
+        private Dictionary<int, string> _charmTierNames = new Dictionary<int, string>() {
+            { 1, "Tier 1" },
+            { 2, "Tier 2" },
+            { 3, "Tier 3" },
         };
         private Dictionary<int, string> _runeNames = new Dictionary<int, string>() {
             { 0, "Ansuz" },
@@ -154,7 +163,24 @@ namespace TooHuman1SE.SEStructure
         };
         private Dictionary<int, string> _weaponTypes = new Dictionary<int, string>()
         {
-            {0 , ""},{1 , ""},{2 , ""},{3 , ""},{4 , ""},{5 , ""},{6 , ""},{7 , ""},{8 , ""},{9 , ""},{10 , ""},{11 , ""},{12 , ""},{13 , ""},{14 , ""},{15 , ""},{16 , ""},{17 , ""}
+            {0 , "Dual Swords"},
+            { 1 , "1-Handed Sword"},
+            { 2 , "2-Handed Sword"},
+            { 3 , "Dual Staves"},
+            { 4 , "1-Handed Staff"},
+            { 5 , "2-Handed Staff"},
+            { 6 , "Dual Hammers"},
+            { 7 , "1-Handed Hammer"},
+            { 8 , "2-Handed Hammer"},
+            { 9 , "Laser Pistols"},
+            { 10 , "Plasma Pistols"},
+            { 11 , "Slug Pistols"},
+            { 12 , "Heavy Laser"},
+            { 13 , "Heavy Plasma"},
+            { 14 , "Heavy Slug"},
+            { 15 , "Assault Laser"},
+            { 16 , "Assault Plasma"},
+            { 17 , "Assault Slug"}
         };
         private Dictionary<int, string> _armourTypes = new Dictionary<int, string>()
         {
@@ -166,43 +192,57 @@ namespace TooHuman1SE.SEStructure
             {1, "character" },
             {2, "skill_tree" },
             {3, "location" },
-            {4, "charm-equipped" },
+            {4, "charms-active" },
             {5, "runes" },
-            {6, "charms" },
+            {6, "charms-available" },
             {7, "weapons" },
             {8, "armour" },
-            {11, "quests" },
+            {11, "charms-incomplete" },
             {12, "weapon-blueprints" },
             {13, "armour-blueprints" }
+        };
+        private Dictionary<int, string> _classNames = new Dictionary<int, string>()
+        {
+            {0, "Berserker" },
+            {1, "Champion" },
+            {2, "Defender" },
+            {3, "Heavy Gunner" },
+            {4, "Gunslinger" },
+            {5, "Commando" },
+            {6, "Bio-Engineer" },
+            {7, "Dragon" },
+            {8, "Rune Master" }
         };
 
         // Limits
         public int LIMIT_MAX_RUNES = 60;
+        public int LIMIT_MAX_CHARMS = 20;
         
         // Lookups
         public string getRuneColourName( char _colourID )
         {
-            if( !_colourNames.TryGetValue(_colourID, out string tmpRes) ) tmpRes = "Unknown";
+            if( !_runeColourNames.TryGetValue(_colourID, out string tmpRes) ) tmpRes = "Unknown";
             return tmpRes;
         }
         public char getRuneColourID( string name)
         {
             char tmpRes = 'G';
-            foreach( KeyValuePair<char,string> _kvp in _colourNames) if (_kvp.Value == name) tmpRes = _kvp.Key;
+            foreach( KeyValuePair<char,string> _kvp in _runeColourNames) if (_kvp.Value == name) tmpRes = _kvp.Key;
             return tmpRes;
         }
-        public string[] colourNameArray
+        // Colour Names
+        public string[] runeColourNameArray
         {
             get
             {
-                string[] tmpRes = new string[_colourNames.Count];
-                int i = 0;
-                foreach( KeyValuePair<char, string> _kvp in _colourNames)
-                {
-                    tmpRes[i] = _kvp.Value;
-                    i++;
-                }
-                return tmpRes;
+                return _runeColourNames.Values.ToArray();
+            }
+        }
+        public string[] charmTierNameArray
+        {
+            get
+            {
+                return _charmTierNames.Values.ToArray();
             }
         }
         public string getRuneName(int _runeID)
@@ -210,13 +250,22 @@ namespace TooHuman1SE.SEStructure
             if (!_runeNames.TryGetValue(_runeID, out string tmpRes)) tmpRes = "Unknown";
             return tmpRes;
         }
+        // Class Names
+        public Dictionary<int, string> classNamesDic
+        {
+            get
+            {
+                return _classNames;
+            }
+        }
         public string[] classNamesArray
         {
             get
             {
-                return new string[] { "Berserker", "Champion", "Defender", "Heavy Gunner", "Gunslinger", "Commando", "Bio-Engineer", "Dragon", "Rune Master" };
+                return _classNames.Values.ToArray();
             }
         }
+        // Alignment Names
         public string[] alignmentNamesArray
         {
             get
@@ -247,6 +296,7 @@ namespace TooHuman1SE.SEStructure
         }
     }
 
+    #region TH1Character
     public class TH1Character
     {
         // Offsets
@@ -256,12 +306,13 @@ namespace TooHuman1SE.SEStructure
         public long OFFSET_CLASS = 52;
         public long OFFSET_LEVELA = 56;
         public long OFFSET_ENEMIES_KILLED = 124;
-        public long OFFSET_SKILLPOINTS = 128;
+        public long OFFSET_SKILLPOINTSA = 128;
         public long OFFSET_DATA_PAIRSA = 956;
         public long OFFSET_DATA_PAIRSB = 1652;
         public long OFFSET_LEVELB = 1748;
         public long OFFSET_CURR_LEVEL_EXP = 1752;
         public long OFFSET_EXP = 1756;
+        public long OFFSET_SKILLPOINTSB = 1760;
         public long OFFSET_BOUNTY = 1764;
         public long OFFSET_NAME_A_LENGTH = 1800;
         public long OFFSET_NAME_A = 1804;
@@ -327,8 +378,9 @@ namespace TooHuman1SE.SEStructure
 
         
     }
+    #endregion TH1Character
 
-    #region Skills Tree
+    #region TH1SkillsTree
     public class TH1SkillsTreePair
     {
         public long first = 0;
@@ -464,7 +516,7 @@ namespace TooHuman1SE.SEStructure
             else return ST_VALUES_DEFAULT;
         }
     }
-    #endregion Skills Tree
+    #endregion TH1SkillsTree
 
     class TH1ExpToNextLevel
     {
@@ -1177,6 +1229,1077 @@ namespace TooHuman1SE.SEStructure
 
     #endregion TH1RuneM
 
+    #region TH1Charm
+
+    // Charms
+    public class TH1Charm
+    {
+        // Private
+        int _charmID;
+        int _charmTier;
+        TH1Mutation _mutation;
+        int _charmLevel;
+        string _charmName;
+        List<int> _runeList;
+        List<TH1CharmQuest> _questList;
+        int _charmValue;
+        TH1Mutation _mutationClass1;
+        TH1Mutation _mutationClass2;
+        int _minRuneLevel;
+        int _charmIcon;
+        double _charmBonusProc;
+        int _charmBonusDamage;
+        int _charmBonusDuration;
+
+        // Public
+        public int charmID
+        {
+            get
+            {
+                return _charmID;
+            }
+        }
+        public int charmTier
+        {
+            get
+            {
+                return _charmTier;
+            }
+        }
+        public TH1Mutation mutation
+        {
+            get
+            {
+                return _mutation;
+            }
+        }
+        public int charmLevel
+        {
+            get
+            {
+                return _charmLevel;
+            }
+        }
+        public string charmName
+        {
+            get
+            {
+                return _charmName;
+            }
+        }
+        public List<int> runeList
+        {
+            get
+            {
+                return _runeList;
+            }
+        }
+        public List<TH1CharmQuest> questList
+        {
+            get
+            {
+                return _questList;
+            }
+        }
+        public int charmValue
+        {
+            get
+            {
+                return _charmValue;
+            }
+        }
+        public TH1Mutation mutationClass1
+        {
+            get
+            {
+                return _mutationClass1;
+            }
+        } // ?
+        public TH1Mutation mutationClass2
+        {
+            get
+            {
+                return _mutationClass2;
+            }
+        } // ?
+        public int minRuneLevel
+        {
+            get
+            {
+                return _minRuneLevel;
+            }
+        }
+        public int charmIcon
+        {
+            get
+            {
+                return _charmIcon;
+            }
+        }
+        public double charmBonusProc
+        {
+            get
+            {
+                return _charmBonusProc;
+            }
+        }
+        public int charmBonusDamage
+        {
+            get
+            {
+                return _charmBonusDamage;
+            }
+        }
+        public int charmBonusDuration
+        {
+            get
+            {
+                return _charmBonusDuration;
+            }
+        }
+
+        // Construction
+        public TH1Charm(int ID, int Tier, int Mutation, int Level, string Name, string Runes, string QuestList, int Value, int mClass1, int mClass2, int minLevel, int Icon, double BonusProc, int Damage, int Duration)
+        {
+            // Helpers
+            TH1CharmQuestCollection _qCollection = new TH1CharmQuestCollection();
+            TH1MutationCollection _mCollection = new TH1MutationCollection();
+
+            // Direct
+            _charmID = ID;
+            _charmTier = Tier;
+            _mutation = _mCollection.findMutation(Mutation);
+            _charmLevel = Level;
+            _charmName = Name;
+            _charmValue = Value;
+            _mutationClass1 = _mCollection.findMutation(mClass1);
+            _mutationClass2 = _mCollection.findMutation(mClass2);
+            _minRuneLevel = Level;
+            _charmIcon = Icon;
+            _charmBonusProc = BonusProc;
+            _charmBonusDamage = Damage;
+            _charmBonusDuration = Duration;
+            _runeList = new List<int>();
+            _questList = new List<TH1CharmQuest>();
+
+            // Parse
+            string[] _tmpRList = Runes.Split(',');
+            string[] _tmpQList = QuestList.Split(',');
+            foreach (string _tmpR in _tmpRList) try { _runeList.Add(int.Parse(_tmpR)); } catch { }
+            foreach (string _tmpQ in _tmpQList) try { _questList.Add(_qCollection.findCharmQuest(int.Parse(_tmpQ))); } catch { }
+        }
+        public TH1Charm()
+        {
+            // Helpers
+            TH1CharmQuestCollection _qCollection = new TH1CharmQuestCollection();
+            TH1MutationCollection _mCollection = new TH1MutationCollection();
+
+            _charmID = 1;
+            _charmTier = 1;
+            _mutation = _mCollection.findMutation(19);
+            _charmLevel = 1;
+            _charmName = "Epic Ruthless Inductor";
+            _runeList = new List<int>{ 1,3,5,4,8 };
+            _questList = new List<TH1CharmQuest> { _qCollection.findCharmQuest(1), _qCollection.findCharmQuest(36), _qCollection.findCharmQuest(78) };
+            _charmValue = 1000;
+            _mutationClass1 = _mCollection.findMutation(19);
+            _mutationClass2 = _mCollection.findMutation(-1);
+            _minRuneLevel = 0;
+            _charmIcon = 11;
+            _charmBonusProc = 0.1;
+            _charmBonusDamage = 0;
+            _charmBonusDuration = 30;
+        } // overload for default (valid rune)
+
+        // Additional Public
+        public string charmString
+        {
+            get
+            {
+                return string.Format("Grey_MutationQuestsTier{0}_{1}",charmTier.ToString(),charmID.ToString());
+            }
+        }
+        public byte[] charmNullArray
+        {
+            get
+            {
+                string tmpString = charmString;
+                byte[] tmpRes = new byte[tmpString.Length + 1];
+                for (int i = 0; i < tmpString.Length; i++)
+                {
+                    tmpRes[i] = Convert.ToByte(tmpString[i]);
+                }
+                return tmpRes;
+            }
+        } // Null Terminated Array
+        public BitmapImage image
+        {
+            get
+            {
+                BitmapImage tmpres;
+                try
+                {
+                    tmpres = new BitmapImage(new Uri(string.Format("pack://application:,,,/Icons/Charms/C{0}.png", charmIcon)));
+                }
+                catch { tmpres = new BitmapImage(new Uri("pack://application:,,,/Icons/Charms/C0.png")); }
+                return tmpres;
+            }
+        }
+        public string mutationString
+        {
+            get
+            {
+                return mutation.description;
+            }
+        }
+        public string charmLongName
+        {
+            get
+            {
+                return string.Format("{0}: L{1} {2}",_charmID, _charmLevel, _charmName);
+            }
+        }
+    } 
+    public class TH1CharmJson
+    {
+        [JsonProperty("String")] public string String { get; set; }
+        [JsonProperty("ItemID")] public int ID { get; set; }
+        [JsonProperty("Tier")] public int Tier { get; set; }
+        [JsonProperty("Mutation")] public int Mutation { get; set; }
+        [JsonProperty("Level")] public int Level { get; set; }
+        [JsonProperty("Name")] public string Name { get; set; }
+        [JsonProperty("Ingredients")] public string Runes { get; set; }
+        [JsonProperty("QuestList")] public string Quests { get; set; }
+        [JsonProperty("Value")] public int Value { get; set; }
+        [JsonProperty("MutationClass1")] public int MutationClass1 { get; set; }
+        [JsonProperty("MutationClass2")] public int MutationClass2 { get; set; }
+        [JsonProperty("MinRuneLevel")] public int MinRuneLevel { get; set; }
+        [JsonProperty("CharmIcon")] public int CharmIcon { get; set; }
+        [JsonProperty("BonusProc")] public double BonusProc { get; set; }
+        [JsonProperty("BonusDamage")] public int BonusDamage { get; set; }
+        [JsonProperty("BonusDur")] public int BonusDur { get; set; }
+    } 
+    public class TH1CharmCollection
+    {
+        // The Collection
+        private Dictionary<string, TH1Charm> _collection = new Dictionary<string, TH1Charm>();
+
+        // The Support
+        // private TH1MutationCollection mutationCollection = new TH1MutationCollection();
+
+        // Create
+        public TH1CharmCollection()
+        {
+            // Load The Library
+            string json;
+            Dictionary<string, TH1CharmJson> _parseCollection = new Dictionary<string, TH1CharmJson>();
+
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/CharmCollection.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<string, TH1CharmJson>>(json);
+            foreach (KeyValuePair<string, TH1CharmJson> _item in _parseCollection)
+            {
+                TH1CharmJson _charm = _item.Value;
+                TH1Charm _tmpCharm = new TH1Charm(
+                    _charm.ID,  _charm.Tier,  _charm.Mutation, _charm.Level, _charm.Name,
+                    _charm.Runes, _charm.Quests, _charm.Value, _charm.MutationClass1, _charm.MutationClass2, _charm.MinRuneLevel,
+                    _charm.CharmIcon, _charm.BonusProc, _charm.BonusDamage,  _charm.BonusDur
+                );
+                _collection.Add(_item.Key, _tmpCharm);
+
+            }
+
+        }
+
+        // Return Rune
+        public TH1Charm findCharm(byte[] nullString)
+        {
+            char[] asciiChars = new char[Encoding.ASCII.GetCharCount(nullString, 0, nullString.Length - 1)];
+            Encoding.ASCII.GetChars(nullString, 0, nullString.Length - 1, asciiChars, 0); // Remove Null
+            string tmpString = new string(asciiChars); ;
+            return findCharm(tmpString);
+        }
+        public TH1Charm findCharm(string charmString)
+        {
+            _collection.TryGetValue(charmString, out TH1Charm tmpRes);
+            return tmpRes;
+        }
+        public TH1Charm findCharmByLongName(string longName)
+        {
+            foreach( KeyValuePair<string,TH1Charm> _kvp in _collection) {
+                if (_kvp.Value.charmLongName == longName) return _kvp.Value;
+            }
+            return new TH1Charm();
+        }
+
+        // Check Rune
+        public bool charmValid(string charmString)
+        {
+            return _collection.TryGetValue(charmString, out TH1Charm _tmp);
+        }
+
+        // Other Functions
+        public string[] charmLongNamesArray
+        {
+            get {
+                List<string> tmpRes = new List<string>();
+                foreach (KeyValuePair<string, TH1Charm> _kvp in _collection) {
+                    tmpRes.Add(_kvp.Value.charmLongName);
+                }
+                return tmpRes.ToArray();
+            }
+        }
+
+        public string[] charmLongNamesByLevel( int level )
+        {
+            List<string> tmpRes = new List<string>();
+            foreach (KeyValuePair<string, TH1Charm> _kvp in _collection)
+            {
+                if( _kvp.Value.charmLevel == level)
+                tmpRes.Add(_kvp.Value.charmLongName);
+            }
+            return tmpRes.ToArray();
+        }
+    }
+    // Charm Quests
+    public class TH1CharmQuest
+    {
+        // Private
+        int _questId;
+        int _questTarget;
+        TH1CharmQuestType _questType;
+        int _questLevel;
+
+        // Public
+        public int questID
+        {
+            get
+            {
+                return _questId;
+            }
+        }
+        public int questTarget
+        {
+            get
+            {
+                return _questTarget;
+            }
+        }
+        public TH1CharmQuestType questType
+        {
+            get
+            {
+                return _questType;
+            }
+        }
+        public int questLevel
+        {
+            get
+            {
+                return _questLevel;
+            }
+        }
+
+        // Construction
+        public TH1CharmQuest(int ID, int Target, TH1CharmQuestType Type, int Level)
+        {
+            _questId = ID;
+            _questTarget = Target;
+            _questType = Type;
+            _questLevel = Level;
+        }
+        public TH1CharmQuest()
+        {
+            _questId = 1;
+            _questTarget = 100;
+            _questType = new TH1CharmQuestType();
+            _questLevel = 1;
+        } // overload for default (valid quest)
+        public string questLongName
+        {
+            get
+            {
+                return string.Format("{0} (L{1}, Target {2})",questType.questTypeDesc,questLevel,questTarget);
+            }
+        }
+    } 
+    public class TH1CharmQuestJson
+    {
+        [JsonProperty("Quest_ID")] public int ID { get; set; }
+        [JsonProperty("Goal")]   public int Target { get; set; }
+        [JsonProperty("QuestType")] public int Type { get; set; }
+        [JsonProperty("Quest Level")] public int Level { get; set; }
+    } 
+    public class TH1CharmQuestCollection
+    {
+        // The Collection
+        private Dictionary<int, TH1CharmQuest> _collection = new Dictionary<int, TH1CharmQuest>();
+
+        // The Support
+        private TH1CharmQuestTypeCollection _typeCollection = new TH1CharmQuestTypeCollection();
+
+        // Create
+        public TH1CharmQuestCollection()
+        {
+            // Load The Library
+            string json;
+            Dictionary<int, TH1CharmQuestJson> _parseCollection = new Dictionary<int, TH1CharmQuestJson>();
+
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/CharmQuestCollection.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<int, TH1CharmQuestJson>>(json);
+            foreach (KeyValuePair<int, TH1CharmQuestJson> _item in _parseCollection)
+            {
+                TH1CharmQuestJson _cqj = _item.Value;
+                TH1CharmQuestType _questType = _typeCollection.findQuestType(_cqj.Type);
+                TH1CharmQuest _tmpQuest = new TH1CharmQuest(_item.Key, _cqj.Target, _questType, _cqj.Level);
+                _collection.Add(_item.Key, _tmpQuest);
+            }
+
+        }
+
+        // Return Charm Quest
+        public TH1CharmQuest findCharmQuest(int id)
+        {
+            _collection.TryGetValue(id, out TH1CharmQuest tmpRes);
+            return tmpRes;
+        }
+
+        // Check Charm Quest
+        public bool runeValid(int id)
+        {
+            return _collection.TryGetValue(id, out TH1CharmQuest _tmp);
+        }
+    }
+    // Charm Quest Types
+    public class TH1CharmQuestType
+    {
+        // Private
+        int _questTypeId;
+        string _questTypeDesc;
+
+        // Public
+        public int questTypeId
+        {
+            get
+            {
+                return _questTypeId;
+            }
+        }
+        public string questTypeDesc
+        {
+            get
+            {
+                return _questTypeDesc;
+            }
+        }
+ 
+        // Construction
+        public TH1CharmQuestType(int id, string desc)
+        {
+            _questTypeId = id;
+            _questTypeDesc = desc;
+        }
+        public TH1CharmQuestType()
+        {
+            _questTypeId = 0;
+            _questTypeDesc = "Kill Any Enemy";
+        } // overload for default (valid quest type)
+
+    }
+    public class TH1CharmQuestTypeJson
+    {
+        [JsonProperty("ID")] public int ID { get; set; }
+        [JsonProperty("Description")] public string Description { get; set; }
+    } 
+    public class TH1CharmQuestTypeCollection
+    {
+        // The Collection
+        private Dictionary<int, TH1CharmQuestType> _collection = new Dictionary<int, TH1CharmQuestType>();
+
+        // Create
+        public TH1CharmQuestTypeCollection()
+        {
+            // Load The Library
+            string json;
+            Dictionary<int, TH1CharmQuestTypeJson> _parseCollection = new Dictionary<int, TH1CharmQuestTypeJson>();
+
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/CharmQuestTypeCollection.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<int, TH1CharmQuestTypeJson>>(json);
+            foreach (KeyValuePair<int, TH1CharmQuestTypeJson> _item in _parseCollection)
+            {
+                TH1CharmQuestTypeJson _cqtj = _item.Value;
+                TH1CharmQuestType _tmpType = new TH1CharmQuestType(_item.Key, _cqtj.Description);
+                _collection.Add(_item.Key, _tmpType);
+            }
+
+        }
+
+        // Return Quest Type
+        public TH1CharmQuestType findQuestType(int id)
+        {
+            _collection.TryGetValue(id, out TH1CharmQuestType tmpRes);
+            return tmpRes;
+        }
+
+        // Check Quest Type
+        public bool questTypeValid(int id)
+        {
+            return _collection.TryGetValue(id, out TH1CharmQuestType tmpRes);
+        }
+    }
+    // Charms In Storage
+    public class TH1CharmEx
+    {
+        private TH1Charm _charm;
+        private uint _val2;
+        private uint _valueModifier;
+        private bool _inActiveSlot;
+        private uint _val8;
+        private uint _progress;
+        private uint _activeQuestId;
+
+        TH1CharmQuest _activeQuest;
+        private List<bool> _runesReq = new List<bool>();
+
+        // Construction
+        public TH1CharmEx(TH1Charm Charm)
+        {
+            _charm = Charm;
+            if(isEquip) if (_activeQuestId == 0) activeQuestId = (uint)_charm.questList[0].questID;
+            _valueModifier = 10000;
+        }
+
+        // Public
+        public TH1Charm charm
+        {
+            get
+            {
+                return _charm;
+            }
+        }
+
+        // #1 & #5 
+        public bool alwaysTrue
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public uint alwaysTrueUint
+        {
+            get
+            {
+                return alwaysTrue ? 1u : 0u;
+            }
+        }
+        // #2
+        public uint val2
+        {
+            get
+            {
+                return _val2;
+            }
+            set
+            {
+                _val2 = value;
+            }
+        }
+        // #3
+        public uint valueModifier
+        {
+            get
+            {
+                return _valueModifier;
+            }
+            set
+            {
+                _valueModifier = value;
+            }
+        }
+        // #4 & #6
+        public bool inActiveSlot
+        {
+            set
+            {
+                _inActiveSlot = value;
+            }
+            get
+            {
+                return _inActiveSlot;
+            }
+        }
+        public uint inActiveSlotUint
+        {
+            get
+            {
+                return _inActiveSlot ? 1u : 0u;
+            }
+        }
+        // #7
+        public bool goalComplete
+        {
+            get
+            {
+                return isEquip && (progress == target);
+            }
+        }
+        public uint goalCompleteUint
+        {
+            get
+            {
+                return goalComplete ? 1u : 0u;
+            }
+        }
+        public uint val8
+        {
+            get
+            {
+                return _val8;
+            }
+            set
+            {
+                _val8 = value;
+            }
+        }
+        public uint progress
+        {
+            get
+            {
+                if (!isEquip) return 0;
+                if (_progress > activeQuest.questTarget) return (uint)activeQuest.questTarget;
+                else return _progress;
+            }
+            set
+            {
+                _progress = value;
+            }
+        }
+        public uint activeQuestId
+        {
+            get
+            {
+                return _activeQuestId;
+            }
+            set
+            {
+                _activeQuestId = value;
+                foreach (TH1CharmQuest _quest in _charm.questList)
+                    if (_quest.questID == _activeQuestId) _activeQuest = _quest;
+            }
+        }
+
+        // Other Functions
+        public List<bool> runesReq
+        {
+            get
+            {
+                return _runesReq;
+            }
+            set
+            {
+                _runesReq = value;
+            }
+        }
+        public byte[] charmToActiveArray
+        {
+            get
+            {
+                return charmToArray(true);
+            }
+        }
+        public byte[] charmToInventryArray
+        {
+            get
+            {
+                return charmToArray(false);
+            }
+        }
+        public TH1CharmQuest activeQuest
+        {
+            get
+            {
+
+                return _activeQuest;
+            }
+        }
+        public string charmName
+        {
+            get
+            {
+                if (_charm != null) return _charm.charmName;
+                else return "None";
+            }
+        }
+        public string charmLongName
+        {
+            get
+            {
+                if (!isEquip) return "None";
+                return _charm.charmLongName;
+            }
+        }
+        public bool isEquip
+        {
+            get
+            {
+                return _charm != null;
+            }
+        }
+        public bool isComplete
+        {
+            get
+            {
+                if (!isEquip) return false;
+                if ((target > 0) && (progress != target)) return false;
+                if (runesReq.ToArray().Where(c => c).Count() < _charm.runeList.Count) return false;
+                return true;
+            }
+        }
+        public int target
+        {
+            get
+            {
+                if (!isEquip) return 0;
+                else return activeQuest.questTarget;
+            }
+        }
+        public BitmapImage image
+        {
+            get
+            {
+                if (!isEquip) return new BitmapImage(new Uri("pack://application:,,,/Icons/Charms/C0.png"));
+                else return _charm.image;
+            }
+        }
+        public string questName
+        {
+            get
+            {
+                if (!isEquip) return "";
+                else return activeQuest.questType.questTypeDesc;
+            }
+        }
+        public string questLongName
+        {
+            get
+            {
+                if (questName == "") return "";
+                else return activeQuest.questLongName;
+            }
+        }
+        public string[] questsLongNameArray
+        {
+            get
+            {
+                List<string> _tmpres = new List<string>();
+                if (!isEquip) return _tmpres.ToArray();
+                foreach( TH1CharmQuest _quest in _charm.questList)
+                {
+                    _tmpres.Add(_quest.questLongName);
+                }
+                return _tmpres.ToArray();
+            }
+        }
+        public string mutationString
+        {
+            get
+            {
+                if (_charm != null) return _charm.mutationString;
+                else return "None";
+            }
+        }
+        public string charmString
+        {
+            get
+            {
+                if (_charm == null) return "NOID";
+                else return string.Format("Grey_MutationQuestsTier{0}_{1}", _charm.charmTier, _charm.charmID);
+            }
+        }
+        public double goalPerc
+        {
+            get
+            {
+                if (!isEquip || (target == 0)) return 0;
+                return (double)progress / (double)target;
+            }
+        }
+        public string goalPercString
+        {
+            get
+            {
+                return string.Format("{0:P1}", goalPerc);
+            }
+        }
+        public int runesRequiredCount
+        {
+            get
+            {
+                if (!isEquip) return 0;
+                return _charm.runeList.Count;
+            }
+        }
+        public int runesInsertedCount
+        {
+            get
+            {
+                if (!isEquip) return 0;
+                return _runesReq.ToArray().Where(c => c).Count();
+            }
+        }
+        public int runesRemainingCount
+        {
+            get
+            {
+                return runesRequiredCount - runesInsertedCount;
+            }
+        }
+        public string runesInsertedString
+        {
+            get
+            {
+                if (!isEquip) return "N/A";
+                return string.Format("{0}/{1}",runesInsertedCount,runesRequiredCount);
+            }
+        }
+        public int charmLevel
+        {
+            get
+            {
+                if (!isEquip) return 0;
+                return _charm.charmLevel;
+            }
+        }
+        public string exDataString
+        {
+            get
+            {
+                return string.Format("{0},{1}", _val2, _val8);
+            }
+        }
+        public int calcValue
+        {
+            get
+            {
+                try
+                {
+                    // dial m for deciMal
+                    if (!isEquip) return 0;
+                    try
+                    {
+                        decimal tmpVal = (charm.charmValue * (1m / 4m)) * (valueModifier / 10000m);
+                        return Convert.ToInt32(tmpVal);
+                    } catch { return 0; }
+                }
+                catch { return 0; }
+            }
+        }
+
+        // Private Helpers
+        private byte[] charmToArray( bool isactive)
+        {
+            int valueCount = 10;
+            int runesReqCount = runesReq.Count;
+            int dataLength = 0;
+
+            if (_charm != null)
+            {
+                dataLength = (valueCount * 4) + 4 + (runesReqCount * 4);
+            }
+
+            int bufferLength = 4 + charmString.Length + 1 + dataLength;
+            if (!isactive) bufferLength += 8;
+
+            byte[] tmpRune = new byte[bufferLength];
+            RWStream writer = new RWStream(tmpRune, true, true);
+            try
+            {
+                // Charm String
+                writer.WriteUInt32((uint)charmString.Length + 1);
+                writer.WriteString(charmString, StringType.Ascii, charmString.Length);
+                writer.WriteBytes(new byte[] { 0x00 });
+
+                // Separator
+                if(!isactive) writer.WriteBytes(new byte[] {
+                        0x00, 0x00, 0x00, 0x00,
+                        0x12, 0x34, 0x56, 0x78 // Old Friend
+                    });
+
+                if (_charm != null)
+                {
+                    // Charm Values
+                    writer.WriteUInt32(alwaysTrueUint);     // #1
+                    writer.WriteUInt32(val2);               // #2 ??
+                    writer.WriteUInt32(valueModifier);      // #3
+                    writer.WriteUInt32(inActiveSlotUint);   // #4
+                    writer.WriteUInt32(alwaysTrueUint);     // #5
+                    writer.WriteUInt32(inActiveSlotUint);   // #6
+                    writer.WriteUInt32(goalCompleteUint);   // #7
+                    writer.WriteUInt32(val8);               // #8 ??
+                    writer.WriteUInt32(progress);           // #9
+                    writer.WriteUInt32(activeQuestId);      // #10
+
+                    // Charm RuneReq
+                    writer.WriteUInt32((uint)runesReq.Count);
+                    for (int i = 0; i < runesReq.Count; i++)
+                    {
+                        writer.WriteUInt32((uint)(runesReq.ElementAt(i) ? 1 : 0));
+                    }
+                }
+
+            }
+            catch { }
+            finally { writer.Flush(); tmpRune = writer.ReadAllBytes(); writer.Close(true); }
+            return tmpRune;
+        }
+    }
+    public class TH1Obelisk
+    {
+        private uint _key;
+        private bool _value;
+
+        public TH1Obelisk( uint Key, uint Value)
+        {
+            _key = Key;
+            _value = Value == 1;
+        }
+
+        public uint key
+        {
+            get {
+                return _key;
+            }
+        }
+        public bool value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+        public uint valueUint
+        {
+            get
+            {
+                return _value ? 1u : 0u;
+            }
+        }
+    }
+
+    #endregion TH1Charm
+
+    #region TH1Mutation
+
+    public class TH1Mutation
+    {
+        private int _id;
+        private string _name;
+        private string _description;
+
+        public int id
+        {
+            get
+            {
+                return _id;
+            }
+        }
+        public string name
+        {
+            get
+            {
+                return _name;
+            }
+        }
+        public string description
+        {
+            get
+            {
+                return _description;
+            }
+        }
+
+        public TH1Mutation (int Id, string Name, string Description)
+        {
+            _id = Id;
+            _name = Name;
+            _description = Description;
+        }
+    }
+    public class TH1MutationJson
+    {
+        [JsonProperty("Name")] public string Name { get; set; }
+        [JsonProperty("Description")] public string Description { get; set; }
+    }
+    public class TH1MutationCollection
+    {
+        // The Collection
+        private Dictionary<int, TH1Mutation> _collection = new Dictionary<int, TH1Mutation>();
+
+        // Create
+        public TH1MutationCollection()
+        {
+            // Load The Library
+            string json;
+            Dictionary<int, TH1MutationJson> _parseCollection = new Dictionary<int, TH1MutationJson>();
+
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/MutationCollection.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<int, TH1MutationJson>>(json);
+            foreach (KeyValuePair<int, TH1MutationJson> _item in _parseCollection)
+            {
+                TH1MutationJson _mj = _item.Value;
+                TH1Mutation _tmpType = new TH1Mutation(_item.Key, _mj.Name, _mj.Description);
+                _collection.Add(_item.Key, _tmpType);
+            }
+
+        }
+
+        // Return Quest Type
+        public TH1Mutation findMutation(int id)
+        {
+            _collection.TryGetValue(id, out TH1Mutation tmpRes);
+            return tmpRes;
+        }
+        // Check Quest Type
+        public bool mutationValid(int id)
+        {
+            return _collection.TryGetValue(id, out TH1Mutation tmpRes);
+        }
+    }
+
+    #endregion TH1Mutation
+
     #region TH1Weapon
 
     public class TH1Weapon
@@ -1205,14 +2328,14 @@ namespace TooHuman1SE.SEStructure
         public const int TH1_SECTOR_CHARACTER = 1; // Character Data
         public const int TH1_SECTOR_SKILLTREE = 2; // Skill/Class Tree?
         public const int TH1_SECTOR_LOCATION = 3; // Area & Co-Ordinates?
-        public const int TH1_SECTOR_CHARM_EQUIP = 4; // Equipt Charms? - 2x Only, NOID = No Rune
+        public const int TH1_SECTOR_CHARM_ACTIVE = 4; // Equipt Charms? - 2x Only, NOID = No Rune
         public const int TH1_SECTOR_RUNE = 5; // Rune Inventry
-        public const int TH1_SECTOR_CHARMS = 6; // Charms Inventry -- uint #of quests, string size, name, uint 0x00, 0x123456, data length 0x4C, back to string size 
+        public const int TH1_SECTOR_CHARMS_AVAILABLE = 6; // Charms Inventry -- uint #of quests, string size, name, uint 0x00, 0x123456, data length 0x4C, back to string size 
         public const int TH1_SECTOR_WEAPONS = 7; // Weapons -- uint #of weapons, string size, name, uint 0x00, 0x123456, data length 0x14, back to string size
         public const int TH1_SECTOR_ARMOUR = 8; // Armour -- uint #of Armour, 
         public const int TH1_SECTOR_UNKNOWN01 = 9;
         public const int TH1_SECTOR_UNKNOWN02 = 10;
-        public const int TH1_SECTOR_QUESTS = 11; // ?
+        public const int TH1_SECTOR_CHARMS_INCOMPLETE = 11; // ?
         public const int TH1_SECTOR_WEAPON_BLUEPRINTS = 12;
         public const int TH1_SECTOR_ARMOUR_BLUEPRINTS = 13;
 
@@ -1275,9 +2398,11 @@ namespace TooHuman1SE.SEStructure
         public TH1Character character;
         public List<TH1RuneMExt> runes;
         public TH1SkillsTree skills;
+        public TH1CharmEx[] charmsActive;
+        public List<TH1CharmEx> charmsInventry;
+        public List<TH1Obelisk> charmsActiveEx;
 
         // Problems
-        // public Boolean saveLoaded = false;
         public long lastError;       // current 0
         public string lastErrorMsg;
 
@@ -1299,9 +2424,12 @@ namespace TooHuman1SE.SEStructure
             this.character = new TH1Character();
             this.runes = new List<TH1RuneMExt>();
             this.skills = new TH1SkillsTree(0);
+            this.charmsActive = new TH1CharmEx[2];
+            this.charmsInventry = new List<TH1CharmEx>();
+            this.charmsActiveEx = new List<TH1Obelisk>();
 
             // Checks
-            setError(-1, "Save Not Loaded.");
+            clearError();
         }
 
         #endregion Init (Reset)
@@ -1322,7 +2450,8 @@ namespace TooHuman1SE.SEStructure
                 dataToCharacter();
                 dataToSkillsTree();
                 dataToRunes();
-                // dataToCharms();
+                dataToCharmsActive();
+                dataToCharmsInventry();
 
                 this.dataSize = this.rawData.Length;
             }
@@ -1338,6 +2467,8 @@ namespace TooHuman1SE.SEStructure
             characterToData();
             skillsTreeToData();
             runesToData();
+            charmsActiveToData();
+            charmsInventryToData();
 
             // Create the Save Buffer in Memory
             saveOut = new byte[this.dataSize];
@@ -1594,7 +2725,7 @@ namespace TooHuman1SE.SEStructure
                 reader.Position = tmpChar.OFFSET_NAME_A;
                 tmpChar.name = reader.ReadString(StringType.Ascii, namelength - 1);
 
-                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A_LENGTH + 4 + namelength + (13*4);
+                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + namelength + (13*4);
                 reader.Position = tmpChar.OFFSET_ALIGNMENT;
                 tmpChar.alignment = reader.ReadUInt32();
 
@@ -1610,7 +2741,7 @@ namespace TooHuman1SE.SEStructure
                 reader.Position = tmpChar.OFFSET_BOUNTY;
                 tmpChar.bounty = reader.ReadUInt32();
 
-                reader.Position = tmpChar.OFFSET_SKILLPOINTS;
+                reader.Position = tmpChar.OFFSET_SKILLPOINTSA;
                 tmpChar.skillPoints = reader.ReadUInt32();
 
                 reader.Position = tmpChar.OFFSET_SAVESLOT;
@@ -1671,7 +2802,7 @@ namespace TooHuman1SE.SEStructure
                 namewriter.Position = tmpChar.OFFSET_NAME_A_LENGTH;
                 namewriter.WriteUInt32(newNameLength + 1);
 
-                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + 4 + newNameLength + 1 + (13 * 4);
+                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + (newNameLength + 1) + (13 * 4);
 
                 charDataTemp = new byte[charData.Length - oldNameLength + newNameLength];
 
@@ -1721,7 +2852,9 @@ namespace TooHuman1SE.SEStructure
                 writer.WriteUInt32((uint)tmpChar.bounty);
 
                 // Write Skillpoints
-                writer.Position = tmpChar.OFFSET_SKILLPOINTS;
+                writer.Position = tmpChar.OFFSET_SKILLPOINTSA;
+                writer.WriteUInt32((uint)tmpChar.skillPoints);
+                writer.Position = tmpChar.OFFSET_SKILLPOINTSB;
                 writer.WriteUInt32((uint)tmpChar.skillPoints);
 
                 // Write Save Slot
@@ -1867,6 +3000,182 @@ namespace TooHuman1SE.SEStructure
 
         #endregion Runes IO
 
+        #region Charms IO
+        private void dataToCharmsActive()
+        {
+            // Buffer It
+            byte[] charmsData = new byte[this.sectors[TH1_SECTOR_CHARM_ACTIVE].size];
+            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARM_ACTIVE].offset, charmsData, 0, charmsData.Length);
+
+            // Parse It
+            dataToCharms(charmsData, true);
+        }
+
+        private void dataToCharmsInventry()
+        {
+            // Buffer It
+            byte[] charmsAvailData = new byte[this.sectors[TH1_SECTOR_CHARMS_AVAILABLE].size];
+            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARMS_AVAILABLE].offset, charmsAvailData, 0, charmsAvailData.Length);
+
+            byte[] charmsIncompData = new byte[this.sectors[TH1_SECTOR_CHARMS_INCOMPLETE].size];
+            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARMS_INCOMPLETE].offset, charmsIncompData, 0, charmsIncompData.Length);
+
+            // Parse It
+            dataToCharms(charmsAvailData, false);
+            dataToCharms(charmsIncompData, false);
+        }
+
+        private void charmsActiveToData()
+        {
+            long bytesize = 0;
+            foreach (TH1CharmEx _charm in this.charmsActive) bytesize += _charm.charmToActiveArray.Length;
+            byte[] tmpCharms = new byte[bytesize + 4 + (this.charmsActiveEx.Count*8)];
+
+            RWStream writer = new RWStream(tmpCharms, true, true);
+            try
+            {
+                foreach (TH1CharmEx _charmLoop in this.charmsActive) writer.WriteBytes(_charmLoop.charmToActiveArray);
+                writer.WriteUInt32((uint)this.charmsActiveEx.Count);
+                foreach(TH1Obelisk _exLoop in this.charmsActiveEx )
+                {
+                    writer.WriteUInt32(_exLoop.key);
+                    writer.WriteUInt32(_exLoop.valueUint);
+                }
+            }
+            catch (Exception ex) { setError(17, "Unable To Write Active Charms: " + ex.ToString()); }
+            finally { writer.Flush(); tmpCharms = writer.ReadAllBytes(); writer.Close(true); }
+
+            replaceSector(TH1_SECTOR_CHARM_ACTIVE, tmpCharms);
+        }
+
+        private void charmsInventryToData()
+        {
+            // MessageBox.Show("charmsInventryToData()");
+            List<TH1CharmEx> _complete = new List<TH1CharmEx>();
+            List<TH1CharmEx> _incomplete = new List<TH1CharmEx>();
+
+            long _completeSize = 0;
+            long _incompleteSize = 0;
+
+            // Getting Organised
+            foreach( TH1CharmEx _charm in this.charmsInventry)
+            {
+                if (_charm.isComplete)
+                {
+                    _complete.Add(_charm);
+                    _completeSize += _charm.charmToInventryArray.Length;
+                }
+                else
+                {
+                    _incomplete.Add(_charm);
+                    _incompleteSize += _charm.charmToInventryArray.Length;
+                }
+            }
+
+            // Buffering
+            byte[] _completeData = new byte[4 + _completeSize];
+            byte[] _incompleteData = new byte[4 + _incompleteSize];
+
+            // Write Complete
+            RWStream _completeWriter = new RWStream(_completeData, true, true);
+            try
+            {
+                _completeWriter.WriteUInt32((uint)_complete.Count);
+                foreach( TH1CharmEx _charm in _complete)
+                {
+                    _completeWriter.WriteBytes(_charm.charmToInventryArray);
+                }
+            }
+            catch (Exception ex) { setError(18, "Unable To Write Complete Charms: " + ex.ToString()); }
+            finally { _completeWriter.Flush(); _completeData = _completeWriter.ReadAllBytes(); _completeWriter.Close(true); }
+
+            // Write Incomplete
+            RWStream _incompleteWriter = new RWStream(_incompleteData, true, true);
+            try
+            {
+                _incompleteWriter.WriteUInt32((uint)_incomplete.Count);
+                foreach (TH1CharmEx _charm in _incomplete)
+                {
+                    _incompleteWriter.WriteBytes(_charm.charmToInventryArray);
+                }
+            }
+            catch (Exception ex) { setError(19, "Unable To Write Incomplete Charms: " + ex.ToString()); }
+            finally { _incompleteWriter.Flush(); _incompleteData = _incompleteWriter.ReadAllBytes(); _incompleteWriter.Close(true); }
+
+            // Replace Sectors
+            replaceSector(TH1_SECTOR_CHARMS_AVAILABLE, _completeData);
+            replaceSector(TH1_SECTOR_CHARMS_INCOMPLETE, _incompleteData);
+
+        }
+
+        private void dataToCharms( byte[] buffer, bool isactive)
+        {
+            TH1CharmCollection charmCollection = new TH1CharmCollection();
+            List<TH1CharmEx> tmpCharms = new List<TH1CharmEx>();
+            // If Active Data
+            List<TH1Obelisk> tmpExs = new List<TH1Obelisk>();
+
+            RWStream reader = new RWStream(buffer, true);
+            try
+            {
+                uint totalCharms; // Charm Count
+                if (isactive) totalCharms = 2;
+                else totalCharms = reader.ReadUInt32();
+
+                for (int charmloop = 0; charmloop < totalCharms; charmloop++)
+                {
+                    int nameLength = (int)reader.ReadUInt32();
+                    byte[] runeName = reader.ReadBytes(nameLength);
+
+                    TH1CharmEx tmpCharm = new TH1CharmEx(charmCollection.findCharm(runeName));
+
+                    if (!isactive) reader.ReadBytes(8); // Skip The Separator
+
+                    if (tmpCharm.charm != null)
+                    {
+                        reader.ReadUInt32();    // alwaysTrue
+                        tmpCharm.val2 = reader.ReadUInt32();
+                        tmpCharm.valueModifier = reader.ReadUInt32();
+                        tmpCharm.inActiveSlot = reader.ReadUInt32() == 1; // hm?
+                        reader.ReadUInt32();    // alwaysTrue
+                        reader.ReadUInt32();    // inActiveSlot 
+                        reader.ReadUInt32();    // goalComplete
+                        tmpCharm.val8 = reader.ReadUInt32();
+                        tmpCharm.progress = reader.ReadUInt32();
+                        tmpCharm.activeQuestId = reader.ReadUInt32();
+                        uint runeChecks = reader.ReadUInt32();
+                        for (int i = 0; i < runeChecks; i++)
+                        {
+                            tmpCharm.runesReq.Add(reader.ReadUInt32() == 1);
+                        }
+                    }
+                    tmpCharms.Add(tmpCharm);
+                }
+
+                if (isactive) // Active Sector Only (Alternate Use?)
+                {
+                    uint exPairs = reader.ReadUInt32();
+                    for (int exLoop = 0; exLoop < exPairs; exLoop++)
+                    {
+                        TH1Obelisk tmpEx = new TH1Obelisk(reader.ReadUInt32(), reader.ReadUInt32());
+                        tmpExs.Add(tmpEx);
+                    }
+                }
+
+            }
+            catch (Exception ex) { setError(16, "Unable To Parse Charms: " + ex.ToString()); }
+            finally {
+                reader.Close(false);
+                if (isactive)
+                {
+                    this.charmsActive = tmpCharms.ToArray();
+                    this.charmsActiveEx = tmpExs;
+                } else foreach (TH1CharmEx _charm in tmpCharms) this.charmsInventry.Add(_charm);
+            }
+
+        }
+        #endregion Charms IO
+
         #region General Functions
 
         private void verifyRawData()
@@ -1955,7 +3264,8 @@ namespace TooHuman1SE.SEStructure
                             // Sector sepcific loading (as currently, the same deliminator is used within sector data)
                             switch (cursec)
                             {
-                                case TH1_SECTOR_CHARMS: // Charms
+                                case TH1_SECTOR_CHARMS_AVAILABLE:
+                                case TH1_SECTOR_CHARMS_INCOMPLETE: // Charms
                                     reader.Position = _sectors[cursec] + deliminator.Length;
                                     sectorSkip = reader.ReadUInt32();
                                     thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
@@ -1980,11 +3290,6 @@ namespace TooHuman1SE.SEStructure
                                         sectorSkip += reader.ReadUInt32();
                                     }
                                     sectorSkip += (uint)armourCount - 1;
-                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
-                                    break;
-                                case TH1_SECTOR_QUESTS:
-                                    reader.Position = _sectors[cursec] + deliminator.Length;
-                                    sectorSkip = reader.ReadUInt32();
                                     thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
                                     break;
                                 default: // Everything Else
@@ -2048,6 +3353,12 @@ namespace TooHuman1SE.SEStructure
         {
             this.lastError = errno;
             this.lastErrorMsg = errmsg;
+        }
+
+        public void clearError()
+        {
+            if (this.rawData != null) setError(0, "OK.");
+            else setError(-1, "Save Not Loaded.");
         }
 
         public static byte[] StringToByteArray(string hex)

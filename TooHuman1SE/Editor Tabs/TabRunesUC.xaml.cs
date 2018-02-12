@@ -53,7 +53,7 @@ namespace TooHuman1SE.Editor_Tabs
 
         public void recountRunes()
         {
-            lblRuneCount.Content = String.Format("{0}/{1} Runes", gridRunes.Items.Count, new TH1Helper().LIMIT_MAX_RUNES);
+            lblRuneCount.Content = String.Format("{0}/{1} Rune{2}", gridRunes.Items.Count, new TH1Helper().LIMIT_MAX_RUNES, gridRunes.Items.Count == 1 ? "" : "s");
         }
 
         private void flipFlop()
@@ -65,30 +65,6 @@ namespace TooHuman1SE.Editor_Tabs
         }
 
         #region Actions Menu
-
-        public void buildContextMenu() {
-            // buildColourContext();
-        }
-
-        /*
-        private void buildColourContext()
-        {
-            string[] colours = new TH1Helper().colourNameArray;
-            MenuItem rootItem = findActionsMenu();
-            MenuItem _group = new MenuItem();
-
-            _group.Header = "Set Colour";
-            for (int i = 0; i < colours.Length; i++)
-            {
-                MenuItem tmpi = new MenuItem();
-                tmpi.Header = colours[i];
-                tmpi.Tag = i;
-                tmpi.Click += mnu_SetColourClick;
-                _group.Items.Add(tmpi);
-            }
-            rootItem.Items.Add(_group);
-        }
-        */
 
         private MenuItem findActionsMenu()
         {

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TooHuman1SE.Windows;
 
 namespace TooHuman1SE.Editor_Tabs
 {
@@ -31,5 +32,19 @@ namespace TooHuman1SE.Editor_Tabs
             } catch { e.Handled = true; }
         }
 
+        private void skillsTreeChanged(object sender, TextChangedEventArgs e)
+        {
+            EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            if (ewin == null) return;
+            var _save = ewin._save;
+            if (_save == null) return;
+
+            TextBox _text = sender as TextBox;
+            if(_text != null) try
+            {
+                int tagno = int.Parse((string)_text.Tag);
+                _save.skills.pairs[tagno].first = Math.Min(int.Parse(_text.Text), _save.skills.LIMIT_SKILL_MAX);
+            } catch { }
+        }
     }
 }

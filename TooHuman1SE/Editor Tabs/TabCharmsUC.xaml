@@ -1,0 +1,124 @@
+﻿<UserControl x:Class="TooHuman1SE.Editor_Tabs.TabCharmsUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TooHuman1SE.Editor_Tabs"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style x:Key="Body_Content_DataGrid_Centering"
+	 TargetType="{x:Type DataGridCell}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <TabControl x:Name="tabControl" TabStripPlacement="Bottom">
+            <TabItem Header="Active">
+                <Grid Background="White">
+                    <Image x:Name="charmAImage" HorizontalAlignment="Left" Height="50" Margin="10,10,0,0" VerticalAlignment="Top" Width="50" Source="/TooHuman1SE;component/Icons/Charms/C0.png"/>
+                    <Image x:Name="charmBImage" HorizontalAlignment="Left" Height="50" Margin="10,187,0,0" VerticalAlignment="Top" Width="50" Source="/TooHuman1SE;component/Icons/Charms/C0.png"/>
+                    <Separator Height="22" Margin="10,160,10,0" VerticalAlignment="Top"/>
+                    <Label x:Name="charmALabel" Content="{}{Name}" HorizontalAlignment="Left" Margin="65,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <Label x:Name="charmBLabel" Content="{}{Name}" HorizontalAlignment="Left" Margin="65,187,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <GroupBox x:Name="groupAMod" Header="Modifiers" Height="63" Margin="10,92,10,0" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,0">
+                            <TextBox x:Name="txtAValue" HorizontalAlignment="Left" Height="23" Margin="102,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="100" Tag="0" TextChanged="ValueModifier_TextChanged"/>
+                            <Label x:Name="lblValueModA" Content="Value Modifier" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="lblProgToGoalA" Content="Progress To Goal" HorizontalAlignment="Right" Margin="0,6,115,0" VerticalAlignment="Top"/>
+                            <Slider x:Name="sliderProgA" Margin="0,10,0,0" HorizontalAlignment="Right" Width="110" IsSnapToTickEnabled="True" Height="21" VerticalAlignment="Top" Tag="0" ValueChanged="sliderProg_ValueChanged"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox x:Name="groupBMod" Header="Modifiers" Height="63" Margin="10,269,10,0" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,0">
+                            <TextBox x:Name="txtBValue" HorizontalAlignment="Left" Height="23" Margin="102,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="100" Tag="1" TextChanged="ValueModifier_TextChanged"/>
+                            <Label x:Name="lblValueModB" Content="Value Modifier" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="lblProgToGoalB" Content="Progress To Goal" HorizontalAlignment="Right" Margin="0,6,115,0" VerticalAlignment="Top"/>
+                            <Slider x:Name="sliderProgB" Margin="0,10,0,0" HorizontalAlignment="Right" Width="110" IsSnapToTickEnabled="True" Height="21" VerticalAlignment="Top" Tag="1" ValueChanged="sliderProg_ValueChanged"/>
+                        </Grid>
+                    </GroupBox>
+                    <ComboBox x:Name="comboAQuest" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="250" SelectionChanged="comboQuest_SelectionChanged" Tag="0"/>
+                    <ComboBox x:Name="comboBQuest" HorizontalAlignment="Left" Margin="10,242,0,0" VerticalAlignment="Top" Width="250" Tag="1" SelectionChanged="comboQuest_SelectionChanged"/>
+                    <GroupBox x:Name="groupARunes" Header="Runes Inserted" Height="77" Margin="374,10,10,0" VerticalAlignment="Top">
+                        <Grid Margin="0" Tag="0">
+                            <CheckBox HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Tag="0" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="30,12,0,0" VerticalAlignment="Top" Tag="1" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="50,12,0,0" VerticalAlignment="Top" Tag="2" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="70,12,0,0" VerticalAlignment="Top" Tag="3" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top" Tag="4" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="30,32,0,0" VerticalAlignment="Top" Tag="5" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="50,32,0,0" VerticalAlignment="Top" Tag="6" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="70,32,0,0" VerticalAlignment="Top" Tag="7" Cursor="Hand" Click="chkRune_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox x:Name="groupBRunes" Header="Runes Inserted" Height="77" Margin="374,187,10,0" VerticalAlignment="Top">
+                        <Grid Margin="0" Tag="1">
+                            <CheckBox HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Tag="0" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="30,12,0,0" VerticalAlignment="Top" Tag="1" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="50,12,0,0" VerticalAlignment="Top" Tag="2" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="70,12,0,0" VerticalAlignment="Top" Tag="3" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top" Tag="4" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="30,32,0,0" VerticalAlignment="Top" Tag="5" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="50,32,0,0" VerticalAlignment="Top" Tag="6" Cursor="Hand" Click="chkRune_Click"/>
+                            <CheckBox HorizontalAlignment="Left" Margin="70,32,0,0" VerticalAlignment="Top" Tag="7" Cursor="Hand" Click="chkRune_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <Label x:Name="lblMutationA" Content="{}{Mutation}" HorizontalAlignment="Left" Margin="65,34,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblMutationB" Content="{}{Mutation}" HorizontalAlignment="Left" Margin="65,211,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="btnUnequipA" Content="Unequip" HorizontalAlignment="Left" Margin="294,10,0,0" VerticalAlignment="Top" Width="75" Height="22" Cursor="Hand" Click="btnUnequip_Click" Tag="0"/>
+                    <Button x:Name="btnUnequipB" Content="Unequip" HorizontalAlignment="Left" Margin="294,187,0,0" VerticalAlignment="Top" Width="75" Height="22" Cursor="Hand" Click="btnUnequip_Click" Tag="1"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Inventory">
+                <Grid>
+                    <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="dataInventry" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False" ScrollViewer.CanContentScroll="False" Margin="0,46,0,0" ContextMenuOpening="dataInventry_ContextMenuOpening">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Path=image}" Height="24"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Width="*" Header="Name" Binding="{Binding Path=charmLongName}" IsReadOnly="true"/>
+                            <DataGridTextColumn Width="70" Header="Goal" Binding="{Binding Path=goalPercString}" IsReadOnly="true"/>
+                            <DataGridTextColumn Width="70" Header="Runes" Binding="{Binding Path=runesInsertedString}" IsReadOnly="true"/>
+                            <DataGridTextColumn Width="70" Header="Value" Binding="{Binding Path=calcValue, StringFormat={}{0:N0}}" IsReadOnly="true" />
+                        </DataGrid.Columns>
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridRow">
+                                <EventSetter Event="MouseDoubleClick" Handler="DataGridRowInventry_MouseDoubleClick"/>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add Charm.." Click="btnAddCharm_Click"/>
+                                <MenuItem Header="Selected">
+                                    <MenuItem Header="Equip">
+                                        <MenuItem Header="Slot 1" Name="mnuSlot1" Tag="0" Click="mnuEquip"/>
+                                        <MenuItem Header="Slot 2" Name="mnuSlot2" Tag="1" Click="mnuEquip"/>
+                                    </MenuItem>
+                                    <MenuItem Header="Duplicate" Click="mnuDuplicateSelected"/>
+                                    <MenuItem Header="Complete" Click="mnuCompleteSelected"/>
+                                    <Separator/>
+                                    <MenuItem Header="Delete" Click="mnuDeleteSelected"/>
+                                </MenuItem>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                    </DataGrid>
+                    <Label x:Name="lblCharmCount" Content="{}{Count}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="btnAddCharm" Content="New Charm.." HorizontalAlignment="Left" Margin="384,10,0,0" VerticalAlignment="Top" Width="100" Height="26" Cursor="Hand" Click="btnAddCharm_Click"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</UserControl>

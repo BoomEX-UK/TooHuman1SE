@@ -29,11 +29,14 @@ namespace TooHuman1SE.Windows
         public MainWindow _mainWindow;
         public TH1SaveStructure _save;
 
+        // Tabs
         TabCharacterUC tc = new TabCharacterUC();
         TabDataPairsUC dp = new TabDataPairsUC();
         TabSkillsTreeUC st = new TabSkillsTreeUC();
         TabRunesUC ru = new TabRunesUC();
         TabSectorsUC se = new TabSectorsUC();
+        TabCharmsUC ch = new TabCharmsUC();
+        TabObelisksUC ob = new TabObelisksUC();
 
         public EditorWindow()
         {
@@ -63,6 +66,8 @@ namespace TooHuman1SE.Windows
             loadSkillTreeTab();
             loadRunesTab();
             loadSectorsTab();
+            loadCharmsTab();
+            loadObelisksTab();
         }
 
         private void loadEditorWindow()
@@ -130,77 +135,27 @@ namespace TooHuman1SE.Windows
         {
             ru.gridRunes.ItemsSource = _save.runes;
             ru.recountRunes();
-            ru.buildContextMenu();
         }
 
         private void loadSectorsTab()
         {
+            se.dataSectors.ItemsSource = null;
             se.dataSectors.ItemsSource = _save.sectors;
         }
 
+        private void loadCharmsTab()
+        {
+            ch.loadCharmsInPlace();
+            ch.dataInventry.ItemsSource = _save.charmsInventry;
+            ch.recountCharms();
+        }
+
+        private void loadObelisksTab()
+        {
+            ob.gridObelisks.ItemsSource = _save.charmsActiveEx;
+        }
+
         #endregion Tab Loading
-
-        #region Tab Saving
-
-        private void saveAll()
-        {
-            saveEditorWindow();
-            saveCharacterTab();
-            saveDataPairsTab();
-            saveSkillTreeTab();
-            // saveRunesTab(); // No Action
-            // saveSectorsTab(); // No Action
-        }
-
-        private void saveEditorWindow()
-        {
-            _save.character.name = txtName.Text;
-            _save.character.saveSlot = int.Parse(txtSlot.Text);
-        }
-
-        private void saveCharacterTab()
-        {
-            TH1ExpToNextLevel ex = new TH1ExpToNextLevel();
-            _save.character.bounty = long.Parse(tc.txtCBounty.Text);
-            _save.character.exp = long.Parse(tc.txtCExp.Text);
-            _save.character.level = ex.calcLevel(_save.character.exp);
-            _save.character.skillPoints = long.Parse(tc.txtCSkillPoints.Text);
-        }
-
-        private void saveDataPairsTab()
-        {
-
-        }
-
-        private void saveSkillTreeTab()
-        {
-            List<Label> labelList = GetLogicalChildCollection<Label>(st);
-            List<TextBox> textList = GetLogicalChildCollection<TextBox>(st);
-
-            foreach (TextBox tb in textList)
-            {
-                int tagno;
-                try
-                {
-                    tagno = int.Parse((string)tb.Tag);
-                }
-                catch { tagno = -1; }
-
-                if ((tagno > -1) && (tagno < _save.skills.pairs.Count - 1))
-                {
-                    try
-                    {
-                        _save.skills.pairs[tagno].first = Math.Min(int.Parse(tb.Text), _save.skills.LIMIT_SKILL_MAX);
-                    } catch
-                    {
-                        _save.skills.pairs[tagno].first = 0;
-                    }
-                }
-
-            }
-        }
-
-        #endregion Tab Saving
 
         #region Functions
 
@@ -236,6 +191,8 @@ namespace TooHuman1SE.Windows
                 if (head == "Skill Tree") ti.Content = st;
                 if (head == "Runes") ti.Content = ru;
                 if (head == "Sectors") ti.Content = se;
+                if (head == "Charms") ti.Content = ch;
+                if (head == "Obelisks") ti.Content = ob;
             }
         }
 
@@ -295,7 +252,7 @@ namespace TooHuman1SE.Windows
             if( validateInputs() )
             {
                 Functions.log("Editor Validated.", Functions.LC_SUCCESS);
-                saveAll();
+                // saveAll(); // Dead!
 
                 // Show 
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -312,6 +269,14 @@ namespace TooHuman1SE.Windows
                 {
                 // Save document
                 _save.writeSaveFile(dlg.FileName);
+                loadSectorsTab();
+                if (_save.lastError != 0)
+                {
+                    MessageBox.Show("Unable To Save The Current File due To An Error:\r\n------\r\n" + _save.lastErrorMsg, "An Error Has Occured", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Functions.log("An Attempt To Save Has Failed. Error #" + _save.lastError, Functions.LC_CRITICAL);
+                    _save.clearError();
+                    return;
+                }
                 }
             } else
             {
@@ -323,6 +288,24 @@ namespace TooHuman1SE.Windows
         private void txtExp_TextChanged(object sender, TextChangedEventArgs e)
         {
             refreshLevelLabel();
+        }
+
+        private void txtName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox _tb = sender as TextBox;
+            if((_tb != null) && (_save != null) ) _save.character.name = _tb.Text;
+        }
+
+        private void txtSlot_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox _tb = sender as TextBox;
+            if (_tb != null && _save != null)
+            {
+                try {
+                    int mptint = Math.Min(int.Parse(_tb.Text),5);
+                    _save.character.saveSlot = mptint;
+                } catch { _save.character.saveSlot = 0; }
+            }
         }
 
         #endregion Event Handlers

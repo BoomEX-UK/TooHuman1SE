@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TooHuman1SE.Windows;
+using TooHuman1SE.SEStructure;
 
 namespace TooHuman1SE.Editor_Tabs
 {
@@ -32,6 +34,60 @@ namespace TooHuman1SE.Editor_Tabs
                 int.Parse(e.Text);
             }
             catch { e.Handled = true; }
+        }
+
+        private void txtCBounty_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            if (ewin == null) return;
+            var _save = ewin._save;
+
+            TextBox _tb = sender as TextBox;
+            if (_tb != null && _save != null)
+            {
+                try
+                {
+                    _save.character.bounty = long.Parse(_tb.Text);
+                }
+                catch { _save.character.bounty = 0; }
+            }
+        }
+
+        private void txtCExp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            if (ewin == null) return;
+            var _save = ewin._save;
+
+            TextBox _tb = sender as TextBox;
+            if (_tb != null && _save != null)
+            {
+                try
+                {
+                    TH1ExpToNextLevel ex = new TH1ExpToNextLevel();
+                    _save.character.exp = long.Parse(_tb.Text);
+                    _save.character.level = ex.calcLevel(_save.character.exp);
+                }
+                catch { _save.character.bounty = 0; _save.character.level = 1; }
+            }
+        }
+
+        private void txtCSkillPoints_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            if (ewin == null) return;
+            var _save = ewin._save;
+
+            TextBox _tb = sender as TextBox;
+            if (_tb != null && _save != null)
+            {
+                try
+                {
+                    _save.character.skillPoints = long.Parse(_tb.Text);
+                }
+                catch { _save.character.skillPoints = 0; }
+            }
+            
         }
     }
 }

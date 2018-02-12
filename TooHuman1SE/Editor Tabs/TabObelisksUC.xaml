@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="TooHuman1SE.Editor_Tabs.TabObelisksUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TooHuman1SE.Editor_Tabs"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="500">
+    <Grid>
+        <DataGrid x:Name="gridObelisks" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="*" Header="Obelisk ID" Binding="{Binding Path=key}" IsReadOnly="true"/>
+                <DataGridTextColumn Width="*" Header="Collected" Binding="{Binding Path=value}" IsReadOnly="true" />
+            </DataGrid.Columns>
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <!-- <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/> -->
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <!-- <MenuItem Header="Menu Item" Click="mnuNameTheEvent_Click"/> -->
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+    </Grid>
+</UserControl>

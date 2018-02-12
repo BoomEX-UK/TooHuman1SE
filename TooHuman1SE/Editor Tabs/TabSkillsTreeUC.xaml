@@ -7,33 +7,33 @@
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="500">
     <Grid>
-        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="0" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="0" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Center" Margin="0,33,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="0"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,67,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="1" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,67,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="1" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Left" Margin="13,90,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="1"/>
-        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,67,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="2" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,67,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="2" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Center" Margin="0,90,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="2"/>
-        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,67,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="3" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,67,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="3" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Right" Margin="0,90,13,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="3"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,122,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="4" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,122,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="4" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Left" Margin="13,145,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="4"/>
         <TextBox HorizontalAlignment="Center" Height="23" Margin="0,122,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="5" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
         <Label Content="{}{name}" HorizontalAlignment="Center" Margin="0,145,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="5"/>
-        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,122,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="6" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,122,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="6" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Right" Margin="0,145,13,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="6"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,175,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="7" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,175,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="7" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Left" Margin="13,198,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="7"/>
-        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,175,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="8" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,175,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="8" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Center" Margin="0,198,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="8"/>
-        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,175,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="9" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,175,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="9" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Right" Margin="0,198,13,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="9"/>
-        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,229,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="12" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Right" Height="23" Margin="0,229,58,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="47" Tag="12" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Right" Margin="0,252,13,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="12"/>
-        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,229,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="11" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,229,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="11" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Center" Margin="0,252,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="11"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,229,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="10" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="58,229,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="10" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Left" Margin="13,252,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="10"/>
-        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,288,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="13" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly"/>
+        <TextBox HorizontalAlignment="Center" Height="23" Margin="0,288,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" Tag="13" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="txt_NumberOnly" TextChanged="skillsTreeChanged"/>
         <Label Content="{}{name}" HorizontalAlignment="Center" Margin="0,311,0,0" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" Tag="13"/>
 
     </Grid>

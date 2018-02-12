@@ -89,8 +89,14 @@
     <Compile Include="Editor Tabs\TabCharacterUC.xaml.cs">
       <DependentUpon>TabCharacterUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Editor Tabs\TabCharmsUC.xaml.cs">
+      <DependentUpon>TabCharmsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Editor Tabs\TabDataPairsUC.xaml.cs">
       <DependentUpon>TabDataPairsUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editor Tabs\TabObelisksUC.xaml.cs">
+      <DependentUpon>TabObelisksUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Editor Tabs\TabRunesUC.xaml.cs">
       <DependentUpon>TabRunesUC.xaml</DependentUpon>
@@ -108,6 +114,9 @@
     <Compile Include="User Controls\LogUC.xaml.cs">
       <DependentUpon>LogUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\CharmEditorWindow.xaml.cs">
+      <DependentUpon>CharmEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\RuneEditorWindow.xaml.cs">
       <DependentUpon>RuneEditorWindow.xaml</DependentUpon>
     </Compile>
@@ -115,7 +124,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Editor Tabs\TabCharmsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Editor Tabs\TabDataPairsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor Tabs\TabObelisksUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -136,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="User Controls\LogUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\CharmEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -202,10 +223,14 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Supporting Data\mutation.csv" />
     <Resource Include="Supporting Data\RuneMBonus.json.gz" />
     <Resource Include="Supporting Data\Paint.json.gz" />
     <Resource Include="Supporting Data\RuneMCollection.json.gz" />
+    <Resource Include="Supporting Data\CharmQuestCollection.json.gz" />
+    <Resource Include="Supporting Data\CharmQuestTypeCollection.json.gz" />
+    <Resource Include="Supporting Data\WeaponCollection.json.gz" />
+    <Resource Include="Supporting Data\CharmCollection.json.gz" />
+    <Resource Include="Supporting Data\MutationCollection.json.gz" />
     <None Include="_Non Build\character-class.psd" />
     <None Include="_Non Build\DataTables.7z" />
     <None Include="_Non Build\TH1SE-vector-logoV2.psd" />
@@ -301,6 +326,19 @@
     <Resource Include="Icons\Runes\G8.png" />
     <Resource Include="Icons\Runes\G9.png" />
     <Resource Include="Icons\Runes\unknown.png" />
+    <Resource Include="Icons\Charms\C0.png" />
+    <Resource Include="Icons\Charms\C11.png" />
+    <Resource Include="Icons\Charms\C20.png" />
+    <Resource Include="Icons\Charms\C21.png" />
+    <Resource Include="Icons\Charms\C12.png" />
+    <Resource Include="Icons\Charms\C13.png" />
+    <Resource Include="Icons\Charms\C14.png" />
+    <Resource Include="Icons\Charms\C15.png" />
+    <Resource Include="Icons\Charms\C16.png" />
+    <Resource Include="Icons\Charms\C17.png" />
+    <Resource Include="Icons\Charms\C18.png" />
+    <Resource Include="Icons\Charms\C19.png" />
+    <Resource Include="Icons\Charms\C22.png" />
     <Content Include="Resources\ISOLib.dll" />
     <Resource Include="Icons\app.ico" />
   </ItemGroup>

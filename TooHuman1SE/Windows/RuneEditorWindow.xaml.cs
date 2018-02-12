@@ -41,7 +41,7 @@ namespace TooHuman1SE.Windows
         private void buildDropDowns()
         {
             // Rune Colour
-            string[] colourNames = new TH1Helper().colourNameArray;
+            string[] colourNames = new TH1Helper().runeColourNameArray;
             comboColour.Items.Clear();
             comboColour.ItemsSource = colourNames;
 
@@ -53,7 +53,6 @@ namespace TooHuman1SE.Windows
 
         private void setupForm()
         {
-
 
             if (runeIndex > -1)
             {

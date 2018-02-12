@@ -14,9 +14,9 @@
         <Label Content="Experience:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="88" Height="26"/>
         <Label Content="Bounty:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Width="88" Height="26"/>
         <Label Content="Skill Points:" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="88" Height="26"/>
-        <TextBox x:Name="txtCExp" HorizontalAlignment="Left" Height="23" Margin="103,45,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="144" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
-        <TextBox x:Name="txtCBounty" HorizontalAlignment="Left" Height="23" Margin="103,76,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="144" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
-        <TextBox x:Name="txtCSkillPoints" HorizontalAlignment="Left" Height="23" Margin="103,107,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="144" PreviewTextInput="txt_NumberOnly" MaxLength="9"/>
+        <TextBox x:Name="txtCExp" HorizontalAlignment="Left" Height="23" Margin="103,45,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="144" PreviewTextInput="txt_NumberOnly" MaxLength="10" TextChanged="txtCExp_TextChanged"/>
+        <TextBox x:Name="txtCBounty" HorizontalAlignment="Left" Height="23" Margin="103,76,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="144" PreviewTextInput="txt_NumberOnly" MaxLength="10" TextChanged="txtCBounty_TextChanged"/>
+        <TextBox x:Name="txtCSkillPoints" HorizontalAlignment="Left" Height="23" Margin="103,107,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="144" PreviewTextInput="txt_NumberOnly" MaxLength="10" TextChanged="txtCSkillPoints_TextChanged"/>
         <Label x:Name="lblLevel" Content="Label" HorizontalAlignment="Left" Margin="103,10,0,0" VerticalAlignment="Top"/>
     </Grid>
 </UserControl>
