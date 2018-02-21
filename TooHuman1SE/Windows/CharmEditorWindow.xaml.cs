@@ -21,8 +21,8 @@ namespace TooHuman1SE.Windows
     /// </summary>
     public partial class CharmEditorWindow : Window
     {
-        public TH1CharmEx _thisCharm;
-        public TH1CharmEx _originalCharm;
+        public TH1CharmExt _thisCharm;
+        public TH1CharmExt _originalCharm;
         public int charmIndex = -1;
         TH1CharmCollection _charms = new TH1CharmCollection();
 
@@ -119,7 +119,7 @@ namespace TooHuman1SE.Windows
         {
             if (comboCharms.SelectedIndex > -1)
             {
-                _thisCharm = new TH1CharmEx(_charms.findCharmByLongName((string)comboCharms.SelectedItem));
+                _thisCharm = new TH1CharmExt(_charms.findCharmByLongName((string)comboCharms.SelectedItem));
                 imgCharm.Source = _thisCharm.image;
                 lblCharm.Content = _thisCharm.charmLongName;
                 comboQuests.ItemsSource = null;

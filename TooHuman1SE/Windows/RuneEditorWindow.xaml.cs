@@ -22,6 +22,7 @@ namespace TooHuman1SE.Windows
     public partial class RuneEditorWindow : Window
     {
         public TH1RuneMExt thisRune;
+        public TH1RuneMCollection runeCollection;
         public int runeIndex = -1;
 
         public RuneEditorWindow()
@@ -104,10 +105,10 @@ namespace TooHuman1SE.Windows
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             MainWindow _mwin = (MainWindow)((EditorWindow)this.Owner)._mainWindow;
-            TH1RuneMCollection _collection = _mwin.runeCollection;
+                ;
             TH1PaintCollection _paintCollection = new TH1PaintCollection();
             string[] runeParts = ((string)comboBonus.SelectedItem).Split(':');
-            TH1RuneM newRune = _collection.findRune(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue), int.Parse(runeParts[0]));
+            TH1RuneM newRune = runeCollection.findRune(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue), int.Parse(runeParts[0]));
 
             thisRune = new TH1RuneMExt(newRune);
             try { thisRune.purchased = (uint)((bool)checkPurchased.IsChecked ? 1 : 0); } catch { thisRune.purchased = 0; }
@@ -128,9 +129,8 @@ namespace TooHuman1SE.Windows
         private void comboColour_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MainWindow _mwin = (MainWindow)((EditorWindow)this.Owner)._mainWindow;
-            TH1RuneMCollection _collection = _mwin.runeCollection;
 
-            comboBonus.ItemsSource = _collection.idLevelAndBonusArray(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue));
+            comboBonus.ItemsSource = runeCollection.idLevelAndBonusArray(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue));
             comboBonus.SelectedIndex = 0;
         }
 
@@ -139,10 +139,9 @@ namespace TooHuman1SE.Windows
             if (comboBonus.SelectedItem != null)
             {
                 MainWindow _mwin = (MainWindow)((EditorWindow)this.Owner)._mainWindow;
-                TH1RuneMCollection _collection = _mwin.runeCollection;
 
                 string[] runeParts = ((string)comboBonus.SelectedItem).Split(':');
-                TH1RuneM _rune = _collection.findRune(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue), int.Parse(runeParts[0]));
+                TH1RuneM _rune = runeCollection.findRune(new TH1Helper().getRuneColourID((string)comboColour.SelectedValue), int.Parse(runeParts[0]));
 
                 imgRune.Source = _rune.runeImage;
                 lblRune.ToolTip = _rune.longName;

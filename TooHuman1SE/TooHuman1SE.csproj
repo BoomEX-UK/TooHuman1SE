@@ -107,6 +107,9 @@
     <Compile Include="Editor Tabs\TabSkillsTreeUC.xaml.cs">
       <DependentUpon>TabSkillsTreeUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Editor Tabs\TabWeaponsUC.xaml.cs">
+      <DependentUpon>TabWeaponsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="User Controls\CharactersUC.xaml.cs">
       <DependentUpon>CharactersUC.xaml</DependentUpon>
@@ -145,6 +148,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Editor Tabs\TabSkillsTreeUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor Tabs\TabWeaponsUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

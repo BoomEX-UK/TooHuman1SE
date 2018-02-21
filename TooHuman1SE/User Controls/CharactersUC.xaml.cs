@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TooHuman1SE.SEFunctions;
+using TooHuman1SE.SEStructure;
 using System.Collections.ObjectModel;
 
 namespace TooHuman1SE.User_Controls
@@ -33,12 +34,67 @@ namespace TooHuman1SE.User_Controls
             InitializeComponent();
         }
 
+        #region Threading
+
+        void SetStatus(string text)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MainWindow mwin = (MainWindow)Window.GetWindow(this);
+                mwin.lblLoading.Text = text;
+                mwin.pbarLoading.Value += 1;
+                mwin.pbarLoading.Visibility = Visibility.Visible;
+            });
+        }
+
+        void ResetStatus()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MainWindow mwin = (MainWindow)Window.GetWindow(this);
+                mwin.lblLoading.Text = "Ready";
+                mwin.pbarLoading.Value = 0;
+                mwin.pbarLoading.Maximum = 0;
+                mwin.pbarLoading.Visibility = Visibility.Hidden;
+            });
+        }
+
+        void setPbarMax( int _max)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MainWindow mwin = (MainWindow)Window.GetWindow(this);
+                mwin.pbarLoading.Maximum = _max;
+            });
+        }
+
+        internal void ExecuteInitialThread( MainWindow mwin )
+        {
+            ResetStatus();
+            setPbarMax(6);
+            SetStatus("Preparing..");
+            SetStatus("Loading Rune Collection");
+            mwin.runeCollection = new TH1RuneMCollection();
+            SetStatus("Loading Weapon Collection");
+            mwin.weaponCollection = new TH1WeaponCollection();
+            SetStatus("Loading Armour Collection");
+            SetStatus("Loading Character List");
+            Dispatcher.Invoke(() =>
+            {
+                Functions.initLoadCharList();
+            });
+        }
+
+        #endregion Threading
 
         #region Event Handlers
 
-        private void lstCharacters_Loaded(object sender, RoutedEventArgs e)
+        private async void lstCharacters_Loaded(object sender, RoutedEventArgs e)
         {
-            Functions.initLoadCharList();
+            MainWindow mwin = (MainWindow)Window.GetWindow(this);
+            await Task.Run(() => ExecuteInitialThread(mwin));
+            mwin.enableInteractions();
+            ResetStatus();
         }
 
         private void lstCharacters_MouseDoubleClick(object sender, MouseButtonEventArgs e)

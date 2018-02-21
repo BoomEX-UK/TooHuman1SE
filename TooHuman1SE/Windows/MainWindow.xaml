@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         Title="Too Human 1 Save Editor" Height="350" Width="525" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Grid>
-        <ContentControl x:Name="MainCC" Content="" Margin="10,27,10,10"/>
+        <ContentControl x:Name="MainCC" Content="" Margin="0,22,0,22"/>
         <Menu VerticalAlignment="Top" Padding="2px">
-            <MenuItem Header="File">
+            <MenuItem Header="File" Name="mnuFile" IsEnabled="False">
                 <MenuItem Header="Import Gamesave.." Click="mnu_importSave">
                     <MenuItem.Icon>
                         <Image Source="/TooHuman1SE;component/Icons/file.png"/>
@@ -33,7 +33,7 @@
                         <Image Source="/TooHuman1SE;component/Icons/log.gif"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Rebuild Character List" Click="mnu_RebuildList">
+                <MenuItem Header="Rebuild Character List" Click="mnu_RebuildList" Name="mnuRebuild" IsEnabled="False">
                     <MenuItem.Icon>
                         <Image Source="/TooHuman1SE;component/Icons/save.png"/>
                     </MenuItem.Icon>
@@ -52,6 +52,25 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-
+        <StatusBar Height="22" VerticalAlignment="Bottom">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <TextBlock Name="lblLoading" Text="Loading.."/>
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
+                <ProgressBar Value="50" Width="90" Height="16" Name="pbarLoading"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

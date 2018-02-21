@@ -56,7 +56,8 @@ namespace TooHuman1SE
 
     public partial class MainWindow : Window
     {
-        public TH1RuneMCollection runeCollection = new TH1RuneMCollection();
+        public TH1RuneMCollection runeCollection;
+        public TH1WeaponCollection weaponCollection;
 
         internal static CharactersUC _CharactersUC = new CharactersUC();
         internal static LogUC _LogUC = new LogUC();
@@ -77,12 +78,17 @@ namespace TooHuman1SE
         private void SwitchCC( System.Windows.Controls.UserControl CC)
         {
             this.MainCC.Content = CC;
-            // this.lblUC.Content = CC.ToolTip + ":";
         }
 
         private void LoadLogWindow()
         {
             _LogWindow.MainCC.Content = _LogUC;
+        }
+
+        public void enableInteractions()
+        {
+            mnuFile.IsEnabled = true;
+            mnuRebuild.IsEnabled = true;
         }
 
         #region FileOpening

@@ -32,6 +32,7 @@ namespace TooHuman1SE.Editor_Tabs
         {
             EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
             RuneEditorWindow dlg = new RuneEditorWindow();
+            dlg.runeCollection = ewin._runes;
             dlg.runeIndex = gridRunes.SelectedIndex;
             dlg.thisRune = (TH1RuneMExt)gridRunes.SelectedItem;
             dlg.Owner = Window.GetWindow(this);
@@ -90,8 +91,9 @@ namespace TooHuman1SE.Editor_Tabs
         private void btnAddRune_Click(object sender, RoutedEventArgs e)
         {
             RuneEditorWindow dlg = new RuneEditorWindow();
-            dlg.Owner = Window.GetWindow(this);
             EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
+            dlg.Owner = ewin;
+            dlg.runeCollection = ewin._runes;
             TH1Helper _help = new TH1Helper();
 
             if (gridRunes.Items.Count < _help.LIMIT_MAX_RUNES)

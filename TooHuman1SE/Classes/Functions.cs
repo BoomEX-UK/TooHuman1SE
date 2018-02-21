@@ -309,8 +309,11 @@ namespace TooHuman1SE.SEFunctions
             if (loadingSave.lastError == 0)
             {
                 EditorWindow eWin = new EditorWindow();
+                MainWindow mWin = _parent;
                 eWin._save = loadingSave;
-                eWin._mainWindow = _parent;
+                eWin._runes = mWin.runeCollection;
+                eWin._weapons = mWin.weaponCollection;
+                eWin._mainWindow = mWin;
                 eWin.Show();
                 log("File Loaded Successfully", LC_SUCCESS);
             } else

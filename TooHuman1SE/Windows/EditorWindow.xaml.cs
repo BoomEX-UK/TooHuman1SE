@@ -28,6 +28,8 @@ namespace TooHuman1SE.Windows
     {
         public MainWindow _mainWindow;
         public TH1SaveStructure _save;
+        public TH1WeaponCollection _weapons;
+        public TH1RuneMCollection _runes;
 
         // Tabs
         TabCharacterUC tc = new TabCharacterUC();
@@ -37,6 +39,7 @@ namespace TooHuman1SE.Windows
         TabSectorsUC se = new TabSectorsUC();
         TabCharmsUC ch = new TabCharmsUC();
         TabObelisksUC ob = new TabObelisksUC();
+        TabWeaponsUC we = new TabWeaponsUC();
 
         public EditorWindow()
         {
@@ -68,6 +71,7 @@ namespace TooHuman1SE.Windows
             loadSectorsTab();
             loadCharmsTab();
             loadObelisksTab();
+            loadWeaponsTab();
         }
 
         private void loadEditorWindow()
@@ -155,6 +159,13 @@ namespace TooHuman1SE.Windows
             ob.gridObelisks.ItemsSource = _save.charmsActiveEx;
         }
 
+        private void loadWeaponsTab()
+        {
+            we._ewin = this;
+            we.weaponCollection = _weapons;
+            // ob.gridObelisks.ItemsSource = _save.charmsActiveEx;
+        }
+
         #endregion Tab Loading
 
         #region Functions
@@ -193,6 +204,7 @@ namespace TooHuman1SE.Windows
                 if (head == "Sectors") ti.Content = se;
                 if (head == "Charms") ti.Content = ch;
                 if (head == "Obelisks") ti.Content = ob;
+                if (head == "Weapons") ti.Content = we;
             }
         }
 

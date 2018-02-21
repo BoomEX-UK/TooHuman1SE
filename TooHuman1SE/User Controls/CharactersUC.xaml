@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" ToolTip="Characters">
     <Grid>
-        <ListView x:Name="lstCharacters" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Loaded="lstCharacters_Loaded" MouseDoubleClick="lstCharacters_MouseDoubleClick">
+        <ListView x:Name="lstCharacters" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Loaded="lstCharacters_Loaded" MouseDoubleClick="lstCharacters_MouseDoubleClick" BorderThickness="0">
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Open Selected" Click="mnu_OpenContext">

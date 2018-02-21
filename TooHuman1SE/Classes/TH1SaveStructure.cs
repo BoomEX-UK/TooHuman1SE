@@ -1771,7 +1771,7 @@ namespace TooHuman1SE.SEStructure
         }
     }
     // Charms In Storage
-    public class TH1CharmEx
+    public class TH1CharmExt
     {
         private TH1Charm _charm;
         private uint _val2;
@@ -1785,7 +1785,7 @@ namespace TooHuman1SE.SEStructure
         private List<bool> _runesReq = new List<bool>();
 
         // Construction
-        public TH1CharmEx(TH1Charm Charm)
+        public TH1CharmExt(TH1Charm Charm)
         {
             _charm = Charm;
             if(isEquip) if (_activeQuestId == 0) activeQuestId = (uint)_charm.questList[0].questID;
@@ -2177,12 +2177,16 @@ namespace TooHuman1SE.SEStructure
             return tmpRune;
         }
     }
+
+    #endregion TH1Charm
+
+    #region TH1Obelisk
     public class TH1Obelisk
     {
         private uint _key;
         private bool _value;
 
-        public TH1Obelisk( uint Key, uint Value)
+        public TH1Obelisk(uint Key, uint Value)
         {
             _key = Key;
             _value = Value == 1;
@@ -2190,7 +2194,8 @@ namespace TooHuman1SE.SEStructure
 
         public uint key
         {
-            get {
+            get
+            {
                 return _key;
             }
         }
@@ -2210,7 +2215,7 @@ namespace TooHuman1SE.SEStructure
         }
     }
 
-    #endregion TH1Charm
+    #endregion TH1Obelisk
 
     #region TH1Mutation
 
@@ -2304,7 +2309,153 @@ namespace TooHuman1SE.SEStructure
 
     public class TH1Weapon
     {
+        private char _colourKey;
+        private int _alignment;
+        private int _id;
+        private int _aIndex;
+        private int _aIndex2;
+        private int _type;
+        private List<string> _runes;
+        private int _level;
+        private int _smLevel;
+        private string _smId;
+        private int _smN;
+        private int _value;
+        private string _prefix;
+        private string _noun;
+        private int _class;
+        private int _condition;
+        private TH1Paint _colour;
+        private bool _isElite;
+        private List<string> _bonusDesc;
+        private int _suitId;
+        private string _eliteBonusDesc;
 
+        public TH1Weapon( 
+            char ColourKey, int Alignment, int Id, int AIndex, int AIndex2, int Type,
+            string Rune1, string Rune2, string Rune3, string Rune4, int Level, int SmLevel,
+            string SmId, int SmN, int Value, string Prefix, string Noun, int Class,
+            int Condition, int Paint, int Elite, string Bonus1, string Bonus2, string Bonus3,
+            string Bonus4, int SuitId, string EliteBonus )
+        {
+            TH1PaintCollection _paints = new TH1PaintCollection();
+
+            _colourKey = ColourKey;
+            _alignment = Alignment;
+            _id = Id;
+            _aIndex = AIndex;
+            _aIndex2 = AIndex2;
+            _type = Type;
+            _runes = new List<string> { Rune1, Rune2, Rune3, Rune4 };
+            _level = Level;
+            _smLevel = SmLevel;
+            _smId = SmId;
+            _smN = SmN;
+            _value = Value;
+            _prefix = Prefix;
+            _noun = Noun;
+            _class = Class;
+            _condition = Condition;
+            _colour = _paints.findPaint(Paint);
+            _isElite = Elite == 1;
+            _bonusDesc = new List<string> { Bonus1, Bonus2, Bonus3, Bonus4 };
+            _suitId = SuitId;
+            _eliteBonusDesc = EliteBonus;
+        }
+
+        public TH1Weapon()
+        {
+            TH1PaintCollection _paints = new TH1PaintCollection();
+
+            _colourKey = 'G';
+            _alignment = 0;
+            _id = 1;
+            _aIndex = 1;
+            _aIndex2 = 0;
+            _type = 0;
+            _runes = new List<string> { "", "", "", "" };
+            _level = 1;
+            _smLevel = 0;
+            _smId = "";
+            _smN = 0;
+            _value = 40;
+            _prefix = "Ceremonial";
+            _noun = "Seax";
+            _class = 0;
+            _condition = 10000;
+            _colour = _paints.findPaint(70);
+            _isElite = false;
+            _bonusDesc = new List<string> { "", "", "", "" };
+            _suitId = 0;
+            _eliteBonusDesc = "";
+        }
+    }
+
+    public class TH1WeaponJson
+    {
+        [JsonProperty("Colour Key")] public char ColourKey { get; set; }
+        [JsonProperty("Alignment")] public int Alignment { get; set; }
+        [JsonProperty("ItemID")] public int ItemID { get; set; }
+        [JsonProperty("AugIndex")] public int AugIndex { get; set; }
+        [JsonProperty("SecondaryAugIndex")] public int SecondaryAugIndex { get; set; }
+        [JsonProperty("Type")] public int Type { get; set; }
+        [JsonProperty("Bonus1")] public string Bonus1 { get; set; }
+        [JsonProperty("Bonus2")] public string Bonus2 { get; set; }
+        [JsonProperty("Bonus3")] public string Bonus3 { get; set; }
+        [JsonProperty("Bonus4")] public string Bonus4 { get; set; }
+        [JsonProperty("Level")] public int Level { get; set; }
+        [JsonProperty("Multiplier")] public decimal Multiplier { get; set; }
+        [JsonProperty("SuperMoveLevel")] public int SuperMoveLevel { get; set; }
+        [JsonProperty("SuperMoveID")] public string SuperMoveID { get; set; }
+        [JsonProperty("SMN")] public int SMN { get; set; }
+        [JsonProperty("Value")] public int Value { get; set; }
+        [JsonProperty("Prefix1")] public string Prefix1 { get; set; }
+        [JsonProperty("Noun")] public string Noun { get; set; }
+        [JsonProperty("Class")] public int Class { get; set; }
+        [JsonProperty("Condition")] public int Condition { get; set; }
+        [JsonProperty("Color")] public int Color { get; set; }
+        [JsonProperty("IsElite")] public int IsElite { get; set; }
+        [JsonProperty("Bonus Desc 1")] public string BonusDesc1 { get; set; }
+        [JsonProperty("Bonus Desc 2")] public string BonusDesc2 { get; set; }
+        [JsonProperty("Bonus Desc 3")] public string BonusDesc3 { get; set; }
+        [JsonProperty("Bonus Desc 4")] public string BonusDesc4 { get; set; }
+        [JsonProperty("SuitID")] public int SuitID { get; set; }
+        [JsonProperty("Elite Bonus Desc")] public string EliteBonusDesc { get; set; }
+    } // Wow ..
+
+    public class TH1WeaponCollection
+    {
+        Dictionary<string, TH1Weapon> _collection = new Dictionary<string, TH1Weapon>();
+
+        public TH1WeaponCollection()
+        {
+            string json;
+            Dictionary<string, TH1WeaponJson> _parseCollection = new Dictionary<string, TH1WeaponJson>();
+            try
+            {
+                Stream libcom = Application.GetResourceStream(new Uri("pack://application:,,,/Supporting Data/WeaponCollection.json.gz")).Stream;
+                Stream lib = new GZipStream(libcom, CompressionMode.Decompress, false);
+                json = new StreamReader(lib).ReadToEnd();
+            }
+            catch (Exception ex) { json = ""; MessageBox.Show(ex.ToString()); }
+
+            // Create The Dictionary
+            _parseCollection = JsonConvert.DeserializeObject<Dictionary<string, TH1WeaponJson>>(json);
+            foreach (KeyValuePair<string, TH1WeaponJson> _item in _parseCollection)
+            {
+                TH1WeaponJson _weapon = _item.Value;
+                TH1Weapon _tmpRuneBonus = new TH1Weapon(
+                    _weapon.ColourKey, _weapon.Alignment, _weapon.ItemID, _weapon.AugIndex, _weapon.SecondaryAugIndex,
+                    _weapon.Type, _weapon.Bonus1, _weapon.Bonus2, _weapon.Bonus3, _weapon.Bonus4, _weapon.Level,
+                    _weapon.SuperMoveLevel, _weapon.SuperMoveID, _weapon.SMN, _weapon.Value, _weapon.Prefix1,
+                    _weapon.Noun, _weapon.Class, _weapon.Condition, _weapon.Color, _weapon.IsElite,
+                    _weapon.BonusDesc1, _weapon.BonusDesc2, _weapon.BonusDesc3, _weapon.BonusDesc4, _weapon.SuitID,
+                    _weapon.EliteBonusDesc
+                    );
+                _collection.Add(_item.Key, _tmpRuneBonus);
+            }
+
+        }
     }
 
     #endregion Weapon
@@ -2398,8 +2549,8 @@ namespace TooHuman1SE.SEStructure
         public TH1Character character;
         public List<TH1RuneMExt> runes;
         public TH1SkillsTree skills;
-        public TH1CharmEx[] charmsActive;
-        public List<TH1CharmEx> charmsInventry;
+        public TH1CharmExt[] charmsActive;
+        public List<TH1CharmExt> charmsInventry;
         public List<TH1Obelisk> charmsActiveEx;
 
         // Problems
@@ -2424,8 +2575,8 @@ namespace TooHuman1SE.SEStructure
             this.character = new TH1Character();
             this.runes = new List<TH1RuneMExt>();
             this.skills = new TH1SkillsTree(0);
-            this.charmsActive = new TH1CharmEx[2];
-            this.charmsInventry = new List<TH1CharmEx>();
+            this.charmsActive = new TH1CharmExt[2];
+            this.charmsInventry = new List<TH1CharmExt>();
             this.charmsActiveEx = new List<TH1Obelisk>();
 
             // Checks
@@ -2452,6 +2603,7 @@ namespace TooHuman1SE.SEStructure
                 dataToRunes();
                 dataToCharmsActive();
                 dataToCharmsInventry();
+                dataToWeapons();
 
                 this.dataSize = this.rawData.Length;
             }
@@ -2469,6 +2621,7 @@ namespace TooHuman1SE.SEStructure
             runesToData();
             charmsActiveToData();
             charmsInventryToData();
+            weaponsToData();
 
             // Create the Save Buffer in Memory
             saveOut = new byte[this.dataSize];
@@ -3000,7 +3153,7 @@ namespace TooHuman1SE.SEStructure
 
         #endregion Runes IO
 
-        #region Charms IO
+        #region Charms / Obelisks IO
         private void dataToCharmsActive()
         {
             // Buffer It
@@ -3028,13 +3181,13 @@ namespace TooHuman1SE.SEStructure
         private void charmsActiveToData()
         {
             long bytesize = 0;
-            foreach (TH1CharmEx _charm in this.charmsActive) bytesize += _charm.charmToActiveArray.Length;
+            foreach (TH1CharmExt _charm in this.charmsActive) bytesize += _charm.charmToActiveArray.Length;
             byte[] tmpCharms = new byte[bytesize + 4 + (this.charmsActiveEx.Count*8)];
 
             RWStream writer = new RWStream(tmpCharms, true, true);
             try
             {
-                foreach (TH1CharmEx _charmLoop in this.charmsActive) writer.WriteBytes(_charmLoop.charmToActiveArray);
+                foreach (TH1CharmExt _charmLoop in this.charmsActive) writer.WriteBytes(_charmLoop.charmToActiveArray);
                 writer.WriteUInt32((uint)this.charmsActiveEx.Count);
                 foreach(TH1Obelisk _exLoop in this.charmsActiveEx )
                 {
@@ -3051,14 +3204,14 @@ namespace TooHuman1SE.SEStructure
         private void charmsInventryToData()
         {
             // MessageBox.Show("charmsInventryToData()");
-            List<TH1CharmEx> _complete = new List<TH1CharmEx>();
-            List<TH1CharmEx> _incomplete = new List<TH1CharmEx>();
+            List<TH1CharmExt> _complete = new List<TH1CharmExt>();
+            List<TH1CharmExt> _incomplete = new List<TH1CharmExt>();
 
             long _completeSize = 0;
             long _incompleteSize = 0;
 
             // Getting Organised
-            foreach( TH1CharmEx _charm in this.charmsInventry)
+            foreach( TH1CharmExt _charm in this.charmsInventry)
             {
                 if (_charm.isComplete)
                 {
@@ -3081,7 +3234,7 @@ namespace TooHuman1SE.SEStructure
             try
             {
                 _completeWriter.WriteUInt32((uint)_complete.Count);
-                foreach( TH1CharmEx _charm in _complete)
+                foreach( TH1CharmExt _charm in _complete)
                 {
                     _completeWriter.WriteBytes(_charm.charmToInventryArray);
                 }
@@ -3094,7 +3247,7 @@ namespace TooHuman1SE.SEStructure
             try
             {
                 _incompleteWriter.WriteUInt32((uint)_incomplete.Count);
-                foreach (TH1CharmEx _charm in _incomplete)
+                foreach (TH1CharmExt _charm in _incomplete)
                 {
                     _incompleteWriter.WriteBytes(_charm.charmToInventryArray);
                 }
@@ -3111,7 +3264,7 @@ namespace TooHuman1SE.SEStructure
         private void dataToCharms( byte[] buffer, bool isactive)
         {
             TH1CharmCollection charmCollection = new TH1CharmCollection();
-            List<TH1CharmEx> tmpCharms = new List<TH1CharmEx>();
+            List<TH1CharmExt> tmpCharms = new List<TH1CharmExt>();
             // If Active Data
             List<TH1Obelisk> tmpExs = new List<TH1Obelisk>();
 
@@ -3127,7 +3280,7 @@ namespace TooHuman1SE.SEStructure
                     int nameLength = (int)reader.ReadUInt32();
                     byte[] runeName = reader.ReadBytes(nameLength);
 
-                    TH1CharmEx tmpCharm = new TH1CharmEx(charmCollection.findCharm(runeName));
+                    TH1CharmExt tmpCharm = new TH1CharmExt(charmCollection.findCharm(runeName));
 
                     if (!isactive) reader.ReadBytes(8); // Skip The Separator
 
@@ -3170,11 +3323,73 @@ namespace TooHuman1SE.SEStructure
                 {
                     this.charmsActive = tmpCharms.ToArray();
                     this.charmsActiveEx = tmpExs;
-                } else foreach (TH1CharmEx _charm in tmpCharms) this.charmsInventry.Add(_charm);
+                } else foreach (TH1CharmExt _charm in tmpCharms) this.charmsInventry.Add(_charm);
             }
 
         }
-        #endregion Charms IO
+        #endregion Charms / Obelisks IO
+
+        #region Weapons IO
+
+        private void dataToWeapons()
+        {
+            List<TH1RuneMExt> tmpRunes = new List<TH1RuneMExt>();
+            TH1RuneMCollection runeCollection = new TH1RuneMCollection();
+            TH1PaintCollection paintCollection = new TH1PaintCollection();
+
+            // Buffer It
+            byte[] runesData = new byte[this.sectors[TH1_SECTOR_RUNE].size];
+            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_RUNE].offset, runesData, 0, runesData.Length);
+
+            RWStream reader = new RWStream(runesData, true);
+            try
+            {
+                int runeCount = (int)reader.ReadUInt32();
+
+                for (int runeloop = 0; runeloop < runeCount; runeloop++)
+                {
+                    int nameLength = (int)reader.ReadUInt32();
+                    byte[] runeName = reader.ReadBytes(nameLength);
+
+                    TH1RuneMExt tmpRune = new TH1RuneMExt(runeCollection.findRune(runeName));
+                    if (tmpRune.rune == null) tmpRune = new TH1RuneMExt(new TH1RuneM());
+
+                    tmpRune.purchased = reader.ReadUInt32();
+                    tmpRune.dataB = reader.ReadUInt32();
+                    tmpRune.valueModifier = reader.ReadUInt32();
+                    tmpRune.dataD = reader.ReadUInt32();
+                    tmpRune.paint = paintCollection.findPaint((int)reader.ReadUInt32());
+
+                    tmpRunes.Add(tmpRune);
+                }
+
+            }
+            catch (Exception ex) { setError(14, "Unable To Parse Runes: " + ex.ToString()); }
+            finally { reader.Close(false); this.runes = tmpRunes; }
+
+        }
+
+        private void weaponsToData()
+        {
+            /*
+            long bytesize = 0;
+            foreach (TH1RuneMExt tmpRune in this.runes) bytesize += tmpRune.runeExtToArray.Length;
+            byte[] tmpRunes = new byte[4 + bytesize];
+
+            RWStream writer = new RWStream(tmpRunes, true, true);
+            try
+            {
+                writer.WriteUInt32((uint)this.runes.Count);
+                foreach (TH1RuneMExt runeLoop in this.runes) writer.WriteBytes(runeLoop.runeExtToArray);
+            }
+            catch (Exception ex) { setError(15, "Unable To Write Runes: " + ex.ToString()); }
+            finally { writer.Flush(); tmpRunes = writer.ReadAllBytes(); writer.Close(true); }
+
+            replaceSector(TH1_SECTOR_RUNE, tmpRunes);
+            */
+        }
+
+        #endregion Weapons IO
 
         #region General Functions
 

@@ -31,7 +31,7 @@ namespace TooHuman1SE.Editor_Tabs
         public void loadCharmsInPlace()
         {
             EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
-            TH1CharmEx _thisCharm;
+            TH1CharmExt _thisCharm;
 
             _thisCharm = ewin._save.charmsActive[0];
             comboAQuest.Items.Clear();
@@ -124,7 +124,7 @@ namespace TooHuman1SE.Editor_Tabs
 
             if (index > -1)
             {
-                dlg._thisCharm = (TH1CharmEx)dataInventry.Items[index];
+                dlg._thisCharm = (TH1CharmExt)dataInventry.Items[index];
                 Functions.log(string.Format("Editing Charm #{0} ({1})", index, dlg._thisCharm.charmString), Functions.LC_PRIMARY);
             }
             else
@@ -184,7 +184,7 @@ namespace TooHuman1SE.Editor_Tabs
                 dataInventry.ItemsSource = null;
                 _save.charmsActive[index].inActiveSlot = false; // No Longer Active
                 _save.charmsInventry.Add(_save.charmsActive[index]);
-                _save.charmsActive[index] = new TH1CharmEx(null);
+                _save.charmsActive[index] = new TH1CharmExt(null);
                 dataInventry.ItemsSource = _save.charmsInventry;
                 recountCharms();
                 loadCharmsInPlace();
@@ -222,7 +222,7 @@ namespace TooHuman1SE.Editor_Tabs
             {
                 int val = int.Parse((string)_combo.Tag);
                 int index = _combo.SelectedIndex;
-                TH1CharmEx _thisCharm = ewin._save.charmsActive[val];
+                TH1CharmExt _thisCharm = ewin._save.charmsActive[val];
                 if (_thisCharm.isEquip)
                 {
                     _thisCharm.activeQuestId = (uint)_thisCharm.charm.questList[index].questID;
@@ -328,7 +328,7 @@ namespace TooHuman1SE.Editor_Tabs
 
             TH1Helper _help = new TH1Helper();
 
-            foreach (TH1CharmEx _charm in dataInventry.SelectedItems)
+            foreach (TH1CharmExt _charm in dataInventry.SelectedItems)
             {
                 if (_save.charmsInventry.Count < _help.LIMIT_MAX_CHARMS)
                 {
@@ -350,7 +350,7 @@ namespace TooHuman1SE.Editor_Tabs
 
             TH1Helper _help = new TH1Helper();
 
-            foreach (TH1CharmEx _charm in dataInventry.SelectedItems)
+            foreach (TH1CharmExt _charm in dataInventry.SelectedItems)
             {
                 _charm.progress = (uint)_charm.target;
                 for( int i = 0; i < _charm.runesReq.Count; i++)
@@ -359,7 +359,7 @@ namespace TooHuman1SE.Editor_Tabs
                 }
             }
 
-            _save.charmsInventry = (List<TH1CharmEx>)dataInventry.ItemsSource;
+            _save.charmsInventry = (List<TH1CharmExt>)dataInventry.ItemsSource;
             dataInventry.ItemsSource = null;
             dataInventry.ItemsSource = _save.charmsInventry;
             recountCharms();
@@ -375,7 +375,7 @@ namespace TooHuman1SE.Editor_Tabs
             if (dataInventry.SelectedItems.Count < 1) return;
             if (MessageBox.Show(string.Format("Are You Sure You Want To Delete {0} Charm{1}", dataInventry.SelectedItems.Count, dataInventry.SelectedItems.Count == 1 ? "":"s"), "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
 
-            foreach (TH1CharmEx _charm in dataInventry.SelectedItems)
+            foreach (TH1CharmExt _charm in dataInventry.SelectedItems)
             {
                 _save.charmsInventry.Remove(_charm);
             }
@@ -409,8 +409,8 @@ namespace TooHuman1SE.Editor_Tabs
             MenuItem _menu = sender as MenuItem;
             if( _menu != null && dataInventry.SelectedItem != null) try { 
                 int activeCharm = int.Parse((string)_menu.Tag);
-                    TH1CharmEx _selected = (TH1CharmEx)dataInventry.SelectedItem;
-                    TH1CharmEx _tmpCharm = _save.charmsActive[activeCharm];
+                    TH1CharmExt _selected = (TH1CharmExt)dataInventry.SelectedItem;
+                    TH1CharmExt _tmpCharm = _save.charmsActive[activeCharm];
 
                     _save.charmsActive[activeCharm] = _selected;
                     _save.charmsActive[activeCharm].inActiveSlot = true; // Now Active
