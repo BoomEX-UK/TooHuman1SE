@@ -121,6 +121,7 @@ namespace TooHuman1SE.Editor_Tabs
             CharmEditorWindow dlg = new CharmEditorWindow();
             dlg.Owner = Window.GetWindow(this);
             dlg.charmIndex = index;
+            dlg.charmCollection = ewin.charmCollection;
 
             if (index > -1)
             {

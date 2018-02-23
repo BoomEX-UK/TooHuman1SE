@@ -28,8 +28,16 @@ namespace TooHuman1SE.Windows
     {
         public MainWindow _mainWindow;
         public TH1SaveStructure _save;
-        public TH1WeaponCollection _weapons;
-        public TH1RuneMCollection _runes;
+        public TH1PaintCollection paintCollection;
+        public TH1MutationCollection mutationCollection;
+        public TH1CharmQuestCollection questCollection;
+        public TH1CharmQuestTypeCollection questTypeCollection;
+        public TH1RuneMBonusCollection runeMBonusCollection;
+        public TH1RuneMCollection runeMCollection;
+        public TH1RuneUCollection runeUCollection;
+        public TH1CharmCollection charmCollection;
+        public TH1WeaponCollection weaponCollection;
+        public TH1ArmourCollection armourCollection;
 
         // Tabs
         TabCharacterUC tc = new TabCharacterUC();
@@ -54,6 +62,7 @@ namespace TooHuman1SE.Windows
 
             // On Show Event Stuff Goes Below..
 
+            setUpCollections();
             LoadAll();
             setWindowTitle();
 
@@ -162,13 +171,27 @@ namespace TooHuman1SE.Windows
         private void loadWeaponsTab()
         {
             we._ewin = this;
-            we.weaponCollection = _weapons;
+            we.weaponCollection = weaponCollection;
             // ob.gridObelisks.ItemsSource = _save.charmsActiveEx;
         }
 
         #endregion Tab Loading
 
         #region Functions
+
+        private void setUpCollections()
+        {
+            paintCollection = _save.paintCollection;
+            mutationCollection = _save.mutationCollection;
+            questCollection = _save.questCollection;
+            questTypeCollection = _save.questTypeCollection;
+            runeMBonusCollection = _save.runeMBonusCollection;
+            runeMCollection = _save.runeMCollection;
+            runeUCollection = _save.runeUCollection;
+            charmCollection = _save.charmCollection;
+            weaponCollection = _save.weaponCollection;
+            armourCollection = _save.armourCollection;
+    }
 
         private void setWindowTitle()
         {

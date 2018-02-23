@@ -56,9 +56,19 @@ namespace TooHuman1SE
 
     public partial class MainWindow : Window
     {
-        public TH1RuneMCollection runeCollection;
+        // All Collections (For Pre-Loading)
+        public TH1PaintCollection paintCollection;
+        public TH1MutationCollection mutationCollection;
+        public TH1CharmQuestCollection questCollection;
+        public TH1CharmQuestTypeCollection questTypeCollection;
+        public TH1RuneMBonusCollection runeMBonusCollection;
+        public TH1RuneMCollection runeMCollection;
+        public TH1RuneUCollection runeUCollection;
+        public TH1CharmCollection charmCollection;
         public TH1WeaponCollection weaponCollection;
+        public TH1ArmourCollection armourCollection;
 
+        // Let's Go
         internal static CharactersUC _CharactersUC = new CharactersUC();
         internal static LogUC _LogUC = new LogUC();
         internal static LogWindow _LogWindow = new LogWindow();

@@ -304,6 +304,17 @@ namespace TooHuman1SE.SEFunctions
             TH1SaveStructure loadingSave = new TH1SaveStructure();
             log("Loading Into Editor \"" + savepath + "\"", LC_PRIMARY);
 
+            // Pass On The Preloading
+            loadingSave.paintCollection = _parent.paintCollection;
+            loadingSave.mutationCollection = _parent.mutationCollection;
+            loadingSave.questCollection = _parent.questCollection;
+            loadingSave.questTypeCollection = _parent.questTypeCollection;
+            loadingSave.runeMBonusCollection = _parent.runeMBonusCollection;
+            loadingSave.runeMCollection = _parent.runeMCollection;
+            loadingSave.runeUCollection = _parent.runeUCollection;
+            loadingSave.charmCollection = _parent.charmCollection;
+            loadingSave.weaponCollection = _parent.weaponCollection;
+            loadingSave.armourCollection = _parent.armourCollection;
             loadingSave.readSaveFile(savepath);
 
             if (loadingSave.lastError == 0)
@@ -311,8 +322,8 @@ namespace TooHuman1SE.SEFunctions
                 EditorWindow eWin = new EditorWindow();
                 MainWindow mWin = _parent;
                 eWin._save = loadingSave;
-                eWin._runes = mWin.runeCollection;
-                eWin._weapons = mWin.weaponCollection;
+
+                // Loading Collections
                 eWin._mainWindow = mWin;
                 eWin.Show();
                 log("File Loaded Successfully", LC_SUCCESS);

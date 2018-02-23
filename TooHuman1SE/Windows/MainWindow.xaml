@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TooHuman1SE"
         mc:Ignorable="d"
-        Title="Too Human 1 Save Editor" Height="350" Width="525" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+        Title="Too Human 1 Save Editor" Height="355" Width="525" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Grid>
         <ContentControl x:Name="MainCC" Content="" Margin="0,22,0,22"/>
         <Menu VerticalAlignment="Top" Padding="2px">
@@ -58,7 +58,6 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="100" />
                         </Grid.ColumnDefinitions>
                     </Grid>
@@ -67,8 +66,7 @@
             <StatusBarItem HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <TextBlock Name="lblLoading" Text="Loading.."/>
             </StatusBarItem>
-            <Separator Grid.Column="1" />
-            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
+            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Center">
                 <ProgressBar Value="50" Width="90" Height="16" Name="pbarLoading"/>
             </StatusBarItem>
         </StatusBar>

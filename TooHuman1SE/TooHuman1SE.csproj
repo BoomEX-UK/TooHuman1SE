@@ -238,6 +238,7 @@
     <Resource Include="Supporting Data\WeaponCollection.json.gz" />
     <Resource Include="Supporting Data\CharmCollection.json.gz" />
     <Resource Include="Supporting Data\MutationCollection.json.gz" />
+    <Resource Include="Supporting Data\RuneUCollection.json.gz" />
     <None Include="_Non Build\character-class.psd" />
     <None Include="_Non Build\DataTables.7z" />
     <None Include="_Non Build\TH1SE-vector-logoV2.psd" />
