@@ -71,29 +71,11 @@ namespace TooHuman1SE.User_Controls
         internal void ExecutePreloading( MainWindow mwin )
         {
             ResetStatus();
-            setPbarMax(12);
+            setPbarMax(3);
 
             // Pre-Load Databases
-            SetStatus("Loading Paint Database");
-            mwin.paintCollection = new TH1PaintCollection();
-            SetStatus("Loading Mutation Database");
-            mwin.mutationCollection = new TH1MutationCollection();
-            SetStatus("Loading Quest Type Database");
-            mwin.questTypeCollection = new TH1CharmQuestTypeCollection();
-            SetStatus("Loading Quest Database");
-            mwin.questCollection = new TH1CharmQuestCollection(mwin.questTypeCollection);
-            SetStatus("Loading Bonus Database");
-            mwin.runeMBonusCollection = new TH1RuneMBonusCollection();
-            SetStatus("Loading Weapon Database");
-            mwin.weaponCollection = new TH1WeaponCollection( mwin.paintCollection );
-            SetStatus("Loading Armour Database");
-            mwin.armourCollection = new TH1ArmourCollection();
-            SetStatus("Loading Rune-M Database");
-            mwin.runeMCollection = new TH1RuneMCollection(mwin.runeMBonusCollection);
-            SetStatus("Loading Rune-U Database");
-            mwin.runeUCollection = new TH1RuneUCollection(mwin.mutationCollection);
-            SetStatus("Loading Charm Database");
-            mwin.charmCollection = new TH1CharmCollection(mwin.questCollection,mwin.mutationCollection);
+            SetStatus("Loading Databases");
+            mwin.db = new TH1Collections();
 
             // Load Character List
             SetStatus("Loading Character List");

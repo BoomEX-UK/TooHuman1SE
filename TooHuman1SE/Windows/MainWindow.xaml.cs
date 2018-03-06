@@ -57,16 +57,7 @@ namespace TooHuman1SE
     public partial class MainWindow : Window
     {
         // All Collections (For Pre-Loading)
-        public TH1PaintCollection paintCollection;
-        public TH1MutationCollection mutationCollection;
-        public TH1CharmQuestCollection questCollection;
-        public TH1CharmQuestTypeCollection questTypeCollection;
-        public TH1RuneMBonusCollection runeMBonusCollection;
-        public TH1RuneMCollection runeMCollection;
-        public TH1RuneUCollection runeUCollection;
-        public TH1CharmCollection charmCollection;
-        public TH1WeaponCollection weaponCollection;
-        public TH1ArmourCollection armourCollection;
+        public TH1Collections db;
 
         // Let's Go
         internal static CharactersUC _CharactersUC = new CharactersUC();
@@ -109,7 +100,10 @@ namespace TooHuman1SE
             {
                 TH1SaveStructure newsave = new TH1SaveStructure();
                 Functions.log("Reading " + filename, Functions.LC_PRIMARY);
+
+                newsave.db = this.db;
                 newsave.readSaveFile(filename);
+
                 if( newsave.lastError == 0 )
                 {
                     if (!newsave.hashVerified) { Functions.log("Save file contains an invalid hash", Functions.LC_WARNING);  }

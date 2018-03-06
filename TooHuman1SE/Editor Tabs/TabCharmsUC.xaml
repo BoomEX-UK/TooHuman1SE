@@ -79,7 +79,7 @@
             </TabItem>
             <TabItem Header="Inventory">
                 <Grid>
-                    <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="dataInventry" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False" ScrollViewer.CanContentScroll="False" Margin="0,46,0,0" ContextMenuOpening="dataInventry_ContextMenuOpening">
+                    <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="dataInventry" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="false" CanUserDeleteRows="False" AutoGenerateColumns="False" ScrollViewer.CanContentScroll="False" Margin="0,46,0,0" ContextMenuOpening="dataInventry_ContextMenuOpening">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>

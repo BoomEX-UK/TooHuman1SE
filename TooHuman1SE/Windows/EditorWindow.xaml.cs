@@ -28,16 +28,7 @@ namespace TooHuman1SE.Windows
     {
         public MainWindow _mainWindow;
         public TH1SaveStructure _save;
-        public TH1PaintCollection paintCollection;
-        public TH1MutationCollection mutationCollection;
-        public TH1CharmQuestCollection questCollection;
-        public TH1CharmQuestTypeCollection questTypeCollection;
-        public TH1RuneMBonusCollection runeMBonusCollection;
-        public TH1RuneMCollection runeMCollection;
-        public TH1RuneUCollection runeUCollection;
-        public TH1CharmCollection charmCollection;
-        public TH1WeaponCollection weaponCollection;
-        public TH1ArmourCollection armourCollection;
+        public TH1Collections db;
 
         // Tabs
         TabCharacterUC tc = new TabCharacterUC();
@@ -171,8 +162,8 @@ namespace TooHuman1SE.Windows
         private void loadWeaponsTab()
         {
             we._ewin = this;
-            we.weaponCollection = weaponCollection;
-            // ob.gridObelisks.ItemsSource = _save.charmsActiveEx;
+            we.weaponCollection = db.weaponCollection;
+            we.gridWeapons.ItemsSource = _save.weapons;
         }
 
         #endregion Tab Loading
@@ -181,17 +172,8 @@ namespace TooHuman1SE.Windows
 
         private void setUpCollections()
         {
-            paintCollection = _save.paintCollection;
-            mutationCollection = _save.mutationCollection;
-            questCollection = _save.questCollection;
-            questTypeCollection = _save.questTypeCollection;
-            runeMBonusCollection = _save.runeMBonusCollection;
-            runeMCollection = _save.runeMCollection;
-            runeUCollection = _save.runeUCollection;
-            charmCollection = _save.charmCollection;
-            weaponCollection = _save.weaponCollection;
-            armourCollection = _save.armourCollection;
-    }
+            db = _save.db; // very important!
+        }
 
         private void setWindowTitle()
         {

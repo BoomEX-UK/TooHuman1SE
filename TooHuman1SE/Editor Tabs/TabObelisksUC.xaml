@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="500">
     <Grid>
-        <DataGrid x:Name="gridObelisks" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
+        <DataGrid x:Name="gridObelisks" CanUserDeleteRows="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Width="*" Header="Obelisk ID" Binding="{Binding Path=key}" IsReadOnly="true"/>
                 <DataGridTextColumn Width="*" Header="Collected" Binding="{Binding Path=value}" IsReadOnly="true" />

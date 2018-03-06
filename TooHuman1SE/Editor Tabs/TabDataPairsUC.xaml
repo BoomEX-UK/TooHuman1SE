@@ -11,7 +11,7 @@
             <TabItem Header="Group A">
                 <Grid Background="#FFE5E5E5">
                     <!-- <DataGrid x:Name="dataPairsA" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120"/> -->
-                    <DataGrid x:Name="dataPairsA" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
+                    <DataGrid x:Name="dataPairsA" CanUserDeleteRows="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Width="130" Header="Key" Binding="{Binding Path=Key}" IsReadOnly="true"/>
                             <DataGridTextColumn Width="*" Header="Value" Binding="{Binding Path=Value}" IsReadOnly="true" />

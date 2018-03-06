@@ -123,6 +123,9 @@
     <Compile Include="Windows\RuneEditorWindow.xaml.cs">
       <DependentUpon>RuneEditorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\WeaponEditorWindow.xaml.cs">
+      <DependentUpon>WeaponEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Editor Tabs\TabCharacterUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,6 +206,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\RuneEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WeaponEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -347,6 +354,38 @@
     <Resource Include="Icons\Charms\C18.png" />
     <Resource Include="Icons\Charms\C19.png" />
     <Resource Include="Icons\Charms\C22.png" />
+    <Resource Include="Icons\Weapons\R8.png" />
+    <Resource Include="Icons\Weapons\default.png" />
+    <Resource Include="Icons\Weapons\B1.png" />
+    <Resource Include="Icons\Weapons\E1.png" />
+    <Resource Include="Icons\Weapons\G1.png" />
+    <Resource Include="Icons\Weapons\O1.png" />
+    <Resource Include="Icons\Weapons\P1.png" />
+    <Resource Include="Icons\Weapons\R1.png" />
+    <Resource Include="Icons\Weapons\B11.png" />
+    <Resource Include="Icons\Weapons\E11.png" />
+    <Resource Include="Icons\Weapons\G11.png" />
+    <Resource Include="Icons\Weapons\O11.png" />
+    <Resource Include="Icons\Weapons\P11.png" />
+    <Resource Include="Icons\Weapons\R11.png" />
+    <Resource Include="Icons\Weapons\B2.png" />
+    <Resource Include="Icons\Weapons\E2.png" />
+    <Resource Include="Icons\Weapons\G2.png" />
+    <Resource Include="Icons\Weapons\O2.png" />
+    <Resource Include="Icons\Weapons\P2.png" />
+    <Resource Include="Icons\Weapons\R2.png" />
+    <Resource Include="Icons\Weapons\B5.png" />
+    <Resource Include="Icons\Weapons\E5.png" />
+    <Resource Include="Icons\Weapons\G5.png" />
+    <Resource Include="Icons\Weapons\O5.png" />
+    <Resource Include="Icons\Weapons\P5.png" />
+    <Resource Include="Icons\Weapons\R5.png" />
+    <Resource Include="Icons\Weapons\B0.png" />
+    <Resource Include="Icons\Weapons\E0.png" />
+    <Resource Include="Icons\Weapons\G0.png" />
+    <Resource Include="Icons\Weapons\O0.png" />
+    <Resource Include="Icons\Weapons\P0.png" />
+    <Resource Include="Icons\Weapons\R0.png" />
     <Content Include="Resources\ISOLib.dll" />
     <Resource Include="Icons\app.ico" />
   </ItemGroup>

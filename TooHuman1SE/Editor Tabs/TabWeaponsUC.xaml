@@ -6,7 +6,55 @@
              xmlns:local="clr-namespace:TooHuman1SE.Editor_Tabs"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style x:Key="Body_Content_DataGrid_Centering"
+	 TargetType="{x:Type DataGridCell}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
-            
+        <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridWeapons"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="25" CanUserSortColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False" MouseDoubleClick="gridWeapons_MouseDoubleClick" ContextMenuOpening="gridWeapons_ContextMenuOpening">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding isEquipt}" Value="true">
+                            <Setter Property="Background" Value="Lavender"></Setter>
+                            <Setter Property="Foreground" Value="DarkBlue"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding Path=image}" Height="24"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="*" Header="Weapon Name" Binding="{Binding Path=weaponLongName}" IsReadOnly="true"/>
+                <DataGridTextColumn Width="70" Header="Condition" Binding="{Binding Path=conditionPerc, StringFormat={}{0:P0}}" IsReadOnly="true" />
+                <DataGridTextColumn Width="*" MaxWidth="175" Header="Class" Binding="{Binding Path=classAlignString}" IsReadOnly="true" />
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Name="mnuAdd" Header="Add Weapon .." Click="btnAddRune_Click"/>
+                    <MenuItem Name="mnuEdit" Header="Edit Selected .." Click="mnuEdit_Click"/>
+                    <MenuItem Name="mnuDuplicate" Header="Duplicate Selected" Click="mnuDuplicate_Click"/>
+                    <MenuItem Name="mnuEquip" Header="Equip Selected" Click="mnuEquip_Click"/>
+                    <Separator/>
+                    <MenuItem Name="mnuDelete" Header="Delete Selected" Click="mnuDelete_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        <Button x:Name="btnAddRune" Content="Add Weapon .." HorizontalAlignment="Right" Height="26" Margin="0,5,5,0" VerticalAlignment="Top" Width="100" Cursor="Hand" Click="btnAddRune_Click"/>
     </Grid>
 </UserControl>

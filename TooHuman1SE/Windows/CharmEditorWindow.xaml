@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TooHuman1SE.Windows"
         mc:Ignorable="d"
-        Title="Charm Editor" Height="395" Width="350" WindowStartupLocation="CenterOwner">
+        Title="Charm Editor" Height="395" Width="350" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Grid>
         <Label Content="Charm" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
         <Label Content="Quest" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top"/>

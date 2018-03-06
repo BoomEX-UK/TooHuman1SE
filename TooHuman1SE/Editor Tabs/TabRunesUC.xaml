@@ -21,7 +21,7 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridRunes"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False">
+        <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridRunes" CanUserDeleteRows="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="35" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False">
             <DataGrid.Columns>
                 <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
