@@ -33,6 +33,26 @@
                         <Image Source="/TooHuman1SE;component/Icons/log.gif"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Sort By" Name="mnuSortBy">
+                    <MenuItem.Icon>
+                        <Image Source="/TooHuman1SE;component/Icons/sort.png"/>
+                    </MenuItem.Icon>
+                    <MenuItem Header="Last Saved" Click="mnuSortBy_Click" Tag="0">
+                        <MenuItem.Icon>
+                            <Image Source="/TooHuman1SE;component/Icons/button.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="EXP" Tag="1" Click="mnuSortBy_Click">
+                        <MenuItem.Icon>
+                            <Image Source="/TooHuman1SE;component/Icons/button.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Name" Tag="2" Click="mnuSortBy_Click">
+                        <MenuItem.Icon>
+                            <Image Source="/TooHuman1SE;component/Icons/button.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="Rebuild Character List" Click="mnu_RebuildList" Name="mnuRebuild" IsEnabled="False">
                     <MenuItem.Icon>
                         <Image Source="/TooHuman1SE;component/Icons/save.png"/>
@@ -48,6 +68,12 @@
                 <MenuItem Header="Developer Blog" Click="mnu_webBlog">
                     <MenuItem.Icon>
                         <Image Source="/TooHuman1SE;component/Icons/web.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="About" Click="mnu_question">
+                    <MenuItem.Icon>
+                        <Image Source="/TooHuman1SE;component/Icons/question.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>

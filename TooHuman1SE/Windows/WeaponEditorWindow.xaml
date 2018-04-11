@@ -149,8 +149,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBox Name="txtA"  Grid.Column="0" VerticalAlignment="Top" Margin="5,0" Height="22" />
-                            <TextBox Name="txtB" Grid.Column="1" VerticalAlignment="Top" Margin="5,0" Height="22" />
+                            <TextBox Name="txtB" Grid.Column="0" VerticalAlignment="Top" Margin="5,0" Height="22" />
                         </Grid>
                     </GroupBox>
                 </Grid>

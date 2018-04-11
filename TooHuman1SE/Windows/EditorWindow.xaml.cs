@@ -163,7 +163,8 @@ namespace TooHuman1SE.Windows
         {
             we._ewin = this;
             we.weaponCollection = db.weaponCollection;
-            we.gridWeapons.ItemsSource = _save.weapons;
+            we.gridWeapons.ItemsSource = _save.weaponsInventory;
+            we.gridBlueprints.ItemsSource = _save.weaponsBlueprints;
         }
 
         #endregion Tab Loading
@@ -275,7 +276,7 @@ namespace TooHuman1SE.Windows
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
                 dlg.FileName = "Too Human SaveGame"; // Default file name
                 dlg.DefaultExt = ".txt"; // Default file extension
-                dlg.Filter = "savegame (.txt)|*.txt"; // Filter files by extension
+                dlg.Filter = "savegame|*.txt"; // Filter files by extension
                 dlg.FileName = "savegame.txt"; // Default Filename
 
                 // Show save file dialog box
@@ -284,16 +285,17 @@ namespace TooHuman1SE.Windows
                 // Process save file dialog box results
                 if (result == true)
                 {
-                // Save document
-                _save.writeSaveFile(dlg.FileName);
-                loadSectorsTab();
-                if (_save.lastError != 0)
-                {
-                    MessageBox.Show("Unable To Save The Current File due To An Error:\r\n------\r\n" + _save.lastErrorMsg, "An Error Has Occured", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Functions.log("An Attempt To Save Has Failed. Error #" + _save.lastError, Functions.LC_CRITICAL);
-                    _save.clearError();
-                    return;
-                }
+                    // Save document
+                    _save.character.lastSave = DateTime.UtcNow;
+                    _save.writeSaveFile(dlg.FileName);
+                    loadSectorsTab();
+                    if (_save.lastError != 0)
+                    {
+                        MessageBox.Show("Unable To Save The Current File due To An Error:\r\n------\r\n" + _save.lastErrorMsg, "An Error Has Occured", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Functions.log("An Attempt To Save Has Failed. Error #" + _save.lastError, Functions.LC_CRITICAL);
+                        _save.clearError();
+                        return;
+                    }
                 }
             } else
             {

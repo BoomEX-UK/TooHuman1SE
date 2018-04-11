@@ -21,40 +21,88 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridWeapons"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="25" CanUserSortColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False" MouseDoubleClick="gridWeapons_MouseDoubleClick" ContextMenuOpening="gridWeapons_ContextMenuOpening">
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding isEquipt}" Value="true">
-                            <Setter Property="Background" Value="Lavender"></Setter>
-                            <Setter Property="Foreground" Value="DarkBlue"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
-            <DataGrid.Columns>
-                <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Image Source="{Binding Path=image}" Height="24"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Width="*" Header="Weapon Name" Binding="{Binding Path=weaponLongName}" IsReadOnly="true"/>
-                <DataGridTextColumn Width="70" Header="Condition" Binding="{Binding Path=conditionPerc, StringFormat={}{0:P0}}" IsReadOnly="true" />
-                <DataGridTextColumn Width="*" MaxWidth="175" Header="Class" Binding="{Binding Path=classAlignString}" IsReadOnly="true" />
-            </DataGrid.Columns>
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Name="mnuAdd" Header="Add Weapon .." Click="btnAddRune_Click"/>
-                    <MenuItem Name="mnuEdit" Header="Edit Selected .." Click="mnuEdit_Click"/>
-                    <MenuItem Name="mnuDuplicate" Header="Duplicate Selected" Click="mnuDuplicate_Click"/>
-                    <MenuItem Name="mnuEquip" Header="Equip Selected" Click="mnuEquip_Click"/>
-                    <Separator/>
-                    <MenuItem Name="mnuDelete" Header="Delete Selected" Click="mnuDelete_Click"/>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
-        </DataGrid>
-        <Button x:Name="btnAddRune" Content="Add Weapon .." HorizontalAlignment="Right" Height="26" Margin="0,5,5,0" VerticalAlignment="Top" Width="100" Cursor="Hand" Click="btnAddRune_Click"/>
+        <TabControl x:Name="tabControl" TabStripPlacement="Bottom">
+            <TabItem Header="Inventory" Height="22" VerticalAlignment="Bottom">
+                <Grid>
+                    <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridWeapons"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="25" CanUserSortColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False" MouseDoubleClick="gridWeapons_MouseDoubleClick" ContextMenuOpening="grid_ContextMenuOpening">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding isEquipt}" Value="true">
+                                        <Setter Property="Background" Value="Lavender"/>
+                                        <Setter Property="Foreground" Value="DarkBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding image}" Height="24"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Width="*" Header="Weapon Name" Binding="{Binding weaponName}" IsReadOnly="true"/>
+                            <DataGridTextColumn Width="40" Header="Level" Binding="{Binding level}" IsReadOnly="true" />
+                            <DataGridTextColumn Width="70" Header="Condition" Binding="{Binding conditionPerc, StringFormat=\{0:P0\}}" IsReadOnly="true" />
+                            <DataGridTextColumn Width="*" MaxWidth="175" Header="Class" Binding="{Binding classAlignString}" IsReadOnly="true" />
+                        </DataGrid.Columns>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="mnuAddInv" Header="Add Weapon .." Click="btnAdd_Click" Tag="0"/>
+                                <MenuItem x:Name="mnuEditInv" Header="Edit Selected .." Click="mnuEdit_Click" Tag="0"/>
+                                <MenuItem x:Name="mnuDuplicateInv" Header="Duplicate Selected" Click="mnuDuplicate_Click" Tag="0"/>
+                                <MenuItem x:Name="mnuEquipInv" Header="Equip Selected" Click="mnuEquip_Click" Tag="0"/>
+                                <MenuItem x:Name="mnuCreateBP" Header="Create Blueprint" Click="mnuCraftBP_Click" Tag="0"/>
+                                <Separator/>
+                                <MenuItem x:Name="mnuDeleteInv" Header="Delete Selected" Click="mnuDelete_Click" Tag="0"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                    </DataGrid>
+                    <Button x:Name="btnAddWeapon" Content="Add Weapon .." HorizontalAlignment="Right" Height="26" Margin="0,5,10,0" VerticalAlignment="Top" Width="100" Cursor="Hand" Click="btnAdd_Click" Tag="0"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Blueprints">
+                <Grid>
+                    <DataGrid CellStyle="{StaticResource Body_Content_DataGrid_Centering}" x:Name="gridBlueprints"  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ItemsSource="{Binding}" ColumnWidth="*" MinColumnWidth="25" CanUserSortColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Margin="0,36,0,0" ScrollViewer.CanContentScroll="False" MouseDoubleClick="gridWeapons_MouseDoubleClick" ContextMenuOpening="grid_ContextMenuOpening" Tag="1">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding isEquipt}" Value="true">
+                                        <Setter Property="Background" Value="Lavender"/>
+                                        <Setter Property="Foreground" Value="DarkBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn MaxWidth="26" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding image}" Height="24"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Width="*" Header="Weapon Name" Binding="{Binding weaponName}" IsReadOnly="true"/>
+                            <DataGridTextColumn Width="40" Header="Level" Binding="{Binding level}" IsReadOnly="true" />
+                            <DataGridTextColumn Width="70" Header="Free Slots" Binding="{Binding freeRuneOfEmpty}" IsReadOnly="true" />
+                            <DataGridTextColumn Width="*" MaxWidth="175" Header="Class" Binding="{Binding classAlignString}" IsReadOnly="true" />
+                        </DataGrid.Columns>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="mnuAddBP" Header="Add Blueprint .." Click="btnAdd_Click" Tag="1"/>
+                                <MenuItem x:Name="mnuEditBP" Header="Edit Selected .." Click="mnuEdit_Click" Tag="1"/>
+                                <MenuItem x:Name="mnuDuplicateBP" Header="Duplicate Selected" Click="mnuDuplicate_Click" Tag="1"/>
+                                <MenuItem x:Name="mnuCraftBP" Header="Craft Selected" Click="mnuCraftBP_Click" Tag="1"/>
+                                <Separator/>
+                                <MenuItem x:Name="mnuDeleteBP" Header="Delete Selected" Click="mnuDelete_Click" Tag="1"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                    </DataGrid>
+                    <Button x:Name="btnAddBlueprint" Content="Add Blueprint .." HorizontalAlignment="Right" Height="26" Margin="0,5,10,0" VerticalAlignment="Top" Width="100" Cursor="Hand" Click="btnAdd_Click" Tag="1"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

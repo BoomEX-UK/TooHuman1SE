@@ -7,9 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="500">
     <Grid>
-        <DataGrid x:Name="dataSectors" CanUserDeleteRows="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False">
+        <DataGrid x:Name="dataSectors" CanUserDeleteRows="False" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ColumnWidth="*" MinColumnWidth="120" CanUserSortColumns="False" CanUserAddRows="false" AutoGenerateColumns="False" ContextMenuOpening="dataSectors_ContextMenuOpening">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="*" Header="Sector ID" Binding="{Binding Path=sectorName}" IsReadOnly="true"/>
+                <DataGridTextColumn Width="*" Header="Sector ID" Binding="{Binding Path=name}" IsReadOnly="true"/>
                 <DataGridTextColumn Width="*" Header="Size" Binding="{Binding Path=sizeString}" IsReadOnly="true" />
             </DataGrid.Columns>
             <DataGrid.Resources>
@@ -19,6 +19,7 @@
             </DataGrid.Resources>
             <DataGrid.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Name="mnuDebugExtract" Header="Debug Extract" Click="mnuDebugExtract_Click" Visibility="Collapsed"/>
                     <MenuItem Header="Extract Selected" Click="mnuExtractSelected_Click"/>
                     <MenuItem Header="Extract All" Click="mnuExtractAll_Click"/>
                 </ContextMenu>

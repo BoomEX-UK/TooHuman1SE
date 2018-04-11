@@ -2,7 +2,9 @@
 using Isolib.IOPackage;
 using Isolib.STFSPackage;
 using System;
+using System.Globalization;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +20,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Diagnostics;
 using TooHuman1SE.SEStructure;
 using TooHuman1SE.SEFunctions;
 using TooHuman1SE.User_Controls;
@@ -67,6 +70,10 @@ namespace TooHuman1SE
         public MainWindow()
         {
             InitializeComponent();
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+            this.Title = this.Title + " v" + version;
             SetContentControl();
             LoadLogWindow();
         }
@@ -92,6 +99,50 @@ namespace TooHuman1SE
             mnuRebuild.IsEnabled = true;
         }
 
+        private void sortCharacterList( int sortType, ObservableCollection<CharListImages> listToSort)
+        {
+            if (listToSort == null) return;
+
+            int i = 0;
+            bool breakout = false;
+
+            while( i < listToSort.Count && !breakout)
+            {
+                if ( i > 0)
+                {
+                    CharListImages thisItem = listToSort[i];
+                    CharListImages prevItem = listToSort[i-1];
+
+                    bool switchout = false;
+                    switch( sortType)
+                    {
+                        case 0:
+                            DateTime thisPlayed = DateTime.Parse(thisItem.lastplayed);
+                            DateTime prevPlayed = DateTime.Parse(prevItem.lastplayed);
+                            switchout = (prevPlayed < thisPlayed);
+                            break;
+                        case 1:
+                            long thisExp = long.Parse(thisItem.exp, NumberStyles.AllowThousands);
+                            long prevExp = long.Parse(prevItem.exp, NumberStyles.AllowThousands);
+                            switchout = (prevExp < thisExp);
+                            break;
+                        case 2:
+                            switchout = (string.Compare(thisItem.name, prevItem.name) == -1);
+                            break;
+                    }
+
+                    if(switchout)
+                    {
+                        listToSort.Move(i, i - 1);
+                        breakout = true;
+                        sortCharacterList(sortType, listToSort);
+                    }
+                }
+                i++;
+            }
+
+        }
+
         #region FileOpening
 
         private void loadFilesIntoList( string[] files)
@@ -107,7 +158,6 @@ namespace TooHuman1SE
                 if( newsave.lastError == 0 )
                 {
                     if (!newsave.hashVerified) { Functions.log("Save file contains an invalid hash", Functions.LC_WARNING);  }
-                    // newsave.writeAllSectors(false); // Debugging Type activity
                     Functions.log("File Read OK! Importing Character..");
                     Functions.importCharSave(newsave);
                     Functions.log("Character Imported.", Functions.LC_SUCCESS);
@@ -120,10 +170,7 @@ namespace TooHuman1SE
         private void ChooseFile()
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-
-            // Set filter for file extension and default file extension 
-            // dlg.DefaultExt = ".png";
-            dlg.Filter = "TH1 Xbox360 Save (TH1_Save*)|TH1_Save*|TH1 Decompressed Save (savegame.txt)|*.txt|All Files (*)|*";
+            dlg.Filter = "TH1 Xbox360 Save|TH1_Save*|TH1 Decompressed Save|*.txt|All Files|*";
 
             Nullable<bool> result = dlg.ShowDialog();
 
@@ -189,14 +236,18 @@ namespace TooHuman1SE
 
         private void mnu_RebuildList(object sender, RoutedEventArgs e)
         {
-            string characterFile = "caracters.xml";
             string saveDir = "saves";
             string fileExt = ".th1";
 
             Functions.log("Rebuilding Character List", Functions.LC_PRIMARY);
 
-            if (File.Exists(characterFile)) File.Delete(characterFile);
-            if( _CharactersUC._charList != null ) _CharactersUC._charList.Clear();
+            if (File.Exists(Functions.charPath)) File.Delete(Functions.charPath);
+            if (_CharactersUC.lstCharacters.ItemsSource != null)
+            {
+                ObservableCollection<CharListImages> list = (ObservableCollection<CharListImages>)_CharactersUC.lstCharacters.ItemsSource;
+                list.Clear();
+            }
+
 
             if ( Directory.Exists(saveDir))
             {
@@ -216,6 +267,31 @@ namespace TooHuman1SE
         private void mnu_webBlog(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("http://toohuman1se.xjam.es/"); 
+        }
+
+        private void mnuSortBy_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.MenuItem mnu = sender as System.Windows.Controls.MenuItem;
+
+            if (mnu == null) return;
+            int sortType = int.Parse((string)mnu.Tag);
+
+            sortCharacterList(sortType, (ObservableCollection<CharListImages>)_CharactersUC.lstCharacters.ItemsSource);
+        }
+
+        private void mnu_question(object sender, RoutedEventArgs e)
+        {
+            string rn = "\r\n";
+            string sep = "\r\n+------------------------------------+\r\n";
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+            MessageBox.Show(
+                string.Format("Too Human 1 Save Editor{0}aka \"9 Years Too Late\"{1}Version: {2}{0}Created By: xJam.es{1}Credits To:{0}Jappi88 & Pureis (Isolib){0}Newtonsoft (Json){0}Fandom (Too Human Wiki){0}Silicon Knights (R.I.P)", rn,sep, version),
+                "Too Human 1 Save Editor",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+                );
         }
 
         #endregion Menu Items

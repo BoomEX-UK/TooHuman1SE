@@ -28,6 +28,7 @@ namespace TooHuman1SE.SEFunctions
         public string cclass { get; set; }
         public string bounty { get; set; }
         public string calign { get; set; }
+        public string lastplayed { get; set; }
     }
 
     public class CharListImages
@@ -41,6 +42,7 @@ namespace TooHuman1SE.SEFunctions
         public string cclass { get; set; }
         public string bounty { get; set; }
         public string calign { get; set; }
+        public string lastplayed { get; set; }
         public BitmapImage image { get; set; }
     }
 
@@ -49,7 +51,7 @@ namespace TooHuman1SE.SEFunctions
         public const string appName = "Too Human 1 Save Editor";
         public const string creatorName = "Created By James";
 
-        private const string charPath = "caracters.xml";
+        public const string charPath = "characters.xml";
 
         public static Stfs confs;
         public static byte[] _buffer;
@@ -171,6 +173,7 @@ namespace TooHuman1SE.SEFunctions
                 chl.cclass = cli.cclass;
                 chl.bounty = cli.bounty;
                 chl.calign = cli.calign;
+                chl.lastplayed = cli.lastplayed;
                 lstc.Add(chl);
             }
             saveCharList(lstc);
@@ -216,6 +219,7 @@ namespace TooHuman1SE.SEFunctions
                 il.bounty = cl.bounty;
                 il.image = classToImage(Array.IndexOf(ca.classNamesArray,cl.cclass));
                 il.calign = cl.calign;
+                il.lastplayed = cl.lastplayed;
                 lsti.Add(il);
             }
 
@@ -224,7 +228,7 @@ namespace TooHuman1SE.SEFunctions
             MainWindow._CharactersUC.lstCharacters.ItemsSource = obsicol;
         }
 
-        private static void lstCharacter_OnChange(object sender, NotifyCollectionChangedEventArgs e)
+        public static void lstCharacter_OnChange(object sender, NotifyCollectionChangedEventArgs e)
         {
             saveCharListView(MainWindow._CharactersUC.lstCharacters);
         }
@@ -251,6 +255,7 @@ namespace TooHuman1SE.SEFunctions
                 item.cclass = ca.classNamesArray[save.character.charClass];
                 item.calign = ca.alignmentNamesArray[save.character.alignment];
                 item.image = classToImage(save.character.charClass);
+                item.lastplayed = save.character.lastSave.ToString();
 
                 // Backup save
                 item.path = @"saves\" + item.hash + ".th1";

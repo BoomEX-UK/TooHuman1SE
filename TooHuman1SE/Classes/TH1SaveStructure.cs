@@ -48,10 +48,19 @@ namespace TooHuman1SE.SEStructure
     public class TH1Sector
     {
         private long _id = 0;
-        private long _offset = 0;
-        private long _size = 0;
         private string _sectorname;
         private byte[] _sectorData;
+
+        public TH1Sector( long inID)
+        {
+            _id = inID;
+            // helpers
+            Dictionary<int, string> sectorNamesDic = new TH1Helper().sectorNamesDic;
+            if (!sectorNamesDic.TryGetValue((int)id, out _sectorname))
+            {
+                _sectorname = string.Format("sector{0}", id.ToString().PadLeft(3, '0'));
+            }
+        }
 
         public long id
         {
@@ -69,26 +78,11 @@ namespace TooHuman1SE.SEStructure
                 }
             }
         }
-        public long offset
-        {
-            get
-            {
-                return _offset;
-            }
-            set
-            {
-                _offset = value;
-            }
-        }
         public long size
         {
             get
             {
-                return _size;
-            }
-            set
-            {
-                _size = value;
+                return _sectorData.Length;
             }
         }
         public string sizeString
@@ -97,7 +91,7 @@ namespace TooHuman1SE.SEStructure
             {
                 string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
                 int decimalPlaces = 1;
-                long value = _size;
+                long value = _sectorData.Length;
 
                 if (value < 0) { return "Unknown"; }
                 if (value == 0) { return string.Format("{0:n" + decimalPlaces + "} bytes", 0); }
@@ -124,14 +118,14 @@ namespace TooHuman1SE.SEStructure
                     SizeSuffixes[mag]);
             }
         }
-        public string sectorName
+        public string name
         {
             get
             {
                 return _sectorname;
             }
         }
-        public byte[] sectorData
+        public byte[] data
         {
             get
             {
@@ -517,7 +511,7 @@ namespace TooHuman1SE.SEStructure
         public long OFFSET_HEADER = 0;
         public long OFFSET_SAVESLOT = 4;
         public long OFFSET_UNKNOWN_01 = 8;
-        public long OFFSET_TIMESTAMP = 12;
+        public long OFFSET_LAST_SAVED = 12;
         public long OFFSET_NAME_U = 20;
         public long OFFSET_CLASS = 52;
         public long OFFSET_LEVELA = 56;
@@ -548,12 +542,13 @@ namespace TooHuman1SE.SEStructure
         public long skillPoints;
         public string playTime;
         public long saveSlot;
+        public DateTime lastSave;
 
         public long OFFSET_ALIGNMENT = 0; // After Ascii Name (uint 14/14)
 
         // Data Pairs
         public Dictionary<string, uint> dataPairsA = new Dictionary<string, uint>();
-        public Dictionary<string, uint> dataPairsB = new Dictionary<string, uint>();
+        public Dictionary<string, float> dataPairsB = new Dictionary<string, float>();
 
         // Data Pair Names
         public Dictionary<uint, string> dataPairNamesA = new Dictionary<uint, string> {
@@ -590,7 +585,9 @@ namespace TooHuman1SE.SEStructure
         };
         public Dictionary<uint, string> dataPairNamesB = new Dictionary<uint, string>
         {
-
+            [0x02] = "playtime_seconds",
+            [0x03] = "playtime_minutes",
+            [0x04] = "playtime_hours"
         };
 
         
@@ -3250,7 +3247,7 @@ namespace TooHuman1SE.SEStructure
     {
         // Private
         private TH1Weapon _weapon;
-        private uint _valueA; // always true?
+        private bool _crafted; // always true?
         private uint _valueB; // boolean?
         private uint _condition;
         private bool _isEquipt; // always false?
@@ -3258,12 +3255,12 @@ namespace TooHuman1SE.SEStructure
         private List<TH1RuneMExt> _runesInserted;
 
         // Public
-        public TH1WeaponExt( TH1Weapon weapon)
+        public TH1WeaponExt( TH1Weapon weapon )
         {
             _weapon = weapon;
             _paint = _weapon.paint;
             _condition = (uint)_weapon.condition;
-            _valueA = 1;
+            _crafted = true;
             _isEquipt = false;
             _runesInserted = new List<TH1RuneMExt>();
         }
@@ -3275,15 +3272,26 @@ namespace TooHuman1SE.SEStructure
                 return _weapon;
             }
         }
-        public uint valueA
+        public bool crafted
         {
             get
             {
-                return _valueA;
+                return _crafted;
             }
             set
             {
-                _valueA = value;
+                _crafted = value;
+            }
+        }
+        public uint craftedUint
+        {
+            get
+            {
+                return _crafted ? 1u : 0u;
+            }
+            set
+            {
+                _crafted = (value == 1);
             }
         }
         public uint valueB
@@ -3381,7 +3389,7 @@ namespace TooHuman1SE.SEStructure
         {
             get
             {
-                return _weapon.noun;
+                return _weapon.weaponName;
             }
         }
         public string weaponLongName
@@ -3476,6 +3484,14 @@ namespace TooHuman1SE.SEStructure
                 return _weapon.emptyRuneSlots - runesInserted.Count;
             }
         }
+        public string freeRuneOfEmpty
+        {
+            get
+            {
+                if (emptyRuneSlots == 0) return "None";
+                else return string.Format("{0}/{1}",freeRuneSlots, emptyRuneSlots);
+            }
+        }
         public byte[] weaponExtToArray
         {
             get
@@ -3509,7 +3525,7 @@ namespace TooHuman1SE.SEStructure
                     
                     // Weapon Ext
                     writer.WriteBytes(new byte [] { 0x12, 0x34, 0x56, 0x78});
-                    writer.WriteUInt32(_valueA);
+                    writer.WriteUInt32(craftedUint);
                     writer.WriteUInt32(_valueB);
                     writer.WriteUInt32(_condition);
                     writer.WriteUInt32(isEquiptUint);
@@ -3614,6 +3630,12 @@ namespace TooHuman1SE.SEStructure
             0x54, 0x48, 0x31, 0x00, 0x00, 0x00, 0x00, 0x42
         };
 
+        // Sector Only Header
+        private static readonly byte[] SECTOR_HEADER = new byte[]
+        {
+            0x12, 0x34, 0x56, 0x78
+        };
+
         //  Is this the chicken or the egg?
         private static readonly byte[] PLACEHOLDER_HASH = new byte[]
         {
@@ -3637,7 +3659,16 @@ namespace TooHuman1SE.SEStructure
         public byte[] rawData;
         public byte[] hash;
         public Boolean hashVerified;
-        public long dataSize;
+        public long dataSize
+        {
+            get
+            {
+                long tmpres = 0;
+                foreach (TH1Sector _sector in this.sectors)
+                    tmpres += 4 + _sector.size;
+                return tmpres;
+            }
+        }
 
         // Gamesave Parsing
         public List<TH1Sector> sectors;
@@ -3647,7 +3678,8 @@ namespace TooHuman1SE.SEStructure
         public TH1CharmExt[] charmsActive;
         public List<TH1CharmExt> charmsInventry;
         public List<TH1Obelisk> charmsActiveEx;
-        public List<TH1WeaponExt> weapons;
+        public List<TH1WeaponExt> weaponsInventory;
+        public List<TH1WeaponExt> weaponsBlueprints;
 
         // Problems
         public long lastError;       // current 0
@@ -3667,7 +3699,6 @@ namespace TooHuman1SE.SEStructure
             this.rawData = null;
             this.hash = PLACEHOLDER_HASH;
             this.hashVerified = false;
-            this.dataSize = 0;
 
             // Parsed
             this.sectors = new List<TH1Sector>();
@@ -3677,7 +3708,8 @@ namespace TooHuman1SE.SEStructure
             this.charmsActive = new TH1CharmExt[2];
             this.charmsInventry = new List<TH1CharmExt>();
             this.charmsActiveEx = new List<TH1Obelisk>();
-            this.weapons = new List<TH1WeaponExt>();
+            this.weaponsInventory = new List<TH1WeaponExt>();
+            this.weaponsBlueprints = new List<TH1WeaponExt>();
 
             // Databases
             if (this.db == null) this.db = new TH1Collections();
@@ -3700,23 +3732,22 @@ namespace TooHuman1SE.SEStructure
             // If Sucessful
             if (this.lastError == 0)
             {
+                // Load Settings
                 loadGamesaveSectors();
                 dataToCharacter();
                 dataToSkillsTree();
                 dataToRunes();
                 dataToCharmsActive();
                 dataToCharmsInventry();
-                dataToWeapons();
-
-                this.dataSize = this.rawData.Length;
+                dataToWeaponsInventory();
+                dataToWeaponsBlueprints();
             }
 
         }
 
         public void writeSaveFile(string outFilePath)
         {
-            byte[] newhash;
-            byte[] saveOut;
+            byte[] gamesaveOut;
 
             // Save Settings
             characterToData();
@@ -3724,35 +3755,22 @@ namespace TooHuman1SE.SEStructure
             runesToData();
             charmsActiveToData();
             charmsInventryToData();
-            weaponsToData();
+            // MessageBox.Show("Weapons To Data");
+            weaponsInventoryToData();
+            weaponsBlueprintsToData();
 
             // Create the Save Buffer in Memory
-            saveOut = new byte[this.dataSize];
-            Array.Copy(this.rawData, 0, saveOut, 0, saveOut.Length);
-            Array.Resize(ref saveOut, (int)(this.dataSize + PUBLIC_FOOTER.Length));
-            Array.Copy(PUBLIC_FOOTER, 0, saveOut, this.dataSize, PUBLIC_FOOTER.Length);
+            gamesaveOut = rebuildSave();
+            long saveLength = gamesaveOut.Length;
 
-            // Generate Hash
-            newhash = getHash(saveOut);
-
-            // Overwrite the Placeholder Hash
-            RWStream writer = new RWStream(saveOut, true, true);
-            try
-            {
-                writer.Position = TH1_OFFSET_HASH;
-                writer.WriteBytes(newhash);
-                writer.Flush();
-            }
-            catch (Exception ex) {
-                setError(8, "Unable To Write New Hash: " + ex.ToString());
-            }
-            finally { saveOut = writer.ReadAllBytes(); writer.Close(true); }
+            Array.Resize(ref gamesaveOut, (int)(saveLength + PUBLIC_FOOTER.Length));
+            Array.Copy(PUBLIC_FOOTER, 0, gamesaveOut, saveLength, PUBLIC_FOOTER.Length);
 
             try
             {
                 using (var fs = new FileStream(outFilePath, FileMode.Create, FileAccess.Write))
                 {
-                    fs.Write(saveOut, 0, saveOut.Length);
+                    fs.Write(gamesaveOut, 0, gamesaveOut.Length);
                 }
             }
             catch (Exception ex)
@@ -3762,21 +3780,9 @@ namespace TooHuman1SE.SEStructure
 
         }
 
-        // Drop Them all
-        public void writeAllSectors(bool incHeader)
-        {
-            string tmphash = BitConverter.ToString(this.hash).Replace("-", "");
-            Directory.CreateDirectory("tmp");
-            Directory.CreateDirectory(@"tmp\" + tmphash);
-            for (int i = 0; i < this.sectors.Count; i++)
-            {
-                writeSectorToFile(@"tmp\" + tmphash + @"\sector" + i.ToString("000") + ".tmp", i, incHeader);
-            }
-        }
-
         #endregion Public
 
-        #region IO Functions
+        #region General IO Functions
 
         private void readTH1Gamesave()
         {
@@ -3875,25 +3881,92 @@ namespace TooHuman1SE.SEStructure
             return output;
         }
 
-        // Dumping Sectors..
-        public void writeSectorToFile(string filename, int sectorID, bool incHeader)
+        private byte[] rewriteFileSize(byte[] data, uint newSize)
         {
-            // Sector Code
-            byte[] sectorcode = new byte[4];
-            Array.Copy(PUBLIC_HEADER, sectorcode, sectorcode.Length);
+            long tmpOffset = TH1_OFFSET_SIZE;
+            RWStream writer = new RWStream(data, true, true);
+            try
+            {
+                writer.Position = tmpOffset;
+                writer.WriteUInt32(newSize);
+            }
+            catch (Exception ex) { setError(11, "Unable To Write New Filesize: " + ex.ToString()); }
+            finally { data = writer.ReadAllBytes(); writer.Close(true); }
+            return data;
+        }
+
+        #endregion General IO Functions
+
+        #region Sector IO
+        private void rebuildSector(int sectorID, byte[] newData)
+        {
+            // this should be enough (for now)
+            foreach (TH1Sector _sector in this.sectors)
+                if (_sector.id == sectorID) _sector.data = newData;
+        }
+
+        private byte[] getSectorData(int sectorID, bool isDebug)
+        {
+            byte[] tmpRes = new byte[0];
+            foreach (TH1Sector _sector in this.sectors)
+                if (_sector.id == sectorID)
+                    if (isDebug) return debugStripSector(sectorID, _sector.data);
+                    else return _sector.data;
+            return tmpRes;
+        }
+
+        // Overload
+        private byte[] getSectorData(int sectorID)
+        {
+            return getSectorData(sectorID, false);
+        }
+
+        private byte[] rebuildSave()
+        {
+            // Get Full Size
+            long fullSize = 0;
+            for (int i = 0; i < this.sectors.Count; i++)
+                fullSize += SECTOR_HEADER.Length + this.sectors[i].size;
+
+            // Reserve Memory
+            byte[] tmpRes = new byte[fullSize];
+            long pointer = 0;
+
+            // Copy Data
+            for (int i = 0; i < this.sectors.Count; i++)
+            {
+                // Header
+                Array.Copy(SECTOR_HEADER, 0, tmpRes, pointer, SECTOR_HEADER.Length);
+                pointer += 4;
+                // Data
+                Array.Copy(this.sectors[i].data, 0, tmpRes, pointer, this.sectors[i].size);
+                pointer += this.sectors[i].size;
+            }
+
+            // Write New File Size
+            tmpRes = rewriteFileSize(tmpRes, (uint)fullSize);
+
+            // Hash The File
+            tmpRes = rewriteHash(tmpRes);
+
+            return tmpRes;
+        }
+
+        // Dumping Sectors..
+        public void writeSectorToFile(string filename, int sectorID, bool incHeader, bool isDebug )
+        {
 
             // Write All Sectors
             if ((this.lastError == 0) && (sectorID <= this.sectors.Count) && (sectorID >= 0))
             {
                 // Grab Data
-                byte[] sectordata = new byte[this.sectors[sectorID].size];
-                Array.Copy(this.rawData, this.sectors[sectorID].offset, sectordata, 0, sectordata.Length);
+                byte[] sectordata = getSectorData(sectorID, isDebug);
 
                 // Write It
                 RWStream writer = new RWStream(File.Open(filename, FileMode.Create), true);
                 if (incHeader)
                 {
-                    writer.WriteBytes(sectorcode);
+                    writer.WriteBytes(SECTOR_HEADER);
                 }
                 writer.WriteBytes(sectordata);
                 writer.Flush();
@@ -3901,57 +3974,19 @@ namespace TooHuman1SE.SEStructure
             }
         }
 
-        // For Those Constantly Changing Sectors ..
-        private void replaceSector(int sectorID, byte[] newData)
+        private byte[] debugStripSector( int sectorID, byte[] sectorData )
         {
-
-            byte[] reconstructed;
-            long pos = 0;
-            long relSize = 0;
-            reconstructed = new byte[this.rawData.Length - this.sectors[sectorID].size + newData.Length];
-
-            // Beginning
-            Array.Copy(this.rawData, 0, reconstructed, pos, this.sectors[sectorID].offset);
-            pos += this.sectors[sectorID].offset;
-
-            // Middle
-            Array.Copy(newData, 0, reconstructed, pos, newData.Length);
-            pos += newData.Length;
-
-            // End
-            long secondHalf = this.sectors[sectorID].offset + this.sectors[sectorID].size;
-            Array.Copy(this.rawData, secondHalf, reconstructed, pos, this.rawData.Length - secondHalf);
-
-            // Shuffle Sector Offsets
-            // relSize = newData.Length - this.sectors[sectorID].size;
-            // this.sectors[sectorID].size = newData.Length;
-            //for (int sectorI = sectorID + 1; sectorI < this.sectors.Count; sectorI++)
-            //{
-            //    this.sectors[sectorI].offset += relSize;
-            //}
-
-            // Output
-            this.rawData = reconstructed;
-            this.dataSize = this.rawData.Length;
-            rewriteFileSize();
-
-            loadGamesaveSectors();
-        }
-
-        private void rewriteFileSize()
-        {
-            long tmpOffset = TH1_OFFSET_SIZE;
-            RWStream writer = new RWStream(this.rawData, true, true);
-            try
+            byte[] tmpRes = sectorData;
+            switch(sectorID)
             {
-                writer.Position = tmpOffset;
-                writer.WriteUInt32((uint)this.dataSize);
+                case TH1_SECTOR_CHARACTER:
+                    tmpRes = debugCharacterToData();
+                    break;
             }
-            catch (Exception ex) { setError(11, "Unable To Write New Filesize: " + ex.ToString()); }
-            finally { this.rawData = writer.ReadAllBytes(); writer.Close(true); }
+            return tmpRes;
         }
 
-        #endregion IO Functions
+        #endregion Sector IO
 
         #region Character IO
         private void dataToCharacter()
@@ -3965,12 +4000,12 @@ namespace TooHuman1SE.SEStructure
             // - Bounty
             // - Skillpoints
             // - SaveSlot
+            // - Last Saved
             // - Data Pairs A
             // - Data Pairs B
 
             // temp load the character data
-            byte[] charData = new byte[this.sectors[TH1_SECTOR_CHARACTER].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARACTER].offset, charData, 0, charData.Length);
+            byte[] charData = getSectorData(TH1_SECTOR_CHARACTER);
             TH1Character tmpChar = this.character;
 
             RWStream reader = new RWStream(charData, true);
@@ -3983,7 +4018,7 @@ namespace TooHuman1SE.SEStructure
                 reader.Position = tmpChar.OFFSET_NAME_A;
                 tmpChar.name = reader.ReadString(StringType.Ascii, namelength - 1);
 
-                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + namelength + (13*4);
+                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + namelength + (13 * 4);
                 reader.Position = tmpChar.OFFSET_ALIGNMENT;
                 tmpChar.alignment = reader.ReadUInt32();
 
@@ -4005,13 +4040,9 @@ namespace TooHuman1SE.SEStructure
                 reader.Position = tmpChar.OFFSET_SAVESLOT;
                 tmpChar.saveSlot = reader.ReadUInt32();
 
-                // ???
-                reader.Position = tmpChar.OFFSET_TIMESTAMP;
-                // byte[] timestampArray = reader.ReadBytes(8);
-                // long seconds = BitConverter.ToInt64(timestampArray, 0);
-
-                long seconds = reader.ReadInt64();
-                // DateTime date = Epoch + TimeSpan.FromSeconds(seconds);
+                // Last Saved
+                reader.Position = tmpChar.OFFSET_LAST_SAVED;
+                tmpChar.lastSave = DateTime.FromFileTimeUtc(reader.ReadInt64()); 
 
                 reader.Position = tmpChar.OFFSET_DATA_PAIRSA;
                 for (int i = 0; i < tmpChar.LIMIT_DATA_PAIRSA; i++)
@@ -4022,7 +4053,7 @@ namespace TooHuman1SE.SEStructure
                 reader.Position = tmpChar.OFFSET_DATA_PAIRSB;
                 for (int i = 0; i < tmpChar.LIMIT_DATA_PARISB; i++)
                 {
-                    tmpChar.dataPairsB.Add(lookupDataPairName(reader.ReadUInt32(), 2), reader.ReadUInt32());
+                    tmpChar.dataPairsB.Add(lookupDataPairName(reader.ReadUInt32(), 2), reader.ReadSingle());
                 }
 
                 //tmpChar.playtime;
@@ -4044,14 +4075,14 @@ namespace TooHuman1SE.SEStructure
             // - Bounty
             // - Skillpoints
             // - SaveSlot
+            // - Last Saved
             // - Data Pairs A
             // - Data Pairs B
 
             // temp load the character data
-            byte[] charData = new byte[this.sectors[TH1_SECTOR_CHARACTER].size];
             byte[] charDataTemp = new byte[1];
 
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARACTER].offset, charData, 0, charData.Length);
+            byte[] charData = getSectorData(TH1_SECTOR_CHARACTER);
             TH1Character tmpChar = this.character;
 
             // No Overflows
@@ -4127,6 +4158,11 @@ namespace TooHuman1SE.SEStructure
                 writer.Position = tmpChar.OFFSET_SAVESLOT;
                 writer.WriteUInt32((uint)tmpChar.saveSlot);
 
+                // Update Last Saved
+                writer.Position = tmpChar.OFFSET_LAST_SAVED;
+                long roundingSeconds = 10000000;
+                writer.WriteInt64(tmpChar.lastSave.ToFileTimeUtc() / roundingSeconds * 10000000);
+
                 writer.Position = tmpChar.OFFSET_DATA_PAIRSA;
                 foreach (KeyValuePair<string, uint> dp in tmpChar.dataPairsA)
                 {
@@ -4135,20 +4171,122 @@ namespace TooHuman1SE.SEStructure
                 }
 
                 writer.Position = tmpChar.OFFSET_DATA_PAIRSB;
-                foreach (KeyValuePair<string, uint> dp in tmpChar.dataPairsB)
+                foreach (KeyValuePair<string, float> dp in tmpChar.dataPairsB)
                 {
                     writer.WriteUInt32(lookupDataPairValue(dp.Key, 2));
-                    writer.WriteUInt32(dp.Value);
+                    writer.WriteSingle(dp.Value);
                 }
-
-                //tmpChar.playtime;
 
             }
             catch (Exception ex) { setError(10, "Unable To Write Character Stats To Save Data: " + ex.ToString()); return; }
             finally { writer.Flush(); charData = writer.ReadAllBytes(); writer.Close(false); }
 
-            replaceSector(TH1_SECTOR_CHARACTER, charData);
+            rebuildSector(TH1_SECTOR_CHARACTER, charData);
 
+        }
+
+        private byte[] debugCharacterToData()
+        {
+
+            // temp load the character data
+            byte[] charDataTemp = new byte[1];
+
+            byte[] charData = getSectorData(TH1_SECTOR_CHARACTER);
+            TH1Character tmpChar = this.character;
+
+            // No Overflows
+            tmpChar.name = "DEBUG";
+
+            RWStream namewriter = new RWStream(charData, true, true);
+            try
+            {
+                // Character Name
+                namewriter.Position = tmpChar.OFFSET_NAME_A_LENGTH;
+                uint oldNameLength = namewriter.ReadUInt32() - 1;
+                uint newNameLength = (uint)tmpChar.name.Length;
+                namewriter.Position = tmpChar.OFFSET_NAME_A_LENGTH;
+                namewriter.WriteUInt32(newNameLength + 1);
+                tmpChar.OFFSET_ALIGNMENT = tmpChar.OFFSET_NAME_A + (newNameLength + 1) + (13 * 4);
+                charDataTemp = new byte[charData.Length - oldNameLength + newNameLength];
+                Array.Copy(charData, charDataTemp, tmpChar.OFFSET_NAME_A);
+                Array.Copy(Encoding.ASCII.GetBytes(tmpChar.name), 0, charDataTemp, tmpChar.OFFSET_NAME_A, tmpChar.name.Length);
+                Array.Copy(charData, tmpChar.OFFSET_NAME_A + oldNameLength, charDataTemp, tmpChar.OFFSET_NAME_A + newNameLength, charData.Length - tmpChar.OFFSET_NAME_A - oldNameLength);
+            }
+            catch (Exception ex) { setError(9, "Failed To Write Character Name To Buffer: " + ex.ToString()); return new byte[0]; }
+
+            charData = charDataTemp;
+
+            RWStream writer = new RWStream(charData, true, true);
+            try
+            {
+                TH1ExpToNextLevel _expCalc = new TH1ExpToNextLevel();
+
+                // Write Unicode Name
+                writer.Position = tmpChar.OFFSET_NAME_U;
+                writer.WriteString(tmpChar.name, StringType.Unicode, tmpChar.name.Length);
+                for (int uniz = tmpChar.name.Length; uniz < tmpChar.LIMIT_NAME_LENGTH; uniz++) writer.WriteBytes(new byte[] { 0x00, 0x00 });
+
+                // Write Alignment
+                writer.Position = tmpChar.OFFSET_ALIGNMENT;
+                writer.WriteUInt32(0);
+
+                // Write Class
+                writer.Position = tmpChar.OFFSET_CLASS;
+                writer.WriteUInt32(0);
+
+                // Write Level
+                writer.Position = tmpChar.OFFSET_LEVELA;
+                writer.WriteUInt32(0);
+
+                writer.Position = tmpChar.OFFSET_LEVELB;
+                writer.WriteUInt32(0);
+
+                // Write EXP
+                writer.Position = tmpChar.OFFSET_EXP;
+                writer.WriteUInt32(0);
+
+                writer.Position = tmpChar.OFFSET_CURR_LEVEL_EXP;
+                writer.WriteUInt32(0);
+
+                // Write Bounty
+                writer.Position = tmpChar.OFFSET_BOUNTY;
+                writer.WriteUInt32(0);
+
+                // Write Skillpoints
+                writer.Position = tmpChar.OFFSET_SKILLPOINTSA;
+                writer.WriteUInt32(0);
+                writer.Position = tmpChar.OFFSET_SKILLPOINTSB;
+                writer.WriteUInt32(0);
+
+                // Write Save Slot
+                writer.Position = tmpChar.OFFSET_SAVESLOT;
+                writer.WriteUInt32(0);
+
+                // Update Last Saved
+                writer.Position = tmpChar.OFFSET_LAST_SAVED;
+                writer.WriteInt64(0);
+
+                writer.Position = tmpChar.OFFSET_DATA_PAIRSA;
+                foreach (KeyValuePair<string, uint> dp in tmpChar.dataPairsA)
+                {
+                    writer.WriteUInt32(lookupDataPairValue(dp.Key, 1));
+                    if (dp.Key.Length > 2) writer.WriteUInt32(0);
+                    else writer.WriteUInt32(dp.Value);
+                }
+
+                writer.Position = tmpChar.OFFSET_DATA_PAIRSB;
+                foreach (KeyValuePair<string, float> dp in tmpChar.dataPairsB)
+                {
+                    writer.WriteUInt32(lookupDataPairValue(dp.Key, 2));
+                    if (dp.Key.Length > 2) writer.WriteSingle(0);
+                    else writer.WriteSingle(dp.Value);
+                }
+
+            }
+            catch (Exception ex) { setError(10, "Unable To Write Character Stats To Save Data: " + ex.ToString()); return new byte[0]; }
+            finally { writer.Flush(); charData = writer.ReadAllBytes(); writer.Close(false); }
+
+            return charData;
         }
 
         #endregion Character IO
@@ -4161,8 +4299,7 @@ namespace TooHuman1SE.SEStructure
             TH1SkillsTree tmpSkills = new TH1SkillsTree(0);
 
             // Buffer It
-            byte[] skillsData = new byte[this.sectors[TH1_SECTOR_SKILLTREE].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_SKILLTREE].offset, skillsData, 0, skillsData.Length);
+            byte[] skillsData = getSectorData(TH1_SECTOR_SKILLTREE);
 
             RWStream reader = new RWStream(skillsData, true);
             try
@@ -4170,7 +4307,7 @@ namespace TooHuman1SE.SEStructure
                 // Read In Character Class
                 tmpSkills = new TH1SkillsTree(reader.ReadUInt32()); // New With Alignment
 
-                while ( reader.Position < reader.Length)
+                while (reader.Position < reader.Length)
                 {
                     TH1SkillsTreePair stp = new TH1SkillsTreePair();
                     stp.first = reader.ReadUInt32();
@@ -4179,21 +4316,21 @@ namespace TooHuman1SE.SEStructure
                 }
 
             }
-            catch (Exception ex) { setError( 12, "Unable To Parse Skills Tree: " + ex.ToString()); }
+            catch (Exception ex) { setError(12, "Unable To Parse Skills Tree: " + ex.ToString()); }
             finally { reader.Close(false); this.skills = tmpSkills; }
         }
 
         private void skillsTreeToData()
         {
             // Buffer It
-            byte[] skillsData = new byte[(this.skills.pairs.Count*8)+4];
+            byte[] skillsData = new byte[(this.skills.pairs.Count * 8) + 4];
 
             RWStream writer = new RWStream(skillsData, true, true);
             try
             {
                 writer.WriteUInt32((uint)this.character.charClass);
 
-                for( int num=0; num < this.skills.pairs.Count; num++)
+                for (int num = 0; num < this.skills.pairs.Count; num++)
                 {
                     writer.WriteUInt32((uint)this.skills.pairs[num].first);
                     writer.WriteUInt32((uint)this.skills.pairs[num].second);
@@ -4202,7 +4339,8 @@ namespace TooHuman1SE.SEStructure
             catch (Exception ex) { setError(13, "Unable To Write Skills Tree: " + ex.ToString()); }
             finally { writer.Flush(); skillsData = writer.ReadAllBytes(); writer.Close(false); }
 
-            replaceSector(TH1_SECTOR_SKILLTREE, skillsData);
+            // replaceSector(TH1_SECTOR_SKILLTREE, skillsData);
+            rebuildSector(TH1_SECTOR_SKILLTREE, skillsData);
         }
 
         #endregion Skills Tree IO
@@ -4214,8 +4352,7 @@ namespace TooHuman1SE.SEStructure
             List<TH1RuneMExt> tmpRunes = new List<TH1RuneMExt>();
 
             // Buffer It
-            byte[] runesData = new byte[this.sectors[TH1_SECTOR_RUNE].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_RUNE].offset, runesData, 0, runesData.Length);
+            byte[] runesData = getSectorData(TH1_SECTOR_RUNE);
 
             RWStream reader = new RWStream(runesData, true);
             try
@@ -4227,7 +4364,7 @@ namespace TooHuman1SE.SEStructure
                     int nameLength = (int)reader.ReadUInt32();
                     byte[] runeName = reader.ReadBytes(nameLength);
 
-                    TH1RuneMExt tmpRune = new TH1RuneMExt( db.runeMCollection.findRune(runeName) );
+                    TH1RuneMExt tmpRune = new TH1RuneMExt(db.runeMCollection.findRune(runeName));
                     if (tmpRune.rune == null) tmpRune = new TH1RuneMExt(new TH1RuneM());
 
                     tmpRune.purchased = reader.ReadUInt32();
@@ -4248,18 +4385,19 @@ namespace TooHuman1SE.SEStructure
         private void runesToData()
         {
             long bytesize = 0;
-            foreach( TH1RuneMExt tmpRune in this.runes) bytesize += tmpRune.runeExtToArray.Length; 
-            byte[] tmpRunes = new byte[4+bytesize];
+            foreach (TH1RuneMExt tmpRune in this.runes) bytesize += tmpRune.runeExtToArray.Length;
+            byte[] tmpRunes = new byte[4 + bytesize];
 
             RWStream writer = new RWStream(tmpRunes, true, true);
             try
             {
                 writer.WriteUInt32((uint)this.runes.Count);
                 foreach (TH1RuneMExt runeLoop in this.runes) writer.WriteBytes(runeLoop.runeExtToArray);
-            } catch( Exception ex) { setError(15, "Unable To Write Runes: " + ex.ToString()); }
+            } catch (Exception ex) { setError(15, "Unable To Write Runes: " + ex.ToString()); }
             finally { writer.Flush(); tmpRunes = writer.ReadAllBytes(); writer.Close(true); }
 
-            replaceSector(TH1_SECTOR_RUNE, tmpRunes);
+            // replaceSector(TH1_SECTOR_RUNE, tmpRunes);
+            rebuildSector(TH1_SECTOR_RUNE, tmpRunes);
         }
 
         #endregion Runes IO
@@ -4267,40 +4405,29 @@ namespace TooHuman1SE.SEStructure
         #region Charms / Obelisks IO
         private void dataToCharmsActive()
         {
-            // Buffer It
-            byte[] charmsData = new byte[this.sectors[TH1_SECTOR_CHARM_ACTIVE].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARM_ACTIVE].offset, charmsData, 0, charmsData.Length);
-
             // Parse It
-            dataToCharms(charmsData, true);
+            dataToCharms(getSectorData(TH1_SECTOR_CHARM_ACTIVE), true);
         }
 
         private void dataToCharmsInventry()
         {
-            // Buffer It
-            byte[] charmsAvailData = new byte[this.sectors[TH1_SECTOR_CHARMS_AVAILABLE].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARMS_AVAILABLE].offset, charmsAvailData, 0, charmsAvailData.Length);
-
-            byte[] charmsIncompData = new byte[this.sectors[TH1_SECTOR_CHARMS_INCOMPLETE].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_CHARMS_INCOMPLETE].offset, charmsIncompData, 0, charmsIncompData.Length);
-
             // Parse It
-            dataToCharms(charmsAvailData, false);
-            dataToCharms(charmsIncompData, false);
+            dataToCharms(getSectorData(TH1_SECTOR_CHARMS_AVAILABLE), false);
+            dataToCharms(getSectorData(TH1_SECTOR_CHARMS_INCOMPLETE), false);
         }
 
         private void charmsActiveToData()
         {
             long bytesize = 0;
             foreach (TH1CharmExt _charm in this.charmsActive) bytesize += _charm.charmToActiveArray.Length;
-            byte[] tmpCharms = new byte[bytesize + 4 + (this.charmsActiveEx.Count*8)];
+            byte[] tmpCharms = new byte[bytesize + 4 + (this.charmsActiveEx.Count * 8)];
 
             RWStream writer = new RWStream(tmpCharms, true, true);
             try
             {
                 foreach (TH1CharmExt _charmLoop in this.charmsActive) writer.WriteBytes(_charmLoop.charmToActiveArray);
                 writer.WriteUInt32((uint)this.charmsActiveEx.Count);
-                foreach(TH1Obelisk _exLoop in this.charmsActiveEx )
+                foreach (TH1Obelisk _exLoop in this.charmsActiveEx)
                 {
                     writer.WriteUInt32(_exLoop.key);
                     writer.WriteUInt32(_exLoop.valueUint);
@@ -4309,7 +4436,8 @@ namespace TooHuman1SE.SEStructure
             catch (Exception ex) { setError(17, "Unable To Write Active Charms: " + ex.ToString()); }
             finally { writer.Flush(); tmpCharms = writer.ReadAllBytes(); writer.Close(true); }
 
-            replaceSector(TH1_SECTOR_CHARM_ACTIVE, tmpCharms);
+            // replaceSector(TH1_SECTOR_CHARM_ACTIVE, tmpCharms);
+            rebuildSector(TH1_SECTOR_CHARM_ACTIVE, tmpCharms);
         }
 
         private void charmsInventryToData()
@@ -4322,7 +4450,7 @@ namespace TooHuman1SE.SEStructure
             long _incompleteSize = 0;
 
             // Getting Organised
-            foreach( TH1CharmExt _charm in this.charmsInventry)
+            foreach (TH1CharmExt _charm in this.charmsInventry)
             {
                 if (_charm.isComplete)
                 {
@@ -4345,7 +4473,7 @@ namespace TooHuman1SE.SEStructure
             try
             {
                 _completeWriter.WriteUInt32((uint)_complete.Count);
-                foreach( TH1CharmExt _charm in _complete)
+                foreach (TH1CharmExt _charm in _complete)
                 {
                     _completeWriter.WriteBytes(_charm.charmToInventryArray);
                 }
@@ -4367,12 +4495,14 @@ namespace TooHuman1SE.SEStructure
             finally { _incompleteWriter.Flush(); _incompleteData = _incompleteWriter.ReadAllBytes(); _incompleteWriter.Close(true); }
 
             // Replace Sectors
-            replaceSector(TH1_SECTOR_CHARMS_AVAILABLE, _completeData);
-            replaceSector(TH1_SECTOR_CHARMS_INCOMPLETE, _incompleteData);
+            // replaceSector(TH1_SECTOR_CHARMS_AVAILABLE, _completeData);
+            // replaceSector(TH1_SECTOR_CHARMS_INCOMPLETE, _incompleteData);
+            rebuildSector(TH1_SECTOR_CHARMS_AVAILABLE, _completeData);
+            rebuildSector(TH1_SECTOR_CHARMS_INCOMPLETE, _incompleteData);
 
         }
 
-        private void dataToCharms( byte[] buffer, bool isactive)
+        private void dataToCharms(byte[] buffer, bool isactive)
         {
             List<TH1CharmExt> tmpCharms = new List<TH1CharmExt>();
             // If Active Data
@@ -4441,19 +4571,28 @@ namespace TooHuman1SE.SEStructure
 
         #region Weapons IO
 
-        private void dataToWeapons()
+        private void dataToWeaponsInventory()
         {
+            dataToWeapons(getSectorData(TH1_SECTOR_WEAPONS), false);
+        }
+
+        private void dataToWeaponsBlueprints()
+        {
+            dataToWeapons(getSectorData(TH1_SECTOR_WEAPON_BLUEPRINTS), true);
+        }
+
+        private void dataToWeapons( byte[] sector, bool isBlueprint )
+        {
+            // Setup
             List<TH1WeaponExt> tmpWeapons = new List<TH1WeaponExt>();
-            TH1Helper _help = new TH1Helper();
-
-            string[] weaponTypes = _help.weaponTypesDic.Values.ToArray();
-
-            byte[] weaponsData = new byte[this.sectors[TH1_SECTOR_WEAPONS].size];
-            Array.Copy(this.rawData, this.sectors[TH1_SECTOR_WEAPONS].offset, weaponsData, 0, weaponsData.Length);
+            TH1Helper helper = db.helper;
+            string[] weaponTypes = helper.weaponTypesDic.Values.ToArray();
             
-            RWStream reader = new RWStream(weaponsData, true);
+            // Buffer
+            RWStream reader = new RWStream(sector, true);
             try
             {
+                // Parse By Type
                 for( int i = 0; i < weaponTypes.Length; i++)
                 {
                     uint weapCount = reader.ReadUInt32();
@@ -4484,7 +4623,7 @@ namespace TooHuman1SE.SEStructure
 
                         // Weapon Ext
                         byte[] header = reader.ReadBytes(4); // header (meh)
-                        thisWeapon.valueA = reader.ReadUInt32();
+                        thisWeapon.craftedUint = reader.ReadUInt32();
                         thisWeapon.valueB = reader.ReadUInt32();
                         thisWeapon.condition = reader.ReadUInt32();
                         thisWeapon.isEquiptUint = reader.ReadUInt32();
@@ -4498,19 +4637,50 @@ namespace TooHuman1SE.SEStructure
                     if (reader.Position < reader.Length) reader.ReadBytes(4);
                 }
             }
-            catch (Exception ex) { setError(20, "Unable To Parse Weapons: " + ex.ToString()); }
-            finally { reader.Close(false); this.weapons = tmpWeapons; }
+            catch (Exception ex) {
+                if( isBlueprint ) setError(20, "Unable To Parse Weapons Blueprints: " + ex.ToString());
+                else setError(20, "Unable To Parse Weapons Inventory: " + ex.ToString());
+            }
+            finally {
+                reader.Close(false);
+                if (isBlueprint) this.weaponsBlueprints = tmpWeapons;
+                else this.weaponsInventory = tmpWeapons;
+            }
         }
 
-        private void weaponsToData()
+        private void weaponsInventoryToData()
         {
-            int[] weapKeys = db.helper.weaponTypesDic.Keys.ToArray();
+            weaponsToData(TH1_SECTOR_WEAPONS);
+        }
 
+        private void weaponsBlueprintsToData()
+        {
+            weaponsToData(TH1_SECTOR_WEAPON_BLUEPRINTS);
+        }
+
+        private void weaponsToData( int sectorID )
+        {
+            byte[] tmpWeapons;
+            int[] weapKeys = db.helper.weaponTypesDic.Keys.ToArray();
+            List<TH1WeaponExt> list;
+
+            switch(sectorID)
+            {
+                case TH1_SECTOR_WEAPONS:
+                    list = weaponsInventory;
+                    break;
+                case TH1_SECTOR_WEAPON_BLUEPRINTS:
+                    list = weaponsBlueprints;
+                    break;
+                default:
+                    return;
+            }
+
+            // Sizing
             long bytesize = 4 * weapKeys.Count(); // Weapon Count Per Type
             bytesize += 4 * (weapKeys.Count() - 1); // Header Per Split Type (excl First)
-            foreach (TH1WeaponExt tmpWeapon in this.weapons) bytesize += tmpWeapon.weaponExtToArray.Length; // Each Weapon
-
-            byte[] tmpWeapons = new byte[bytesize];
+            foreach (TH1WeaponExt tmpWeapon in list) bytesize += tmpWeapon.weaponExtToArray.Length; // Each Weapon
+            tmpWeapons = new byte[bytesize];
 
             RWStream writer = new RWStream(tmpWeapons, true, true);
             try
@@ -4518,7 +4688,7 @@ namespace TooHuman1SE.SEStructure
                 foreach (int weap in db.helper.weaponWriteOrder)
                 {
                     List<TH1WeaponExt> thisType = new List<TH1WeaponExt>();
-                    foreach(TH1WeaponExt weaponLoop in this.weapons)
+                    foreach(TH1WeaponExt weaponLoop in list)
                     {
                         if (weaponLoop.weaponType == weap) thisType.Add(weaponLoop);
                     }
@@ -4531,8 +4701,7 @@ namespace TooHuman1SE.SEStructure
             catch (Exception ex) { setError(21, "Unable To Write Weapons: " + ex.ToString()); }
             finally { writer.Flush(); tmpWeapons = writer.ReadAllBytes(); writer.Close(true); }
 
-            replaceSector(TH1_SECTOR_WEAPONS, tmpWeapons);
-            
+            rebuildSector( sectorID, tmpWeapons );
         }
 
         #endregion Weapons IO
@@ -4565,15 +4734,15 @@ namespace TooHuman1SE.SEStructure
 
                 // grab the true data size (no padding / overflow)
                 readerW.Position = TH1_OFFSET_SIZE;
-                this.dataSize = readerW.ReadInt32();
-                if (!(readerW.Length >= this.dataSize))
+                long dataSize = readerW.ReadInt32();
+                if (!(readerW.Length >= dataSize))
                 {
                     setError(3, "Data Size value is larger than the actual file-size");
                     return;
                 }
 
                 // trim the fat
-                readerW.WriterBaseStream.SetLength(this.dataSize);
+                readerW.WriterBaseStream.SetLength(dataSize);
 
                 // flush out the hash
                 readerW.Position = TH1_OFFSET_HASH;
@@ -4592,7 +4761,7 @@ namespace TooHuman1SE.SEStructure
                 readerW.Close(true);
             }
 
-            newhash = getHash();
+            newhash = getHash(this.rawData);
             this.hashVerified = this.hash.SequenceEqual(newhash);
 
         }
@@ -4658,19 +4827,16 @@ namespace TooHuman1SE.SEStructure
                                     break;
                             }
                         }
-                        else thisSize = (UInt32)(this.dataSize - _sectors[cursec]);
+                        else thisSize = (UInt32)(this.rawData.Length - _sectors[cursec]);
 
                         thisSize -= (UInt32)deliminator.Length;
 
                         // Add the important references to the list
-                        TH1Sector tmpsector = new TH1Sector();
-                        tmpsector.id = cursec;
-                        tmpsector.offset = _sectors[cursec] + deliminator.Length;
-                        tmpsector.size = thisSize;
+                        TH1Sector tmpsector = new TH1Sector(cursec);
 
                         // Sector Data
-                        tmpsector.sectorData = new byte[thisSize];
-                        Array.Copy(this.rawData, tmpsector.offset, tmpsector.sectorData, 0, thisSize);
+                        tmpsector.data = new byte[thisSize];
+                        Array.Copy(this.rawData, _sectors[cursec] + deliminator.Length, tmpsector.data, 0, thisSize);
 
                         this.sectors.Add(tmpsector);
 
@@ -4686,99 +4852,17 @@ namespace TooHuman1SE.SEStructure
             finally { reader.Close(false); }
         }
 
-        /* Migrating To New Sector System
-        private void loadGamesaveSectors()
-        {
-            byte[] deliminator = new byte[4];
-            UInt32 thisSize = 0;
-            long[] sectorsArray;
-            List<long> _sectors;
-
-            // Load
-            Array.Copy(PUBLIC_HEADER, deliminator, deliminator.Length);
-
-            RWStream reader = new RWStream(this.rawData, true);
-            try
-            {
-                sectorsArray = reader.SearchHexString(BitConverter.ToString(deliminator).Replace("-",""), false);
-                _sectors = new List<long>(sectorsArray);
-
-                if (_sectors.Count > 6)
-                {
-                    for (int cursec = 0; cursec < _sectors.Count; cursec++)
-                    {
-                        uint sectorSkip = 0;
-                        if (cursec < (_sectors.Count - 1))
-                        {
-                            // Sector sepcific loading (as currently, the same deliminator is used within sector data)
-                            switch (cursec)
-                            {
-                                case TH1_SECTOR_CHARMS_AVAILABLE:
-                                case TH1_SECTOR_CHARMS_INCOMPLETE: // Charms
-                                    reader.Position = _sectors[cursec] + deliminator.Length;
-                                    sectorSkip = reader.ReadUInt32();
-                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
-                                    break;
-                                case TH1_SECTOR_WEAPONS:
-                                case TH1_SECTOR_WEAPON_BLUEPRINTS:
-                                    int weapCount = new TH1Helper().weaponTypesDic.Count;
-                                    for ( int i=0; i < weapCount; i++)
-                                    {
-                                        reader.Position = _sectors[cursec + i + (int)sectorSkip] + deliminator.Length;
-                                        sectorSkip += reader.ReadUInt32();
-                                    }
-                                    sectorSkip += (uint)weapCount - 1;
-                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
-                                    break;
-                                case TH1_SECTOR_ARMOUR:
-                                case TH1_SECTOR_ARMOUR_BLUEPRINTS:
-                                    int armourCount = new TH1Helper().armourTypesDic.Count;
-                                    for (int i = 0; i < armourCount; i++)
-                                    {
-                                        reader.Position = _sectors[cursec + i + (int)sectorSkip] + deliminator.Length;
-                                        sectorSkip += reader.ReadUInt32();
-                                    }
-                                    sectorSkip += (uint)armourCount - 1;
-                                    thisSize = (UInt32)(_sectors[cursec + 1 + (int)sectorSkip] - _sectors[cursec]);
-                                    break;
-                                default: // Everything Else
-                                    thisSize = (UInt32)(_sectors[cursec + 1] - _sectors[cursec]);
-                                    break;
-                            }
-                        } else thisSize = (UInt32)(this.dataSize - _sectors[cursec]);
-
-                        thisSize -= (UInt32)deliminator.Length;
-
-                        // Add the important references to the list
-                        TH1Sector tmpsector = new TH1Sector();
-                        tmpsector.id = cursec;
-                        tmpsector.offset = _sectors[cursec] + deliminator.Length;
-                        tmpsector.size = thisSize;
-                        this.sectors.Add(tmpsector);
-                        // cursec += (int)sectorSkip;
-                        for (int i = 0; i < sectorSkip; i++) _sectors.RemoveAt(cursec + 1);
-                    }
-                }
-                else {
-                    setError(5, "Failed to load Gamesave sectors");
-                }
-            }
-            catch { }
-            finally { reader.Close(false);  }
-        }
-        */
-
         #endregion Sector Loading
 
         private byte[] getHash( byte[] saveData )
         {
             // Prepare Buffers
             var tmpres = new byte[PLACEHOLDER_HASH.Length];
-            var checkBuff = new byte[(PUBLIC_HEADER.Length*2) + this.dataSize];
+            var checkBuff = new byte[(PUBLIC_HEADER.Length*2) + saveData.Length];
 
             // Load
             Array.Copy(abra(PUBLIC_HEADER),0,checkBuff,0, (PUBLIC_HEADER.Length * 2));
-            Array.Copy(this.rawData, 0, checkBuff, (PUBLIC_HEADER.Length * 2), this.dataSize);
+            Array.Copy(saveData, 0, checkBuff, (PUBLIC_HEADER.Length * 2), saveData.Length);
 
             // Calculate
             SHA1 sha = new SHA1CryptoServiceProvider();
@@ -4793,10 +4877,18 @@ namespace TooHuman1SE.SEStructure
             return tmpres;
         }
 
-        // Overload
-        private byte[] getHash()
+        public byte[] rewriteHash( byte[] data)
         {
-            return getHash(this.rawData);
+            // do stuff here
+            byte[] newhash = getHash(data);
+            RWStream writer = new RWStream(data, true, true);
+            try
+            {
+                writer.Position = TH1_OFFSET_HASH;
+                writer.WriteBytes(newhash);
+            } catch(Exception ex) { setError(8,"Unable To Write New Hash: " + ex.ToString()); }
+            finally { data = writer.ReadAllBytes(); writer.Close(true); }
+            return data;
         }
 
         private void setError( long errno, string errmsg)

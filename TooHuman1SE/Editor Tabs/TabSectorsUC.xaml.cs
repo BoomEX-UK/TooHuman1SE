@@ -30,7 +30,29 @@ namespace TooHuman1SE.Editor_Tabs
 
         private void mnuExtractSelected_Click(object sender, RoutedEventArgs e)
         {
-            if (dataSectors.SelectedItems.Count > 0) {
+            extractSelectedSectorToFile(false);
+        }
+
+        private void mnuExtractAll_Click(object sender, RoutedEventArgs e)
+        {
+            dataSectors.SelectAll();
+            mnuExtractSelected_Click(sender, e);
+        }
+
+        private void mnuDebugExtract_Click(object sender, RoutedEventArgs e)
+        {
+            extractSelectedSectorToFile(true);
+        }
+
+        private void dataSectors_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            mnuDebugExtract.Visibility = Keyboard.IsKeyDown(Key.LeftCtrl) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void extractSelectedSectorToFile(bool isDebug)
+        {
+            if (dataSectors.SelectedItems.Count > 0)
+            {
                 EditorWindow ewin = (EditorWindow)Window.GetWindow(this);
                 string name = ewin._save.character.name;
 
@@ -45,17 +67,11 @@ namespace TooHuman1SE.Editor_Tabs
                     string filename = dlg.FileName;
                     foreach (TH1Sector _sector in dataSectors.SelectedItems)
                     {
-                        ewin._save.writeSectorToFile(string.Format("{0}-{1}-{2}.bin", filename, _sector.id.ToString().PadLeft(3,'0'), _sector.sectorName), (int)_sector.id,false);
+                        ewin._save.writeSectorToFile(string.Format("{0}-{1}-{2}.bin", filename, _sector.id.ToString().PadLeft(3, '0'), _sector.name), (int)_sector.id, false, isDebug);
                     }
                 }
             }
             dataSectors.UnselectAll();
-        }
-
-        private void mnuExtractAll_Click(object sender, RoutedEventArgs e)
-        {
-            dataSectors.SelectAll();
-            mnuExtractSelected_Click(sender, e);
         }
     }
 }

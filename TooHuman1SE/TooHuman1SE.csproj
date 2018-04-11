@@ -14,6 +14,21 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -386,9 +401,36 @@
     <Resource Include="Icons\Weapons\O0.png" />
     <Resource Include="Icons\Weapons\P0.png" />
     <Resource Include="Icons\Weapons\R0.png" />
+    <Resource Include="Icons\Weapons\B8.png" />
+    <Resource Include="Icons\Weapons\E8.png" />
+    <Resource Include="Icons\Weapons\G8.png" />
+    <Resource Include="Icons\Weapons\O8.png" />
+    <Resource Include="Icons\Weapons\P8.png" />
+    <Resource Include="Icons\Weapons\B7.png" />
+    <Resource Include="Icons\Weapons\E7.png" />
+    <Resource Include="Icons\Weapons\G7.png" />
+    <Resource Include="Icons\Weapons\O7.png" />
+    <Resource Include="Icons\Weapons\P7.png" />
+    <Resource Include="Icons\Weapons\R7.png" />
+    <Resource Include="Icons\Weapons\B9.png" />
+    <Resource Include="Icons\Weapons\E9.png" />
+    <Resource Include="Icons\Weapons\G9.png" />
+    <Resource Include="Icons\Weapons\O9.png" />
+    <Resource Include="Icons\Weapons\P9.png" />
+    <Resource Include="Icons\Weapons\R9.png" />
+    <Resource Include="Icons\sort.png" />
+    <Resource Include="Icons\menu.png" />
+    <Resource Include="Icons\button.png" />
+    <Resource Include="Icons\question.png" />
     <Content Include="Resources\ISOLib.dll" />
     <Resource Include="Icons\app.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -58,7 +58,7 @@
                                 <TextBlock Text="Bounty: " />
                                 <TextBlock Text="{Binding bounty}" />
                             </WrapPanel>
-                            <TextBlock Text="{Binding importedon}"  />
+                            <TextBlock Text="{Binding lastplayed}"  />
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

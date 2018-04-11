@@ -30,46 +30,49 @@ namespace TooHuman1SE.Editor_Tabs
         private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             int activeTab = tabDataPairs.SelectedIndex;
-            KeyValuePair<string, uint> kvp;
+            KeyValuePair<string, uint> kvpA;
+            KeyValuePair<string, float> kvpB;
             DataPairEditorWindow dpe = new DataPairEditorWindow();
             dpe.Owner = Window.GetWindow(this);
 
             switch (activeTab)
             {
                 case 1:
-                    kvp = (KeyValuePair<string, uint>)dataPairsB.SelectedItem;
-                    dpe.dataPair = (Dictionary<string, uint>)dataPairsB.ItemsSource;
+                    kvpB = (KeyValuePair<string, float>)dataPairsB.SelectedItem;
+                    dpe.dataPairB = (Dictionary<string, float>)dataPairsB.ItemsSource;
+                    dpe.activeKey = kvpB.Key;
+                    Functions.log("Loading Value Editor float(" + kvpB.Key + ")");
                     break;
                 default:
-                    kvp = (KeyValuePair<string, uint>)dataPairsA.SelectedItem;
-                    dpe.dataPair = (Dictionary<string, uint>)dataPairsA.ItemsSource;
+                    kvpA = (KeyValuePair<string, uint>)dataPairsA.SelectedItem;
+                    dpe.dataPairA = (Dictionary<string, uint>)dataPairsA.ItemsSource;
+                    dpe.activeKey = kvpA.Key;
+                    Functions.log("Loading Value Editor uint(" + kvpA.Key + ")");
                     break;
             }
             
-            dpe.activeKey = kvp.Key;
-
-            Functions.log("Loading Value Editor (" + kvp.Key + ")");
             if ( dpe.ShowDialog().Equals(true))
             {
                 dataPairsA.ItemsSource = null;
                 dataPairsB.ItemsSource = null;
 
                 EditorWindow par = (EditorWindow)Window.GetWindow(this);
-                KeyValuePair <string, uint> edit = (KeyValuePair<string, uint>)dpe.Tag;
-
-                switch(activeTab)
+                if (dpe.pairTypeA)
                 {
-                    case 1:
-                        par._save.character.dataPairsB[edit.Key] = edit.Value;
-                        break;
-                    default:
-                        par._save.character.dataPairsA[edit.Key] = edit.Value;
-                        break;
+                    KeyValuePair<string, uint> edit = (KeyValuePair<string, uint>)dpe.Tag;
+                    par._save.character.dataPairsA[edit.Key] = edit.Value;
+                    Functions.log("Edit Made uint(" + edit.Key + "," + edit.Value.ToString() + ")");
                 }
-                
+                else
+                {
+                    KeyValuePair<string, float> edit = (KeyValuePair<string, float>)dpe.Tag;
+                    par._save.character.dataPairsB[edit.Key] = edit.Value;
+                    Functions.log("Edit Made float(" + edit.Key + "," + edit.Value.ToString() + ")");
+                }
+
                 dataPairsA.ItemsSource = par._save.character.dataPairsA;
                 dataPairsB.ItemsSource = par._save.character.dataPairsB;
-                Functions.log("Edit Made (" + edit.Key + "," + edit.Value.ToString() + ")");
+                
             }
             else Functions.log("User Cancelled");
         }

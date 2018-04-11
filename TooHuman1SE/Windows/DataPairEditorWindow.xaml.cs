@@ -21,10 +21,10 @@ namespace TooHuman1SE.Windows
     public partial class DataPairEditorWindow : Window
     {
 
-        public Dictionary<string, uint> dataPair = new Dictionary<string, uint>();
+        public Dictionary<string, uint> dataPairA = new Dictionary<string, uint>();
+        public Dictionary<string, float> dataPairB = new Dictionary<string, float>();
         public string activeKey;
-
-
+        public bool pairTypeA = true;
 
         public DataPairEditorWindow()
         {
@@ -44,10 +44,24 @@ namespace TooHuman1SE.Windows
         private void setSelectors()
         {
             comboStat.Items.Clear();
-            foreach( KeyValuePair<string,uint> kvp in dataPair)
+            if (dataPairA.Count > 0)
             {
-                comboStat.Items.Add(kvp.Key);
+                foreach( KeyValuePair<string,uint> kvp in dataPairA)
+                {
+                    comboStat.Items.Add(kvp.Key);
+                }
+                pairTypeA = true;
             }
+            else if (dataPairB.Count > 0)
+            {
+                foreach( KeyValuePair<string,float> kvp in dataPairB)
+                {
+                    comboStat.Items.Add(kvp.Key);
+                }
+                pairTypeA = false;
+            }
+            else DialogResult = false;
+
             for (int i = 0; i < comboStat.Items.Count; i++) if ((string)comboStat.Items[i] == activeKey) comboStat.SelectedIndex = i;
         }
 
@@ -58,11 +72,21 @@ namespace TooHuman1SE.Windows
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            uint activeValue;
-            try { activeValue = uint.Parse(txtValue.Text); }
-            catch { activeValue = 0; }
+            object res;
 
-            KeyValuePair<string, uint> res = new KeyValuePair<string, uint>(activeKey,activeValue);
+            if (pairTypeA)
+            {
+                uint activeValue;
+                try { activeValue = uint.Parse(txtValue.Text); }
+                catch { activeValue = 0; }
+                res = new KeyValuePair<string, uint>(activeKey, activeValue);
+            } else
+            {
+                float activeValue;
+                try { activeValue = float.Parse(txtValue.Text); }
+                catch { activeValue = 0; }
+                res = new KeyValuePair<string, float>(activeKey, activeValue);
+            }
 
             this.DialogResult = true;
             this.Tag = res;
@@ -71,9 +95,18 @@ namespace TooHuman1SE.Windows
         private void comboStat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             activeKey = comboStat.SelectedValue.ToString();
-            uint outval = 0;
-            if (dataPair.TryGetValue(activeKey, out outval)) txtValue.Text = outval.ToString();
-            else txtValue.Text = "0";
+
+            if (pairTypeA)
+            {
+                uint outval = 0;
+                if (dataPairA.TryGetValue(activeKey, out outval)) txtValue.Text = outval.ToString();
+                else txtValue.Text = "0";
+            } else
+            {
+                float outval = 0;
+                if (dataPairB.TryGetValue(activeKey, out outval)) txtValue.Text = outval.ToString();
+                else txtValue.Text = "0";
+            }
         }
 
         private void txt_NumberOnly(object sender, TextCompositionEventArgs e)

@@ -31,17 +31,31 @@ namespace TooHuman1SE.Editor_Tabs
             InitializeComponent();
         }
 
-        private void ShowWeaponEditorWindow(int weaponIndex)
+        private void ShowWeaponEditorWindow(int weaponIndex, bool isBlueprint )
         {
             WeaponEditorWindow dlg = new WeaponEditorWindow();
+            DataGrid _grid;
+            List<TH1WeaponExt> _list;
 
             dlg.Owner = Window.GetWindow(this);
             dlg.weaponIndex = weaponIndex;
             dlg.db = _ewin.db;
-                        
+            dlg._thisWeapon.crafted = !isBlueprint;
+
+            if (isBlueprint)
+            {
+                _grid = gridBlueprints;
+                _list = _ewin._save.weaponsBlueprints;
+            }
+            else
+            {
+                _grid = gridWeapons;
+                _list = _ewin._save.weaponsInventory;
+            }
+
             if (weaponIndex > -1)
             {
-                dlg._thisWeapon = (TH1WeaponExt)gridWeapons.Items[weaponIndex];
+                dlg._thisWeapon = (TH1WeaponExt)_grid.Items[weaponIndex];
                 Functions.log(string.Format("Editing Weapon #{0} ({1})", weaponIndex, dlg._thisWeapon.weaponLongIdName), Functions.LC_PRIMARY);
             }
             else
@@ -50,72 +64,120 @@ namespace TooHuman1SE.Editor_Tabs
                 Functions.log("Creating New Weapon", Functions.LC_PRIMARY);
             }
             
-
             if (dlg.ShowDialog().Equals(true))
             {
                 Functions.log("Saving Weapon");
-
-                gridWeapons.ItemsSource = null;
+                _grid.ItemsSource = null;
 
                 // Add Or Edit
-                if (weaponIndex > -1) _ewin._save.weapons[weaponIndex] = dlg._thisWeapon;
-                else _ewin._save.weapons.Add(dlg._thisWeapon);
+                dlg._thisWeapon.crafted = !isBlueprint;
+                if (weaponIndex > -1) _list[weaponIndex] = dlg._thisWeapon;
+                else _list.Add(dlg._thisWeapon);
 
-                gridWeapons.ItemsSource = _ewin._save.weapons;
+                _grid.ItemsSource = _list;
             }
             else Functions.log("User Cancelled");
         }
 
         #region Event Handlers
-        private void btnAddRune_Click(object sender, RoutedEventArgs e)
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            ShowWeaponEditorWindow(-1);
+            Button btn = sender as Button;
+            MenuItem mnu = sender as MenuItem;
+
+            bool isBlueprint;
+
+            if (btn != null) isBlueprint = (string)btn.Tag == "1";
+            else if (mnu != null) isBlueprint = (string)mnu.Tag == "1";
+            else return;
+
+            ShowWeaponEditorWindow(-1, isBlueprint );
         }
         
         private void gridWeapons_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            DataGrid grid = sender as DataGrid;
+            if (grid == null) return;
+
             var src = VisualTreeHelper.GetParent((DependencyObject)e.OriginalSource);
             var srcType = src.GetType();
             if (srcType == typeof(ContentPresenter) || srcType == typeof(DataGridCell))
             {
-                if (gridWeapons.SelectedItem != null)
+                if (grid.SelectedItem != null)
                 {
-                    ShowWeaponEditorWindow(gridWeapons.SelectedIndex);
+                    ShowWeaponEditorWindow(grid.SelectedIndex, (string)grid.Tag == "1");
                 }
             }
         }
 
         private void mnuDelete_Click(object sender, RoutedEventArgs e)
         {
-            int itemcount = gridWeapons.SelectedItems.Count;
+            MenuItem mnu = sender as MenuItem;
+            if (mnu == null) return;
+
+            DataGrid grid;
+            List<TH1WeaponExt> list;
+            bool isBlueprint = (string)mnu.Tag == "1";
+
+            if (isBlueprint)
+            {
+                grid = gridBlueprints;
+                list = _ewin._save.weaponsBlueprints;
+            }
+            else
+            {
+                grid = gridWeapons;
+                list = _ewin._save.weaponsInventory;
+            }
+
+            int itemcount = grid.SelectedItems.Count;
             if (itemcount > 0)
             {
                 if (MessageBox.Show(string.Format("Are You Sure You Want To Delete {0} Weapon{1}?", itemcount, itemcount == 1 ? "" : "s"), "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No) return;
 
-                foreach( TH1WeaponExt weap in gridWeapons.SelectedItems)
+                foreach( TH1WeaponExt weap in grid.SelectedItems)
                 {
-                    if (!weap.isEquipt) _ewin._save.weapons.Remove(weap);
+                    if (!weap.isEquipt) list.Remove(weap);
                     else MessageBox.Show(string.Format("You cannot delete an equipt weapon ({0}).",weap.weaponLongName), "Delete Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
-                gridWeapons.ItemsSource = null;
-                gridWeapons.ItemsSource = _ewin._save.weapons;
+                grid.ItemsSource = null;
+                grid.ItemsSource = list;
             }
         }
 
         private void mnuDuplicate_Click(object sender, RoutedEventArgs e)
         {
-            foreach (TH1WeaponExt weap in gridWeapons.SelectedItems)
+            List<TH1WeaponExt> list;
+            DataGrid grid;
+            bool isBlueprint;
+
+            MenuItem mnu = sender as MenuItem;
+            if (mnu == null) return;
+            isBlueprint = ((string)mnu.Tag == "1");
+
+            if( isBlueprint)
             {
-                TH1WeaponExt newWeap = new TH1WeaponExt(weap.weapon);
-                newWeap.valueA = weap.valueA;
-                newWeap.valueB = weap.valueB;
-                newWeap.condition = newWeap.condition;
-                newWeap.paint = weap.paint;
-                newWeap.runesInserted = weap.runesInserted;
-                _ewin._save.weapons.Add(newWeap);
+                grid = gridBlueprints;
+                list = _ewin._save.weaponsBlueprints;
+            } else
+            {
+                grid = gridWeapons;
+                list = _ewin._save.weaponsInventory;
             }
-            gridWeapons.ItemsSource = null;
-            gridWeapons.ItemsSource = _ewin._save.weapons;
+
+            foreach (TH1WeaponExt weap in grid.SelectedItems)
+            {
+                TH1WeaponExt newWeap = new TH1WeaponExt(weap.weapon) {
+                    crafted = !isBlueprint,
+                    valueB = weap.valueB,
+                    condition = weap.condition,
+                    paint = weap.paint,
+                    runesInserted = weap.runesInserted
+                };
+                list.Add(newWeap);
+            }
+            grid.ItemsSource = null;
+            grid.ItemsSource = list;
         }
 
         private void mnuEquip_Click(object sender, RoutedEventArgs e)
@@ -125,33 +187,103 @@ namespace TooHuman1SE.Editor_Tabs
                 TH1WeaponExt selectedWeapon = ((TH1WeaponExt)gridWeapons.SelectedItem);
                 int weaponGroup = _ewin.db.helper.getWeaponGroup(selectedWeapon.weaponType);
 
-                for ( int i=0; i < _ewin._save.weapons.Count; i++)
+                for ( int i=0; i < _ewin._save.weaponsInventory.Count; i++)
                 {
-                    if (_ewin.db.helper.getWeaponGroup(_ewin._save.weapons[i].weaponType) == weaponGroup)
-                        _ewin._save.weapons[i].isEquipt = gridWeapons.SelectedIndex == i;
+                    if (_ewin.db.helper.getWeaponGroup(_ewin._save.weaponsInventory[i].weaponType) == weaponGroup)
+                        _ewin._save.weaponsInventory[i].isEquipt = gridWeapons.SelectedIndex == i;
                 }
                 gridWeapons.ItemsSource = null;
-                gridWeapons.ItemsSource = _ewin._save.weapons;
+                gridWeapons.ItemsSource = _ewin._save.weaponsInventory;
             }
         }
 
         private void mnuEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (gridWeapons.SelectedItem != null)
+            MenuItem mnu = sender as MenuItem;
+            DataGrid grid;
+            bool isBlueprint;
+
+            if (mnu != null) isBlueprint = (string)mnu.Tag == "1";
+            else return;
+
+            if (isBlueprint) grid = gridBlueprints;
+            else grid = gridWeapons;
+
+            if (grid.SelectedItem != null)
             {
-                ShowWeaponEditorWindow(gridWeapons.SelectedIndex);
+                ShowWeaponEditorWindow(grid.SelectedIndex, isBlueprint);
             }
         }
         
-        private void gridWeapons_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        private void grid_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            mnuDelete.IsEnabled = gridWeapons.SelectedItem != null; // is selected
-            mnuAdd.IsEnabled = true; // can add
+            mnuDeleteInv.IsEnabled = gridWeapons.SelectedItem != null; // is selected
+            mnuAddInv.IsEnabled = true; // can add
 
-            mnuDuplicate.IsEnabled = mnuDelete.IsEnabled && mnuAdd.IsEnabled;
-            mnuEdit.IsEnabled = mnuDelete.IsEnabled;
-            mnuEquip.IsEnabled = mnuDelete.IsEnabled;
+            mnuDuplicateInv.IsEnabled = mnuDeleteInv.IsEnabled && mnuAddInv.IsEnabled;
+            mnuEditInv.IsEnabled = mnuDeleteInv.IsEnabled;
+            mnuEquipInv.IsEnabled = mnuDeleteInv.IsEnabled;
+            mnuCreateBP.IsEnabled = mnuDeleteInv.IsEnabled;
+
+            // -----
+
+            mnuDeleteBP.IsEnabled = gridBlueprints.SelectedItem != null; // is selected
+            mnuAddBP.IsEnabled = true; // can add
+
+            mnuDuplicateBP.IsEnabled = mnuDeleteBP.IsEnabled && mnuAddBP.IsEnabled;
+            mnuEditBP.IsEnabled = mnuDeleteBP.IsEnabled;
+            mnuCraftBP.IsEnabled = mnuDeleteBP.IsEnabled;
+            mnuCreateBP.IsEnabled = mnuDeleteBP.IsEnabled;
         }
+
+        private void mnuCraftBP_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid grid;
+            List<TH1WeaponExt> listFrom;
+            List<TH1WeaponExt> listTo;
+            bool fromBlueprint;
+
+            MenuItem mnu = sender as MenuItem;
+            if (mnu == null) return;
+
+            fromBlueprint = ((string)mnu.Tag == "1");
+            if(fromBlueprint)
+            {
+                listFrom = _ewin._save.weaponsBlueprints;
+                listTo = _ewin._save.weaponsInventory;
+                grid = gridBlueprints;
+            } else
+            {
+                listFrom = _ewin._save.weaponsInventory;
+                listTo = _ewin._save.weaponsBlueprints;
+                grid = gridWeapons;
+            }
+
+            foreach( TH1WeaponExt weap in grid.SelectedItems)
+            {
+                if (!weap.isEquipt) // avoid equipt
+                {
+                    TH1WeaponExt newWeap = new TH1WeaponExt(weap.weapon)
+                    {
+                        crafted = fromBlueprint,
+                        valueB = weap.valueB,
+                        condition = weap.condition,
+                        paint = weap.paint,
+                        runesInserted = weap.runesInserted
+                    };
+                    listTo.Add(newWeap);
+                    listFrom.Remove(weap);
+                }
+            }
+
+            gridBlueprints.ItemsSource = null;
+            gridWeapons.ItemsSource = null;
+
+            gridBlueprints.ItemsSource = _ewin._save.weaponsBlueprints;
+            gridWeapons.ItemsSource = _ewin._save.weaponsInventory;
+        }
+
         #endregion Event Handlers
+
     }
 }

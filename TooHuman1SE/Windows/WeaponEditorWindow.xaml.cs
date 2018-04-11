@@ -28,7 +28,6 @@ namespace TooHuman1SE.Windows
         public TH1Collections db;
         public TH1Helper helper = new TH1Helper();
         private bool formReady = false;
-        private bool tabchanging = false;
 
         public WeaponEditorWindow()
         {
@@ -63,6 +62,9 @@ namespace TooHuman1SE.Windows
             formReady = false;
             if (_originalWeapon == null) _originalWeapon = _thisWeapon;
 
+            if (_thisWeapon.crafted) this.Title = "Weapon Editor";
+            else this.Title = "Blueprint Editor";
+
             // Combo's
             foreach (object comb in gridSelections.Children)
             {
@@ -95,7 +97,6 @@ namespace TooHuman1SE.Windows
 
         private void setupExtraDataTab()
         {
-            txtA.Text = _thisWeapon.valueA.ToString();
             txtB.Text = _thisWeapon.valueB.ToString();
             slideCondition.Maximum = _thisWeapon.maxCondition;
             slideCondition.Value = _thisWeapon.condition;
