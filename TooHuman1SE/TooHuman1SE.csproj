@@ -14,6 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -25,9 +26,9 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -71,6 +72,18 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>BC686CCB889A37EB085D5D3240B7C0D9FB97F60F</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>TooHuman1SE_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ISOLib, Version=0.2.2.0, Culture=neutral, PublicKeyToken=5a4742d0f8b86e59, processorArchitecture=x86">
@@ -261,6 +274,7 @@
     <Resource Include="Supporting Data\CharmCollection.json.gz" />
     <Resource Include="Supporting Data\MutationCollection.json.gz" />
     <Resource Include="Supporting Data\RuneUCollection.json.gz" />
+    <None Include="TooHuman1SE_TemporaryKey.pfx" />
     <None Include="_Non Build\character-class.psd" />
     <None Include="_Non Build\DataTables.7z" />
     <None Include="_Non Build\TH1SE-vector-logoV2.psd" />
@@ -422,6 +436,7 @@
     <Resource Include="Icons\menu.png" />
     <Resource Include="Icons\button.png" />
     <Resource Include="Icons\question.png" />
+    <Resource Include="Icons\book.png" />
     <Content Include="Resources\ISOLib.dll" />
     <Resource Include="Icons\app.ico" />
   </ItemGroup>

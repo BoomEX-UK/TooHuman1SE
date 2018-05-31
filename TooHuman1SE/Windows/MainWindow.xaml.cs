@@ -72,8 +72,8 @@ namespace TooHuman1SE
             InitializeComponent();
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = fvi.FileVersion;
-            this.Title = this.Title + " v" + version;
+            string version = string.Format(" v{0}.{1}.{2}", fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart);
+            this.Title = this.Title + version;
             SetContentControl();
             LoadLogWindow();
         }
@@ -264,9 +264,9 @@ namespace TooHuman1SE
             System.Diagnostics.Process.Start("https://github.com/xJam-es/TooHuman1SE");
         }
 
-        private void mnu_webBlog(object sender, RoutedEventArgs e)
+        private void mnu_webWiki(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://toohuman1se.xjam.es/"); 
+            System.Diagnostics.Process.Start("https://github.com/xJam-es/TooHuman1SE/wiki"); 
         }
 
         private void mnuSortBy_Click(object sender, RoutedEventArgs e)

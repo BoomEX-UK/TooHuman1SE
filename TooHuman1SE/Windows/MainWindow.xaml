@@ -65,9 +65,9 @@
                         <Image Source="/TooHuman1SE;component/Icons/github.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Developer Blog" Click="mnu_webBlog">
+                <MenuItem Header="Getting Started" Click="mnu_webWiki">
                     <MenuItem.Icon>
-                        <Image Source="/TooHuman1SE;component/Icons/web.png"/>
+                        <Image Source="/TooHuman1SE;component/Icons/book.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
