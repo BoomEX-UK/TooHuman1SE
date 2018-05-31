@@ -269,6 +269,11 @@ namespace TooHuman1SE
             System.Diagnostics.Process.Start("https://github.com/xJam-es/TooHuman1SE/wiki"); 
         }
 
+        private void mnu_webUpdates(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/xJam-es/TooHuman1SE/releases/latest");
+        }
+
         private void mnuSortBy_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem mnu = sender as System.Windows.Controls.MenuItem;

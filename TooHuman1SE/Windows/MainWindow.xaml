@@ -70,6 +70,11 @@
                         <Image Source="/TooHuman1SE;component/Icons/book.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Check For Updates.." Click="mnu_webUpdates">
+                    <MenuItem.Icon>
+                        <Image Source="/TooHuman1SE;component/Icons/web.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
                 <MenuItem Header="About" Click="mnu_question">
                     <MenuItem.Icon>
