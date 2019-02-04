@@ -18,18 +18,18 @@ using TooHuman1SE.Windows;
 namespace TooHuman1SE.Windows
 {
     /// <summary>
-    /// Interaction logic for WeaponEditorWindow.xaml
+    /// Interaction logic for ArmourEditorWindow.xaml
     /// </summary>
-    public partial class WeaponEditorWindow : Window
+    public partial class ArmourEditorWindow : Window
     {
-        public TH1WeaponExt _thisWeapon = new TH1WeaponExt(new TH1Weapon());
-        public TH1WeaponExt _originalWeapon;
-        public int weaponIndex = -1;
+        public TH1ArmourExt _thisArmour = new TH1ArmourExt(new TH1Armour());
+        public TH1ArmourExt _originalArmour;
+        public int armourIndex = -1;
         public TH1Collections db;
         public TH1Helper helper = new TH1Helper();
         private bool formReady = false;
 
-        public WeaponEditorWindow()
+        public ArmourEditorWindow()
         {
             InitializeComponent();
         }
@@ -40,7 +40,7 @@ namespace TooHuman1SE.Windows
 
             // On Show Event Stuff Goes Below..
             buildDropDowns();
-            setupForm( true );
+            setupForm(true);
         }
 
         private void buildDropDowns()
@@ -50,19 +50,19 @@ namespace TooHuman1SE.Windows
             comboAlignment.Items.Add("Any");
 
             // Selections
-            foreach (string wecol in helper.equipmentColourNamesArray) comboColour.Items.Add(wecol);
-            foreach (string wecol in helper.weaponTypesArray) comboType.Items.Add(wecol);
-            foreach (string wecol in helper.classNamesArray) comboClass.Items.Add(wecol);
-            foreach (string wecol in helper.alignmentNamesArray) comboAlignment.Items.Add(wecol);
+            foreach (string arcol in helper.equipmentColourNamesArray) comboColour.Items.Add(arcol);
+            foreach (string artyp in helper.armourTypesArray) comboType.Items.Add(artyp);
+            foreach (string arcla in helper.classNamesArray) comboClass.Items.Add(arcla);
+            foreach (string arali in helper.alignmentNamesArray) comboAlignment.Items.Add(arali);
             comboPaint.ItemsSource = db.paintCollection.paintNameArray();
         }
 
         private void setupForm(bool initial)
         {
             formReady = false;
-            if (_originalWeapon == null) _originalWeapon = _thisWeapon;
+            if (_originalArmour == null) _originalArmour = _thisArmour;
 
-            if (_thisWeapon.crafted) this.Title = "Weapon Editor";
+            if (_thisArmour.crafted) this.Title = "Armour Editor";
             else this.Title = "Blueprint Editor";
 
             // Combo's
@@ -77,19 +77,19 @@ namespace TooHuman1SE.Windows
             comboAlignment.SelectedIndex = 0;
 
             // Specific Filter
-            comboColour.SelectedItem = helper.getRuneColourName(_thisWeapon.colourKey);
-            comboType.SelectedItem = _thisWeapon.weaponTypeName;
+            comboColour.SelectedItem = helper.getRuneColourName(_thisArmour.colourKey);
+            comboType.SelectedItem = _thisArmour.armourTypeName;
 
             // Tabs
             setupExtraDataTab();
             setupRunesTab(initial);
-            refreshWeaponList();
+            refreshArmourList();
             lockdownForm();
 
             // Selection
-            gridWeapons.SelectedItem = _thisWeapon.weapon;
-            if (gridWeapons.SelectedItem != null) gridWeapons.ScrollIntoView(gridWeapons.SelectedItem);
-            else if(gridWeapons.Items.Count > 0) gridWeapons.SelectedIndex = 0;
+            gridArmour.SelectedItem = _thisArmour.armour;
+            if (gridArmour.SelectedItem != null) gridArmour.ScrollIntoView(gridArmour.SelectedItem);
+            else if (gridArmour.Items.Count > 0) gridArmour.SelectedIndex = 0;
 
             // Ready
             formReady = true;
@@ -97,17 +97,17 @@ namespace TooHuman1SE.Windows
 
         private void setupExtraDataTab()
         {
-            txtB.Text = _thisWeapon.valueB.ToString();
-            slideCondition.Maximum = _thisWeapon.maxCondition;
-            slideCondition.Value = _thisWeapon.condition;
-            comboPaint.SelectedItem = _thisWeapon.paint.paintName;
+            txtB.Text = _thisArmour.valueB.ToString();
+            slideCondition.Maximum = _thisArmour.maxCondition;
+            slideCondition.Value = _thisArmour.condition;
+            comboPaint.SelectedItem = _thisArmour.paint.paintName;
         }
 
-        private void setupRunesTab( bool initial )
+        private void setupRunesTab(bool initial)
         {
             gridBonus.ItemsSource = null;
             List<TH1RuneSummary> bonusRunes = new List<TH1RuneSummary>();
-            foreach (string runeID in _thisWeapon.bonusRunes)
+            foreach (string runeID in _thisArmour.bonusRunes)
             {
                 TH1RuneSummary tmpRune = new TH1RuneSummary();
                 tmpRune.setRune(db, runeID);
@@ -118,40 +118,40 @@ namespace TooHuman1SE.Windows
             if (initial)
             {
                 gridInserted.ItemsSource = null;
-                gridInserted.ItemsSource = _thisWeapon.runesInserted;
+                gridInserted.ItemsSource = _thisArmour.runesInserted;
             }
 
-            groupInsert.Header = string.Format("{0} Free Slot{1} (Right-Click For Options)", _thisWeapon.emptyRuneSlots, _thisWeapon.emptyRuneSlots == 1 ? "" : "s");
+            groupInsert.Header = string.Format("{0} Free Slot{1} (Right-Click For Options)", _thisArmour.emptyRuneSlots, _thisArmour.emptyRuneSlots == 1 ? "" : "s");
         }
 
-        private void refreshWeaponList()
+        private void refreshArmourList()
         {
-            gridWeapons.ItemsSource = null;
-            gridWeapons.ItemsSource = db.weaponCollection.listWeapons(helper.equipmentColourNames.Keys.ToArray()[comboColour.SelectedIndex], comboType.SelectedIndex, comboClass.SelectedIndex - 1, comboAlignment.SelectedIndex - 1);
+            gridArmour.ItemsSource = null;
+            gridArmour.ItemsSource = db.armourCollection.listArmour(helper.equipmentColourNames.Keys.ToArray()[comboColour.SelectedIndex], comboType.SelectedIndex, comboClass.SelectedIndex - 1, comboAlignment.SelectedIndex - 1);
         }
 
         private void lockdownForm()
         {
-            if (_thisWeapon.isEquipt) Functions.log("Editing Equipt Wepaon");
-            gridWeapons.IsEnabled = !_thisWeapon.isEquipt;
-            comboAlignment.IsEnabled = gridWeapons.IsEnabled;
-            comboClass.IsEnabled = gridWeapons.IsEnabled;
-            comboColour.IsEnabled = gridWeapons.IsEnabled;
-            comboType.IsEnabled = gridWeapons.IsEnabled;
+            if (_thisArmour.isEquipt) Functions.log("Editing Equipt Armour");
+            gridArmour.IsEnabled = !_thisArmour.isEquipt;
+            comboAlignment.IsEnabled = gridArmour.IsEnabled;
+            comboClass.IsEnabled = gridArmour.IsEnabled;
+            comboColour.IsEnabled = gridArmour.IsEnabled;
+            comboType.IsEnabled = gridArmour.IsEnabled;
         }
 
         private void combo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (formReady) // saves the overkill
             {
-                refreshWeaponList();
-                if( gridWeapons.Items.Count > 0 ) gridWeapons.SelectedIndex = 0;
+                refreshArmourList();
+                if (gridArmour.Items.Count > 0) gridArmour.SelectedIndex = 0;
             }
         }
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            _thisWeapon = _originalWeapon;
+            _thisArmour = _originalArmour;
             setupForm(true);
         }
 
@@ -162,30 +162,30 @@ namespace TooHuman1SE.Windows
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            if(_thisWeapon == null )
+            if (_thisArmour == null)
             {
-                MessageBox.Show("You Must Select A Weapon To Save", "Weapon Selection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("You Must Select An Item To Save", "Armour Selection Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 tabControl.SelectedIndex = 0;
                 return;
             }
 
-            if((_thisWeapon.emptyRuneSlots - gridInserted.Items.Count) < 0)
+            if ((_thisArmour.emptyRuneSlots - gridInserted.Items.Count) < 0)
             {
-                MessageBox.Show(string.Format("You Have Too Many Runes Inserted (Max {0}).",_thisWeapon.emptyRuneSlots),"Inserted Runes Error",MessageBoxButton.OK,MessageBoxImage.Error);
+                MessageBox.Show(string.Format("You Have Too Many Runes Inserted (Max {0}).", _thisArmour.emptyRuneSlots), "Inserted Runes Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 tabControl.SelectedIndex = 1;
                 return;
             }
 
-            _thisWeapon.runesInserted = (List<TH1RuneMExt>)gridInserted.ItemsSource;
+            _thisArmour.runesInserted = (List<TH1RuneMExt>)gridInserted.ItemsSource;
             this.DialogResult = true;
         }
 
-        private void gridWeapons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void gridArmour_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             btnAdd.IsEnabled = ((DataGrid)sender).SelectedItem != null;
             if (formReady)
             {
-                if (btnAdd.IsEnabled) _thisWeapon = new TH1WeaponExt((TH1Weapon)((DataGrid)sender).SelectedItem);
+                if (btnAdd.IsEnabled) _thisArmour = new TH1ArmourExt((TH1Armour)((DataGrid)sender).SelectedItem);
                 setupExtraDataTab();
                 setupRunesTab(false);
             }
@@ -199,7 +199,7 @@ namespace TooHuman1SE.Windows
 
             if (dlg.ShowDialog().Equals(true))
             {
-                Functions.log(string.Format("Inserting Rune To Weapon [{0}]", dlg.thisRune.rune.runeString));
+                Functions.log(string.Format("Inserting Rune To Armour [{0}]", dlg.thisRune.rune.runeString));
                 List<TH1RuneMExt> tmpRunes = (List<TH1RuneMExt>)gridInserted.ItemsSource;
                 gridInserted.ItemsSource = null;
 
@@ -219,10 +219,10 @@ namespace TooHuman1SE.Windows
 
         private void contextRemove_Click(object sender, RoutedEventArgs e)
         {
-            if( MessageBox.Show(string.Format("Remove Selected Rune{0}?", gridInserted.SelectedItems.Count == 1 ? "" : "s"),"Confirm Remove",MessageBoxButton.YesNo,MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show(string.Format("Remove Selected Rune{0}?", gridInserted.SelectedItems.Count == 1 ? "" : "s"), "Confirm Remove", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 List<TH1RuneMExt> tmpList = (List<TH1RuneMExt>)gridInserted.ItemsSource;
-                foreach(TH1RuneMExt tmpRune in gridInserted.SelectedItems)
+                foreach (TH1RuneMExt tmpRune in gridInserted.SelectedItems)
                 {
                     tmpList.Remove(tmpRune);
                 }
@@ -234,7 +234,7 @@ namespace TooHuman1SE.Windows
 
         private void gridInserted_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            contextInsert.IsEnabled = (_thisWeapon.emptyRuneSlots - gridInserted.Items.Count > 0);
+            contextInsert.IsEnabled = (_thisArmour.emptyRuneSlots - gridInserted.Items.Count > 0);
             contextRemove.IsEnabled = (gridInserted.SelectedItem != null);
             contextDuplicate.IsEnabled = contextInsert.IsEnabled && contextRemove.IsEnabled;
         }
@@ -244,7 +244,7 @@ namespace TooHuman1SE.Windows
             List<TH1RuneMExt> tmpList = (List<TH1RuneMExt>)gridInserted.ItemsSource;
             foreach (TH1RuneMExt tmpRune in gridInserted.SelectedItems)
             {
-                if (_thisWeapon.emptyRuneSlots - gridInserted.Items.Count > 0)
+                if (_thisArmour.emptyRuneSlots - gridInserted.Items.Count > 0)
                     tmpList.Add(tmpRune);
             }
             gridInserted.ItemsSource = null;
@@ -253,12 +253,12 @@ namespace TooHuman1SE.Windows
 
         private void slideCondition_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (formReady) _thisWeapon.condition = (uint)slideCondition.Value;
+            if (formReady) _thisArmour.condition = (uint)slideCondition.Value;
         }
 
         private void comboPaint_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (formReady) _thisWeapon.paint = db.paintCollection.findPaint((string)comboPaint.SelectedItem);
+            if (formReady) _thisArmour.paint = db.paintCollection.findPaint((string)comboPaint.SelectedItem);
         }
     }
 }

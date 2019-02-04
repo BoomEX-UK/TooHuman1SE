@@ -26,7 +26,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -114,9 +114,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Editor Tabs\TabArmourUC.xaml.cs">
-      <DependentUpon>TabArmourUC.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Editor Tabs\TabCharacterUC.xaml.cs">
       <DependentUpon>TabCharacterUC.xaml</DependentUpon>
     </Compile>
@@ -148,9 +145,6 @@
     <Compile Include="User Controls\LogUC.xaml.cs">
       <DependentUpon>LogUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ArmourEditorWindow.xaml.cs">
-      <DependentUpon>ArmourEditorWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\CharmEditorWindow.xaml.cs">
       <DependentUpon>CharmEditorWindow.xaml</DependentUpon>
     </Compile>
@@ -160,10 +154,6 @@
     <Compile Include="Windows\WeaponEditorWindow.xaml.cs">
       <DependentUpon>WeaponEditorWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="Editor Tabs\TabArmourUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Editor Tabs\TabCharacterUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -201,10 +191,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="User Controls\LogUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\ArmourEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -288,8 +274,6 @@
     <Resource Include="Supporting Data\CharmCollection.json.gz" />
     <Resource Include="Supporting Data\MutationCollection.json.gz" />
     <Resource Include="Supporting Data\RuneUCollection.json.gz" />
-    <Resource Include="Supporting Data\ArmorCollection.json.gz" />
-    <Resource Include="Supporting Data\ArmourBaseStats.json.gz" />
     <None Include="TooHuman1SE_TemporaryKey.pfx" />
     <None Include="_Non Build\character-class.psd" />
     <None Include="_Non Build\DataTables.7z" />
@@ -452,8 +436,6 @@
     <Resource Include="Icons\menu.png" />
     <Resource Include="Icons\button.png" />
     <Resource Include="Icons\question.png" />
-    <Resource Include="Icons\book.png" />
-    <Resource Include="Icons\Armour\default.png" />
     <Content Include="Resources\ISOLib.dll" />
     <Resource Include="Icons\app.ico" />
   </ItemGroup>
@@ -464,6 +446,5 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

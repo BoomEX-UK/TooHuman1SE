@@ -39,6 +39,7 @@ namespace TooHuman1SE.Windows
         TabCharmsUC ch = new TabCharmsUC();
         TabObelisksUC ob = new TabObelisksUC();
         TabWeaponsUC we = new TabWeaponsUC();
+        TabArmourUC ar = new TabArmourUC();
 
         public EditorWindow()
         {
@@ -72,6 +73,7 @@ namespace TooHuman1SE.Windows
             loadCharmsTab();
             loadObelisksTab();
             loadWeaponsTab();
+            loadArmourTab();
         }
 
         private void loadEditorWindow()
@@ -167,6 +169,14 @@ namespace TooHuman1SE.Windows
             we.gridBlueprints.ItemsSource = _save.weaponsBlueprints;
         }
 
+        private void loadArmourTab()
+        {
+            ar._ewin = this;
+            ar.armourCollection = db.armourCollection;
+            ar.gridArmour.ItemsSource = _save.armourInventory;
+            ar.gridBlueprints.ItemsSource = _save.armourBlueprints;
+        }
+
         #endregion Tab Loading
 
         #region Functions
@@ -211,6 +221,7 @@ namespace TooHuman1SE.Windows
                 if (head == "Charms") ti.Content = ch;
                 if (head == "Obelisks") ti.Content = ob;
                 if (head == "Weapons") ti.Content = we;
+                if (head == "Armour") ti.Content = ar;
             }
         }
 
